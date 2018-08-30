@@ -7,17 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 
-public enum State
-{
-    START,
-    RUN,
-    INSIDE,
-    ACTIVATED,
-    CLICKED,
-    FINISHED
-
-}
-
 [RequireComponent(typeof(SteamVR_LaserPointer))]
 public class VRUIInput : MonoBehaviour
 {
@@ -291,7 +280,7 @@ public class VRUIInput : MonoBehaviour
             Debug.Log(store.Peek());
             store.Clear();
 
-            list.Add(new DataSet(Index, t));
+            list.Add(new DataSet(Index, new List<Vector3>()));
 
             timer = null;
             tmp = null;
@@ -299,7 +288,9 @@ public class VRUIInput : MonoBehaviour
             Index++;
             Score.text = Index + "/" + Times;
 
-            if (Index >= Times)
+
+
+            if (Index == )
             {
 
                 state = State.FINISHED;
@@ -503,3 +494,4 @@ public class VRUIInput : MonoBehaviour
 	}
 
 }
+    

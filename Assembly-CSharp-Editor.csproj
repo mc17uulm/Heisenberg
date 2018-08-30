@@ -10,7 +10,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>
     </RootNamespace>
-    <ProjectGuid>{64FF064A-8F05-616A-0E58-2E218D2F17CC}</ProjectGuid>
+    <ProjectGuid>{D890603A-0507-0917-DFBE-8AED453989B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
@@ -68,16 +68,16 @@
     <Compile Include="Assets\SteamVR\Editor\SteamVR_SkyboxEditor.cs" />
     <Compile Include="Assets\SteamVR\Editor\SteamVR_Update.cs" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg-abb887533e83ab42f2e6769037a715f2d30fb671/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg-abb887533e83ab42f2e6769037a715f2d30fb671/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg-abb887533e83ab42f2e6769037a715f2d30fb671/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg-abb887533e83ab42f2e6769037a715f2d30fb671/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:/Users/mi-vr/Desktop/Heisenberg/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -370,7 +370,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{D01F55C9-31C9-BDAB-D086-BE183DED9856}</Project>
+      <Project>{C499D987-9EF0-189B-7DB1-A2E72C4FF1D1}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
   </ItemGroup>
