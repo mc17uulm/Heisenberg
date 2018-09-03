@@ -53,11 +53,18 @@ public class Processing : MonoBehaviour {
     private static System.Random rand = new System.Random();
     private int Index;
     private Mode indication;
+    private IDictionary<string, object> config;
+    private int tries;
+    private Session session;
 
     void OnEnable()
     {
 
-        indication = Mode.LASTPOS;
+        config = Config.Load();
+
+        session = new Session("1");
+        
+        indication = (bool) config["last_position"] ? Mode.LASTPOS : Mode.AVG;
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
         trackedController = GetComponent<SteamVR_TrackedController>();
@@ -79,6 +86,7 @@ public class Processing : MonoBehaviour {
         LoadPositions();
 
         Index = 0;
+        tries = 0;
         list = new List<DataSet>();
 
 
@@ -86,12 +94,6 @@ public class Processing : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-        if(state.Equals(State.START))
-        {
-            SetTargets();
-            state = State.RUN;
-        }
 
         ProcessHits();
 
@@ -109,6 +111,7 @@ public class Processing : MonoBehaviour {
             timer = null;
             progressIndicator.enabled = false;
             Index++;
+           
 
             if(Index >= targetPositions.Count)
             {
@@ -121,10 +124,16 @@ public class Processing : MonoBehaviour {
 
                     missedPositions.Add(clicked);
                 }
+                session.AddTry(list);
             }
             else
             {
-                state = State.START;
+                // Checkt ob Durchgänge für diese Position bereits durchlaufen wurden
+                if ((targetPositions.Count * (int)config["repeat"]) % (Index + 1) == 0)
+                {
+                    SetTargets();
+                }
+                //state = State.START;
             }
         }
 
@@ -195,8 +204,9 @@ public class Processing : MonoBehaviour {
 
     private void SetTargets()
     {
-        targetSphere.transform.localPosition = targetPositions[Index];
-        progressIndicator.transform.localPosition = targetPositions[Index];
+        int t = ((targetPositions.Count * (int)config["repeat"]) / (Index + 1)) - 1; 
+        targetSphere.transform.localPosition = targetPositions[t];
+        progressIndicator.transform.localPosition = targetPositions[t];
     }
 
     private Boolean Contains(RaycastHit[] hits, string name, out GameObject x, out RaycastHit hit)
@@ -225,27 +235,21 @@ public class Processing : MonoBehaviour {
         missedPositions = new List<GameObject>();
     }
 
-    private void LoadPositions(bool random = true)
+    private void LoadPositions()
     {
         targetPositions = new List<Vector3>();
-        List<string> p = (Resources.Load("positions") as TextAsset).text.Split(new string[] { "\r\n" }, StringSplitOptions.None).ToList();
-        if (random)
+        //List<string> p = (Resources.Load("positions") as TextAsset).text.Split(new string[] { "\r\n" }, StringSplitOptions.None).ToList();
+        List<Vector3> p = ((Vector3[])config["positions"]).ToList<Vector3>();
+        if ((bool) config["random"])
         {
-            string first = p[0];
+            Vector3 first = p[0];
             p.RemoveAt(0);
             p = p.OrderBy(x => rand.Next()).ToList();
             p.Insert(0, first);
         }
-        foreach (string pos in p)
-        {
-            string[] v = pos.Split(' ');
-            Vector3 vec = new Vector3(
-                (float.Parse(v[0], CultureInfo.InvariantCulture.NumberFormat)),
-                (float.Parse(v[1], CultureInfo.InvariantCulture.NumberFormat)),
-                (float.Parse(v[2], CultureInfo.InvariantCulture.NumberFormat))
-            );
-            targetPositions.Add(vec);
-        }
+        targetPositions = p;
+        targetSphere.transform.localPosition = targetPositions[0];
+        progressIndicator.transform.localPosition = targetPositions[0];
     }
 
     private void ProcessButtons()
@@ -260,6 +264,12 @@ public class Processing : MonoBehaviour {
             Reset();
             list = new List<DataSet>();
             Index = 0;
+            tries++;
+            if(tries == (int) config["tries"])
+            {
+                Debug.Log("Session finished");
+                // Save to file
+            }
         }
 
     }
