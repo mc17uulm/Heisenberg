@@ -61,11 +61,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\HeisenbergScene\Scripts\Config.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\DataSet.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\Hit.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Logger.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Processing.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\Session.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Store.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Timer.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\Try.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\VRUIInput.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\VRUIItem.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />

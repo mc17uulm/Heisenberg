@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+/**
 public class DataSet : MonoBehaviour{
 
     private int num;
@@ -79,3 +79,4 @@ public class DataSet : MonoBehaviour{
 
     }
 }
+    */

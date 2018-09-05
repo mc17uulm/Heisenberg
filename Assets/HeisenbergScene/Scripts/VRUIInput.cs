@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿/**
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
@@ -290,7 +291,7 @@ public class VRUIInput : MonoBehaviour
 
 
 
-            if (Index == )
+            if (Index == 0)
             {
 
                 state = State.FINISHED;
@@ -494,4 +495,4 @@ public class VRUIInput : MonoBehaviour
 	}
 
 }
-    
+    */

@@ -17,12 +17,6 @@ public enum State
     FINISHED
 }
 
-public enum Mode
-{
-    LASTPOS,
-    AVG
-}
-
 [RequireComponent(typeof(SteamVR_LaserPointer))]
 public class Processing : MonoBehaviour {
 
@@ -44,27 +38,24 @@ public class Processing : MonoBehaviour {
     private Timer timer;
     // Angabe der ms für welche der Nutzer im Ziel sein muss um klicken zu können
     private int timespan = 500;
-
-    private List<DataSet> list;
+    
     private State state;
     private List<Vector3> stack;
     private List<Vector3> targetPositions;
     private List<GameObject> missedPositions;
-    private static System.Random rand = new System.Random();
+    public static System.Random rand = new System.Random();
     private int Index;
-    private Mode indication;
     private IDictionary<string, object> config;
-    private int tries;
+    private int Tries;
     private Session session;
+    private Try t;
 
     void OnEnable()
     {
 
         config = Config.Load();
 
-        session = new Session("1");
-        
-        indication = (bool) config["last_position"] ? Mode.LASTPOS : Mode.AVG;
+        session = new Session();
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
         trackedController = GetComponent<SteamVR_TrackedController>();
@@ -86,8 +77,9 @@ public class Processing : MonoBehaviour {
         LoadPositions();
 
         Index = 0;
-        tries = 0;
-        list = new List<DataSet>();
+        Tries = 0;
+
+        t = new Try(Tries);
 
 
     }
@@ -107,106 +99,137 @@ public class Processing : MonoBehaviour {
         if(state.Equals(State.ACTIVATED))
         {
             state = State.CLICKED;
-            list.Add(new DataSet(Index, stack, targetSphere));
+            
             timer = null;
             progressIndicator.enabled = false;
             Index++;
-           
 
-            if(Index >= targetPositions.Count)
+            int hi = Index % (int)config["repeat"] == 0 ? (int)config["repeat"] : Index % (int)config["repeat"];
+            t.AddHit(new Hit(hi, targetSphere.transform.position, stack));
+
+
+            if (Index >= (int) config["repeat"] * targetPositions.Count)
             {
-                foreach(DataSet set in list)
-                {
-                    GameObject clicked = Instantiate(indicatorButton, set.GetPosition(indication), Quaternion.identity) as GameObject;
-                    clicked.transform.parent = canvas.transform;
-                    clicked.transform.localScale = new Vector3(1, 1, 1);
-                    clicked.SetActive(true);
+                session.AddTry(t);
+                Tries++;
+                state = State.FINISHED;
+                targetSphere.SetActive(false);
 
-                    missedPositions.Add(clicked);
+                if(Tries >= (int) config["tries"])
+                {
+                    state = State.FINISHED;
+                    targetSphere.SetActive(false);
+                    int ind = 0;
+                    foreach (Try tr in session.GetTries()) {
+                        foreach (Hit h in tr.GetHits())
+                        {
+                            // Erster hit auf target um position von target zu ermitteln
+                            if (h.GetIndex() == 1 && ind == 0)
+                            {
+                                GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
+                                target.transform.parent = canvas.transform;
+                                target.transform.localScale = new Vector3(15, 15, 1);
+                                target.SetActive(true);
+                                missedPositions.Add(target);
+                            }
+                            Vector3 m = (bool)config["last_position"] ? h.GetLastPosition() : h.GetAverage();
+                            GameObject clicked = Instantiate(indicatorButton, m, Quaternion.identity) as GameObject;
+                            clicked.transform.parent = canvas.transform;
+                            clicked.transform.localScale = new Vector3(1, 1, 1);
+                            clicked.SetActive(true);
+
+                            missedPositions.Add(clicked);
+                        }
+                    }
+                    ind++;
+
+                    session.SaveToFile((string) config["savefile"]);
                 }
-                session.AddTry(list);
             }
             else
             {
                 // Checkt ob Durchgänge für diese Position bereits durchlaufen wurden
-                if ((targetPositions.Count * (int)config["repeat"]) % (Index + 1) == 0)
+                if (Index % (int)config["repeat"] == 0)
                 {
                     SetTargets();
                 }
-                //state = State.START;
+                state = State.RUN;
             }
+
+            stack = new List<Vector3>();
         }
 
     }
 
     private void ProcessHits()
     {
-        RaycastHit[] hits;
-        hits = Physics.RaycastAll(laserPointer.transform.position, transform.forward, 100.0f);
-
-        GameObject obj;
-        RaycastHit hit;
-
-        if(Contains(hits, "Sphere", out obj, out hit))
+        if (!state.Equals(State.FINISHED))
         {
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(laserPointer.transform.position, transform.forward, 100.0f);
 
-            if(hits.Length > 0)
+            GameObject obj;
+            RaycastHit hit;
+
+            if (Contains(hits, "Sphere", out obj, out hit))
             {
-                stack.Add(hits[0].point);
-            }
 
-            switch(state)
-            {
-
-                case State.RUN:
-                    timer = new Timer();
-                    progressIndicator.enabled = true;
-                    progressIndicator.fillAmount = 0;
-                    progressIndicator.color = new Color(255, 0, 0);
-                    state = State.INSIDE;
-                    break;
-
-                case State.INSIDE:
-                    if(timer.Finished())
-                    {
-                        state = State.ACTIVATED;
-                        progressIndicator.color = new Color(0, 255, 0);
-                    }
-                    else
-                    {
-                        float progress = timer.GetProgress(timespan);
-                        progressIndicator.fillAmount = progress;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-
-        }
-        else
-        {
-            if(Contains(hits, "Panel_", out obj, out hit))
-            {
-                if (state.Equals(State.ACTIVATED))
+                if (hits.Length > 0)
                 {
                     stack.Add(hits[0].point);
                 }
-                else
+
+                switch (state)
                 {
-                    progressIndicator.enabled = false;
-                    timer = null;
-                    state = State.RUN;
+
+                    case State.RUN:
+                        timer = new Timer();
+                        progressIndicator.enabled = true;
+                        progressIndicator.fillAmount = 0;
+                        progressIndicator.color = new Color(255, 0, 0);
+                        state = State.INSIDE;
+                        break;
+
+                    case State.INSIDE:
+                        if (timer.Finished())
+                        {
+                            state = State.ACTIVATED;
+                            progressIndicator.color = new Color(0, 255, 0);
+                        }
+                        else
+                        {
+                            float progress = timer.GetProgress(timespan);
+                            progressIndicator.fillAmount = progress;
+                        }
+                        break;
+
+                    default:
+                        break;
                 }
+
             }
+            else if (Contains(hits, "Panel_", out obj, out hit))
+                {
+                    if (state.Equals(State.ACTIVATED))
+                    {
+                    stack.Add(hits[0].point);
+                    }
+                    else
+                    {
+                        progressIndicator.enabled = false;
+                        timer = null;
+                        state = State.RUN;
+                    }
+                }
         }
     }
 
     private void SetTargets()
     {
-        int t = ((targetPositions.Count * (int)config["repeat"]) / (Index + 1)) - 1; 
-        targetSphere.transform.localPosition = targetPositions[t];
-        progressIndicator.transform.localPosition = targetPositions[t];
+        int o = t.GetHits().Count / (int)config["repeat"];
+        Debug.Log("OOO: " + o);
+        targetSphere.transform.localPosition = targetPositions[o];
+        progressIndicator.transform.localPosition = targetPositions[o];
     }
 
     private Boolean Contains(RaycastHit[] hits, string name, out GameObject x, out RaycastHit hit)
@@ -257,19 +280,25 @@ public class Processing : MonoBehaviour {
 
         if(Input.GetKeyDown(KeyCode.Space) && state.Equals(State.FINISHED))
         {
-            foreach(GameObject o in missedPositions)
+            /**foreach(GameObject o in missedPositions)
             {
                 Destroy(o);
-            }
+            }*/
             Reset();
-            list = new List<DataSet>();
+            //list = new List<DataSet>();
             Index = 0;
-            tries++;
-            if(tries == (int) config["tries"])
+            t = new Try(Tries);
+            stack = new List<Vector3>();
+            state = State.RUN;
+            targetSphere.SetActive(true);
+            targetSphere.transform.localPosition = targetPositions[0];
+            progressIndicator.transform.localPosition = targetPositions[0];
+            //Tries++;
+            /**if(Tries == (int) config["tries"])
             {
                 Debug.Log("Session finished");
                 // Save to file
-            }
+            }*/
         }
 
     }
