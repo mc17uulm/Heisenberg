@@ -12,8 +12,7 @@ public class Session
 
     public Session()
     {
-        this.id = string.Concat(Enumerable.Range(0, 12).Select(_ => Processing.rand.Next(16).ToString("X")));
-        Debug.Log("Session id: " + this.id);
+        this.id = this.BuildHexString();
         this.tries = new List<Try>();
     }
 
@@ -54,10 +53,15 @@ public class Session
         {
             using(StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("id;target;hit;\r\n");
-                foreach (Hit h in this.GetAllHits())
+                w.WriteLine("session;try;hit;target;position.x;position.y;position.z");
+                foreach(Try tr in this.tries)
                 {
-                    w.WriteLine(string.Format("{0};{1};{2};\r\n", this.id, h.GetTarget(), h.GetPositions()));
+                    foreach (Hit h in tr.GetHits())
+                    {
+                        foreach (Vector3 pos in h.GetPositions()) {
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.id, tr.GetIndex(), h.GetIndex(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                        }
+                    }
                 }
             }
         }
@@ -65,11 +69,31 @@ public class Session
         {
             using (StreamWriter w = File.AppendText(file))
             {
-                foreach (Hit h in this.GetAllHits())
+                foreach (Try tr in this.tries)
                 {
-                    w.WriteLine(string.Format("{0};{1};{2};\r\n", this.id, h.GetTarget(), h.GetPositions()));
+                    foreach (Hit h in tr.GetHits())
+                    {
+                        foreach (Vector3 pos in h.GetPositions())
+                        {
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.id, tr.GetIndex(), h.GetIndex(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private string BuildHexString()
+    {
+        string hexValue = string.Empty;
+        int num;
+
+        for (int i = 0; i < 8; i++)
+        {
+            num = Processing.rand.Next(0, int.MaxValue);
+            hexValue += num.ToString("X8");
+        }
+
+        return hexValue;
     }
 }

@@ -62,15 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\HeisenbergScene\Scripts\Config.cs" />
-    <Compile Include="Assets\HeisenbergScene\Scripts\DataSet.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Hit.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Logger.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Processing.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Session.cs" />
-    <Compile Include="Assets\HeisenbergScene\Scripts\Store.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Timer.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Try.cs" />
-    <Compile Include="Assets\HeisenbergScene\Scripts\VRUIInput.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\VRUIItem.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
@@ -175,7 +172,6 @@
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
     <None Include="Assets\SteamVR\InteractionSystem\Hints\Shaders\ControllerButtonHints.shader" />
-    <None Include="Assets\Resources\positions.txt" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\SeeThru.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/mi-vr/Desktop/Heisenberg/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

@@ -13,13 +13,13 @@ public class Config{
         // Positionen der Ziele
         config["positions"] = new Vector3[]
         {
-            new Vector3(0, 44.7f, 0),
-            new Vector3(0, 22.7f, 0),
-            new Vector3(-44.7f, 44.7f, 0)
+            new Vector3(0, 104.7f, 0),
+            new Vector3(0, 0.7f, 0),
+            new Vector3(-104.7f, 104.7f, 0)
         };
 
         // Wie oft soll eine Position wiederholt werden?
-        config["repeat"] = 2;
+        config["repeat"] = 1;
         // Durchgänge
         config["tries"] = 2;
         // Sollen die Positionen random oder nach Reihenfolge erscheinen

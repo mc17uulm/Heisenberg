@@ -77,7 +77,7 @@ public class Processing : MonoBehaviour {
         LoadPositions();
 
         Index = 0;
-        Tries = 0;
+        Tries = 1;
 
         t = new Try(Tries);
 
@@ -96,7 +96,7 @@ public class Processing : MonoBehaviour {
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
 
-        if(state.Equals(State.ACTIVATED))
+        if (state.Equals(State.ACTIVATED))
         {
             state = State.CLICKED;
             
@@ -104,9 +104,11 @@ public class Processing : MonoBehaviour {
             progressIndicator.enabled = false;
             Index++;
 
-            int hi = Index % (int)config["repeat"] == 0 ? (int)config["repeat"] : Index % (int)config["repeat"];
+            int hi = (int)config["repeat"] == 1 ? Index : (Index % (int)config["repeat"] == 0 ? (int)config["repeat"] : Index % (int)config["repeat"]);
+            Debug.Log("hi: " + hi);
             t.AddHit(new Hit(hi, targetSphere.transform.position, stack));
 
+            scoreText.text = "Versuch: " + (Tries-1) + "/" + config["tries"] + "\r\nPosition: " + ((t.GetHits().Count / (int)config["repeat"])) + "/" + targetPositions.Count;
 
             if (Index >= (int) config["repeat"] * targetPositions.Count)
             {
@@ -115,20 +117,22 @@ public class Processing : MonoBehaviour {
                 state = State.FINISHED;
                 targetSphere.SetActive(false);
 
-                if(Tries >= (int) config["tries"])
+                if(Tries > (int) config["tries"])
                 {
                     state = State.FINISHED;
                     targetSphere.SetActive(false);
+                    scoreText.text = "Finished";
+                    Debug.Log("finished");
                     int ind = 0;
                     foreach (Try tr in session.GetTries()) {
                         foreach (Hit h in tr.GetHits())
                         {
                             // Erster hit auf target um position von target zu ermitteln
-                            if (h.GetIndex() == 1 && ind == 0)
+                            if (tr.GetIndex() == 1 && ind == 0)
                             {
                                 GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
                                 target.transform.parent = canvas.transform;
-                                target.transform.localScale = new Vector3(15, 15, 1);
+                                target.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
                                 target.SetActive(true);
                                 missedPositions.Add(target);
                             }
@@ -208,7 +212,7 @@ public class Processing : MonoBehaviour {
                 }
 
             }
-            else if (Contains(hits, "Panel_", out obj, out hit))
+            else if (Contains(hits, "TargetPanel", out obj, out hit))
                 {
                     if (state.Equals(State.ACTIVATED))
                     {
@@ -227,7 +231,6 @@ public class Processing : MonoBehaviour {
     private void SetTargets()
     {
         int o = t.GetHits().Count / (int)config["repeat"];
-        Debug.Log("OOO: " + o);
         targetSphere.transform.localPosition = targetPositions[o];
         progressIndicator.transform.localPosition = targetPositions[o];
     }
@@ -260,6 +263,7 @@ public class Processing : MonoBehaviour {
 
     private void LoadPositions()
     {
+        
         targetPositions = new List<Vector3>();
         //List<string> p = (Resources.Load("positions") as TextAsset).text.Split(new string[] { "\r\n" }, StringSplitOptions.None).ToList();
         List<Vector3> p = ((Vector3[])config["positions"]).ToList<Vector3>();
@@ -271,8 +275,17 @@ public class Processing : MonoBehaviour {
             p.Insert(0, first);
         }
         targetPositions = p;
+        scoreText.text = "Versuch: 0/" + config["tries"] + "\r\nPosition: 0/" + targetPositions.Count;
+
+        Vector3 panel = canvas.transform.localPosition;
+        panel.z = (int)config["distance"];
+        canvas.transform.localPosition = panel;
         targetSphere.transform.localPosition = targetPositions[0];
+        //(targetSphere.transform as RectTransform).sizeDelta = new Vector2((int)config["dimension"], (int)config["dimension"]);
+        targetSphere.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
         progressIndicator.transform.localPosition = targetPositions[0];
+        float dimension = (int)config["dimension"]*4;
+        progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
     }
 
     private void ProcessButtons()
@@ -293,6 +306,7 @@ public class Processing : MonoBehaviour {
             targetSphere.SetActive(true);
             targetSphere.transform.localPosition = targetPositions[0];
             progressIndicator.transform.localPosition = targetPositions[0];
+            scoreText.text = "Versuch: " + (Tries-1) + "/" + config["tries"] + "\r\nPosition: 0/" + targetPositions.Count;
             //Tries++;
             /**if(Tries == (int) config["tries"])
             {
