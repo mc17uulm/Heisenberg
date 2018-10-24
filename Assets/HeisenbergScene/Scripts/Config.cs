@@ -11,17 +11,29 @@ public class Config{
         IDictionary<string, object> config = new Dictionary<string, object>();
 
         // Positionen der Ziele
+        config["start_position"] = new Vector3(0,0,0);
         config["positions"] = new Vector3[]
         {
-            new Vector3(0, 104.7f, 0),
-            new Vector3(0, 0.7f, 0),
-            new Vector3(-104.7f, 104.7f, 0)
+            new Vector3(-280,180,0),
+            new Vector3(-93.5f,180,0),
+            /**new Vector3(93.5f,180,0),
+            new Vector3(280,180,0),
+
+            new Vector3(-280,0,0),
+            new Vector3(-93.5f,0,0),
+            new Vector3(93.5f,0,0),
+            new Vector3(280,0,0),
+
+            new Vector3(-280,-180,0),
+            new Vector3(-93.5f,-180,0),
+            new Vector3(93.5f,-180,0),
+            new Vector3(280,-180,0)*/
         };
 
         // Wie oft soll eine Position wiederholt werden?
-        config["repeat"] = 1;
+        config["repeat"] = 2;
         // Durchgänge
-        config["tries"] = 2;
+        config["tries"] = 1;
         // Sollen die Positionen random oder nach Reihenfolge erscheinen
         config["random"] = true;
         // Größe des Zieles (width = heigth) in px

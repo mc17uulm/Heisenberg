@@ -7,12 +7,12 @@ using System.IO;
 public class Session
 {
 
-    private string id;
+    private string name;
     private List<Try> tries;
 
     public Session()
     {
-        this.id = this.BuildHexString();
+        this.name = "Max Mustermann";
         this.tries = new List<Try>();
     }
 
@@ -42,9 +42,9 @@ public class Session
         return o;
     }
 
-    public string GetId()
+    public string GetName()
     {
-        return this.id;
+        return this.name;
     }
 
     public void SaveToFile(string file)
@@ -53,13 +53,13 @@ public class Session
         {
             using(StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("session;try;hit;target;position.x;position.y;position.z");
+                w.WriteLine("name;try;hit;first;target;position.x;position.y;position.z");
                 foreach(Try tr in this.tries)
                 {
                     foreach (Hit h in tr.GetHits())
                     {
                         foreach (Vector3 pos in h.GetPositions()) {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.id, tr.GetIndex(), h.GetIndex(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.name, tr.GetIndex(), h.GetIndex(), h.GetFirst(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
                         }
                     }
                 }
@@ -75,7 +75,7 @@ public class Session
                     {
                         foreach (Vector3 pos in h.GetPositions())
                         {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.id, tr.GetIndex(), h.GetIndex(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.name, tr.GetIndex(), h.GetIndex(), h.GetFirst(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
                         }
                     }
                 }

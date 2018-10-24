@@ -7,12 +7,20 @@ public class Hit {
     private int index;
     private Vector3 target;
     private List<Vector3> positions;
+    private bool first;
 
-    public Hit(int index, Vector3 target, List<Vector3> positions)
+    public Hit(int index, Vector3 target, List<Vector3> positions, bool first = false)
     {
         this.index = index;
         this.target = target;
         this.positions = positions;
+        this.first = first;
+        Debug.Log("Construct size: " + positions.Count);
+    }
+
+    public override string ToString()
+    {
+        return "First: " + this.first + " | LastPos: " + this.GetLastPosition();
     }
 
     public int GetIndex()
@@ -30,9 +38,22 @@ public class Hit {
         return this.positions;
     }
 
+    public bool GetFirst()
+    {
+        return this.first;
+    }
+
     public Vector3 GetLastPosition()
     {
-        return this.positions[this.positions.Count - 1];
+        if(this.positions.Count == 0)
+        {
+            Debug.Log("empty pos");
+            return this.target;
+        }
+        else
+        {
+            return this.positions[this.positions.Count - 1];
+        }
     }
 
     public Vector3 GetAverage()
