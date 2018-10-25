@@ -121,10 +121,12 @@ public class Processing : MonoBehaviour
                 t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
                 h++;
                 stack = new List<Vector3>();
+                //targetSphere.GetComponent<MeshRenderer>().materials[0].color = new Color(0.02197933f, 0, 1);
                 state = State.SECOND;
                 break;
 
             case State.ACTIVATED:
+                Debug.Log("INDEX NOW: " + Index);
                 state = State.CLICKED;
                 timer = null;
                 progressIndicator.enabled = false;
@@ -132,13 +134,14 @@ public class Processing : MonoBehaviour
                 h++;
                 if(Index >= targetPositions.Count - 1)
                 {
+                    Debug.Log("Fin");
                     state = State.FINISHED;
                     session.AddTry(t);
                     Tries++;
-                    targetSphere.SetActive(false);
 
                     if (Tries > (int)config["tries"])
                     {
+                        Debug.Log("In Here");
                         state = State.FINISHED;
                         targetSphere.SetActive(false);
                         int ind = 0;
@@ -149,14 +152,10 @@ public class Processing : MonoBehaviour
                             Debug.Log("Hits: " + tr.GetHits().Count);
                             foreach (Hit h in tr.GetHits())
                             {
-                                Debug.Log(tes);
-                                Debug.Log(fir);
-                                Debug.Log(h.ToString());
 
                                 // Erster hit auf target um position von target zu ermitteln
-                                if (h.GetFirst())
+                                if (h.GetFirst() && tr.GetIndex() == 1 && ind == 0)
                                 {
-                                    Debug.Log("Size: " + h.GetPositions().Count);
                                     GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
                                     target.transform.parent = canvas.transform;
                                     target.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
@@ -184,6 +183,27 @@ public class Processing : MonoBehaviour
                         ind++;
 
                         session.SaveToFile((string)config["savefile"]);
+                    }
+                    else
+                    {
+                        Debug.Log("Right");
+
+                        LoadPositions();
+
+                        Debug.Log(targetPositions.Count);
+                        foreach(Vector3 vec in targetPositions)
+                        {
+                            Debug.Log(vec.x + " | " + vec.y);
+                        }
+
+                        Index = 0;
+                        h = 1;
+
+                        SetTargets();
+
+                        t = new Try(Tries);
+
+                        state = State.FIRST;
                     }
                 }
                 else
@@ -297,6 +317,7 @@ public class Processing : MonoBehaviour
         }
         else
         {
+            Debug.Log("Index: " + Index);
             //int o = t.GetHits().Count / (int)config["repeat"];
             targetSphere.transform.localPosition = targetPositions[Index];
             progressIndicator.transform.localPosition = targetPositions[Index];
