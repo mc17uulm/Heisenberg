@@ -6,13 +6,14 @@ public class Hit {
 
     private int index;
     private Vector3 target;
-    private List<Vector3> positions;
+    private List<Position> positions;
     private bool first;
 
-    public Hit(int index, Vector3 target, List<Vector3> positions, bool first = false)
+    public Hit(int index, Vector3 target, List<Position> positions, bool first = false)
     {
         this.index = index;
         this.target = target;
+        positions[positions.Count - 1].SetEvent(PointerEvent.Released);
         this.positions = positions;
         this.first = first;
         Debug.Log("Construct size: " + positions.Count);
@@ -33,7 +34,7 @@ public class Hit {
         return this.target;
     }
 
-    public List<Vector3> GetPositions()
+    public List<Position> GetPositions()
     {
         return this.positions;
     }
@@ -52,7 +53,7 @@ public class Hit {
         }
         else
         {
-            return this.positions[this.positions.Count - 1];
+            return this.positions[this.positions.Count - 1].GetPointerPos();
         }
     }
 
@@ -66,7 +67,7 @@ public class Hit {
 
         for (int i = 0; i < volume; i++)
         {
-            Vector3 t = this.positions[this.positions.Count - 1];
+            Vector3 t = this.positions[this.positions.Count - 1].GetPointerPos();
             x += t.x;
             y += t.y;
             z += t.z;

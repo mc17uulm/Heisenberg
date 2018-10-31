@@ -12,7 +12,7 @@ public class Session
 
     public Session()
     {
-        this.name = "Max Mustermann";
+        this.name = "Marco";
         this.tries = new List<Try>();
     }
 
@@ -53,13 +53,32 @@ public class Session
         {
             using(StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("name;try;hit;first;target;position.x;position.y;position.z");
+                w.WriteLine("name;round;trial;ballistic;timestamp;event;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
                 foreach(Try tr in this.tries)
                 {
                     foreach (Hit h in tr.GetHits())
                     {
-                        foreach (Vector3 pos in h.GetPositions()) {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.name, tr.GetIndex(), h.GetIndex(), h.GetFirst(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                        foreach (Position pos in h.GetPositions()) {
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};",
+                                this.name, 
+                                tr.GetIndex(), 
+                                h.GetIndex(), 
+                                h.GetFirst(), 
+                                pos.GetTimestamp(),
+                                pos.PrintEvent(),
+                                pos.GetPressStrength(),
+                                pos.GetControllerPos().x,
+                                pos.GetControllerPos().y,
+                                pos.GetControllerPos().z,
+                                pos.GetControllerRot().x,
+                                pos.GetControllerRot().y,
+                                pos.GetControllerRot().z,
+                                h.GetTarget().x,
+                                h.GetTarget().y,
+                                h.GetTarget().z,
+                                pos.GetPointerPos().x,
+                                pos.GetPointerPos().y
+                             ));
                         }
                     }
                 }
@@ -73,9 +92,28 @@ public class Session
                 {
                     foreach (Hit h in tr.GetHits())
                     {
-                        foreach (Vector3 pos in h.GetPositions())
+                        foreach (Position pos in h.GetPositions())
                         {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};", this.name, tr.GetIndex(), h.GetIndex(), h.GetFirst(), h.GetTarget().ToString(), pos.x, pos.y, pos.z));
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};",
+                                this.name,
+                                tr.GetIndex(),
+                                h.GetIndex(),
+                                h.GetFirst(),
+                                pos.GetTimestamp(),
+                                pos.PrintEvent(),
+                                pos.GetPressStrength(),
+                                pos.GetControllerPos().x,
+                                pos.GetControllerPos().y,
+                                pos.GetControllerPos().z,
+                                pos.GetControllerRot().x,
+                                pos.GetControllerRot().y,
+                                pos.GetControllerRot().z,
+                                h.GetTarget().x,
+                                h.GetTarget().y,
+                                h.GetTarget().z,
+                                pos.GetPointerPos().x,
+                                pos.GetPointerPos().y
+                             ));
                         }
                     }
                 }

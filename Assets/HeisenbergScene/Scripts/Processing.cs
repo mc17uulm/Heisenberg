@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
+using Valve.VR;
 
 public enum State
 {
@@ -45,7 +46,7 @@ public class Processing : MonoBehaviour
     private int timespan = 500;
 
     private State state;
-    private List<Vector3> stack;
+    private List<Position> stack;
     private List<Vector3> targetPositions;
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
@@ -55,6 +56,9 @@ public class Processing : MonoBehaviour
     private int h;
     private Session session;
     private Try t;
+
+    private SteamVR_Controller.Device device = null;
+    private float triggerPress; 
 
     void OnEnable()
     {
@@ -74,7 +78,9 @@ public class Processing : MonoBehaviour
             Debug.Log("TrackedContoroller still null");
             Application.Quit();
         }
-
+        
+        trackedController.TriggerUnclicked -= ControllerOnRelease;
+        trackedController.TriggerUnclicked += ControllerOnRelease;
         trackedController.TriggerClicked -= ControllerOnClick;
         trackedController.TriggerClicked += ControllerOnClick;
 
@@ -100,14 +106,21 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        //Debug.Log(state);
+        if(device == null)
+        {
+            device = SteamVR_Controller.Input((int)trackedController.controllerIndex);
+        }
+        else
+        {
+            triggerPress = device.GetAxis(EVRButtonId.k_EButton_SteamVR_Trigger).x;
+        }
 
     }
 
-    private void ControllerOnClick(object sender, ClickedEventArgs e)
+    private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
-
-        switch(state)
+        Debug.Log("ONRELEASE");
+        switch (state)
         {
 
             case State.START_IN:
@@ -120,7 +133,7 @@ public class Processing : MonoBehaviour
                 state = State.FIRST_CLICK;
                 t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
                 h++;
-                stack = new List<Vector3>();
+                stack = new List<Position>();
                 //targetSphere.GetComponent<MeshRenderer>().materials[0].color = new Color(0.02197933f, 0, 1);
                 state = State.SECOND;
                 break;
@@ -132,7 +145,7 @@ public class Processing : MonoBehaviour
                 progressIndicator.enabled = false;
                 t.AddHit(new Hit(h, targetSphere.transform.position, stack));
                 h++;
-                if(Index >= targetPositions.Count - 1)
+                if (Index >= targetPositions.Count - 1)
                 {
                     Debug.Log("Fin");
                     state = State.FINISHED;
@@ -167,7 +180,7 @@ public class Processing : MonoBehaviour
                                 GameObject clicked = Instantiate(indicatorButton, m, Quaternion.identity) as GameObject;
                                 clicked.transform.parent = canvas.transform;
                                 clicked.transform.localScale = new Vector3(1, 1, 1);
-                                if(h.GetFirst())
+                                if (h.GetFirst())
                                 {
                                     clicked.GetComponent<Image>().color = new Color(0.03671634f, 1, 0, 1);
                                 }
@@ -191,7 +204,7 @@ public class Processing : MonoBehaviour
                         LoadPositions();
 
                         Debug.Log(targetPositions.Count);
-                        foreach(Vector3 vec in targetPositions)
+                        foreach (Vector3 vec in targetPositions)
                         {
                             Debug.Log(vec.x + " | " + vec.y);
                         }
@@ -212,13 +225,19 @@ public class Processing : MonoBehaviour
                     SetTargets();
                     state = State.FIRST;
                 }
-                stack = new List<Vector3>();
+                stack = new List<Position>();
                 break;
 
             default:
                 break;
 
         }
+    }
+
+    private void ControllerOnClick(object sender, ClickedEventArgs e)
+    {
+
+        
 
     }
 
@@ -238,7 +257,7 @@ public class Processing : MonoBehaviour
 
                 if (hits.Length > 0 && !state.Equals(State.START) && !state.Equals(State.START_IN))
                 {
-                    stack.Add(hits[0].point);
+                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetSphere.transform.position, hits[0].point));
                 }
 
                 switch (state)
@@ -281,7 +300,8 @@ public class Processing : MonoBehaviour
             {
                 if (state.Equals(State.ACTIVATED) || state.Equals(State.FIRST_IN))
                 {
-                    stack.Add(hits[0].point);
+                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetSphere.transform.position, hits[0].point));
+                    //stack.Add(hits[0].point);
                 }
                 else if(state.Equals(State.FIRST))
                 {
@@ -346,7 +366,7 @@ public class Processing : MonoBehaviour
         timer = null;
         state = State.START;
         progressIndicator.enabled = false;
-        stack = new List<Vector3>();
+        stack = new List<Position>();
         missedPositions = new List<GameObject>();
     }
 
@@ -385,12 +405,33 @@ public class Processing : MonoBehaviour
             Reset();
             Index = 0;
             t = new Try(Tries);
-            stack = new List<Vector3>();
+            stack = new List<Position>();
             state = State.START;
             targetSphere.SetActive(true);
             SetTargets(true);
             //scoreText.text = "Versuch: " + (Tries - 1) + "/" + config["tries"] + "\r\nPosition: 0/" + targetPositions.Count;
         }
 
+    }
+
+    private long GetNow()
+    {
+        return (long) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+    }
+
+    private PointerEvent GetEvent()
+    {
+        if (triggerPress > 0.1f && triggerPress < 1.0f)
+        {
+            return PointerEvent.TriggerPressed;
+        }
+        else if (triggerPress >= 1.0f)
+        {
+            return PointerEvent.Clicked;
+        }
+        else
+        {
+            return PointerEvent.None;
+        }
     }
 }

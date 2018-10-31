@@ -19,7 +19,7 @@ public class Config{
             new Vector3(93.5f,180,0),
             new Vector3(280,180,0),
 
-            new Vector3(-280,0,0),
+            /**new Vector3(-280,0,0),
             new Vector3(-93.5f,0,0),
             new Vector3(93.5f,0,0),
             new Vector3(280,0,0),
@@ -27,13 +27,13 @@ public class Config{
             new Vector3(-280,-180,0),
             new Vector3(-93.5f,-180,0),
             new Vector3(93.5f,-180,0),
-            new Vector3(280,-180,0)
+            new Vector3(280,-180,0)*/
         };
 
         // Wie oft soll eine Position wiederholt werden?
         config["repeat"] = 2;
         // Durchgänge
-        config["tries"] = 10;
+        config["tries"] = 2;
         // Sollen die Positionen random oder nach Reihenfolge erscheinen
         config["random"] = true;
         // Größe des Zieles (width = heigth) in px
