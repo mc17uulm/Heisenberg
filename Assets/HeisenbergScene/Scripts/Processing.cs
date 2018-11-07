@@ -236,9 +236,7 @@ public class Processing : MonoBehaviour
 
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
-
-        
-
+        stack[stack.Count - 1].SetEvent(PointerEvent.ClickEvent);
     }
 
     private void ProcessHits()
