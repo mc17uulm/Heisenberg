@@ -243,7 +243,7 @@ public class Processing : MonoBehaviour
             stack[stack.Count - 1].SetEvent(PointerEvent.ClickEvent);
             Debug.Log("Click: " + triggerPress);
         }
-
+		
     }
 
     private void ProcessHits()

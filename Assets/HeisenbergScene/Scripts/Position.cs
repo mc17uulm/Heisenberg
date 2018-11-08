@@ -5,6 +5,7 @@ using UnityEngine;
 public enum PointerEvent
 {
     TriggerPressed,
+    ClickEvent,
     Clicked,
     ClickEvent,
     Released,
