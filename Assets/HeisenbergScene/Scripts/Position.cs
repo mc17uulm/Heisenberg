@@ -6,6 +6,7 @@ public enum PointerEvent
 {
     TriggerPressed,
     Clicked,
+    ClickEvent,
     Released,
     None
 }
@@ -56,6 +57,9 @@ public class Position {
 
             case PointerEvent.Clicked:
                 return "Clicked";
+
+            case PointerEvent.ClickEvent:
+                return "ClickEvent";
 
             case PointerEvent.Released:
                 return "Released";

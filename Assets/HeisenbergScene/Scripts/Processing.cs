@@ -134,7 +134,8 @@ public class Processing : MonoBehaviour
                 t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
                 h++;
                 stack = new List<Position>();
-                //targetSphere.GetComponent<MeshRenderer>().materials[0].color = new Color(0.02197933f, 0, 1);
+
+                targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.02197933f, 0, 1));
                 state = State.SECOND;
                 break;
 
@@ -237,7 +238,11 @@ public class Processing : MonoBehaviour
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
 
-        
+        if(stack.Count > 0)
+        {
+            stack[stack.Count - 1].SetEvent(PointerEvent.ClickEvent);
+            Debug.Log("Click: " + triggerPress);
+        }
 
     }
 
@@ -339,6 +344,7 @@ public class Processing : MonoBehaviour
         {
             Debug.Log("Index: " + Index);
             //int o = t.GetHits().Count / (int)config["repeat"];
+            targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
             targetSphere.transform.localPosition = targetPositions[Index];
             progressIndicator.transform.localPosition = targetPositions[Index];
         }
