@@ -58,7 +58,8 @@ public class Processing : MonoBehaviour
     private Try t;
 
     private SteamVR_Controller.Device device = null;
-    private float triggerPress; 
+    private float triggerPress;
+    private float triggerPressBefore;
 
     void OnEnable()
     {
@@ -96,6 +97,9 @@ public class Processing : MonoBehaviour
 
         t = new Try(Tries);
 
+        triggerPress = 0;
+        triggerPressBefore = 0;
+
     }
 
     // Update is called once per frame
@@ -112,115 +116,127 @@ public class Processing : MonoBehaviour
         }
         else
         {
+            triggerPressBefore = triggerPress;
             triggerPress = device.GetAxis(EVRButtonId.k_EButton_SteamVR_Trigger).x;
+        }
+
+        if(triggerPressBefore >= 1 && triggerPress < 1)
+        {
+            switch (state)
+            {
+
+                case State.START_IN:
+                    state = State.FIRST;
+                    targetSphere.transform.localPosition = targetPositions[0].GetPosition();
+                    progressIndicator.transform.localPosition = targetPositions[0].GetPosition();
+                    break;
+
+                case State.FIRST_IN:
+                    state = State.FIRST_CLICK;
+                    t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
+                    h++;
+                    stack = new List<Position>();
+
+                    targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.02197933f, 0, 1));
+                    state = State.SECOND;
+                    break;
+
+                case State.ACTIVATED:
+                    state = State.CLICKED;
+                    timer = null;
+                    progressIndicator.enabled = false;
+                    t.AddHit(new Hit(h, targetSphere.transform.position, stack));
+                    h++;
+                    if (Index >= targetPositions.Count - 1)
+                    {
+                        state = State.FINISHED;
+                        session.AddTry(t);
+                        Tries++;
+
+                        if (Tries > (int)config["tries"])
+                        {
+                            state = State.FINISHED;
+                            targetSphere.SetActive(false);
+                            int ind = 0;
+                            int tes = 0;
+                            int fir = 0;
+                            foreach (Try tr in session.GetTries())
+                            {
+                                foreach (Hit h in tr.GetHits())
+                                {
+
+                                    // Erster hit auf target um position von target zu ermitteln
+                                    if (h.GetFirst() && tr.GetIndex() == 1 && ind == 0)
+                                    {
+                                        GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
+                                        target.transform.parent = canvas.transform;
+                                        target.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
+                                        target.SetActive(true);
+                                        missedPositions.Add(target);
+                                        fir++;
+                                    }
+                                    GameObject clicked;
+                                    if (h.GetFirst())
+                                    {
+                                        clicked = Instantiate(indicatorButton, h.GetLastPosition(), Quaternion.identity) as GameObject;
+                                        clicked.transform.parent = canvas.transform;
+                                        clicked.transform.localScale = new Vector3(1, 1, 1);
+                                        clicked.GetComponent<Image>().color = new Color(0.03671634f, 1, 0, 1);
+                                    }
+                                    else
+                                    {
+                                        clicked = Instantiate(indicatorButton, h.GetAverage(), Quaternion.identity) as GameObject;
+                                        clicked.transform.parent = canvas.transform;
+                                        clicked.transform.localScale = new Vector3(1, 1, 1);
+                                        clicked.GetComponent<Image>().color = new Color(1, 0, 0, 1);
+                                    }
+                                    clicked.SetActive(true);
+                                    tes++;
+                                    missedPositions.Add(clicked);
+                                }
+                            }
+                            ind++;
+
+                            session.SaveToFile((string)config["savefile"]);
+                            session.SaveSum((string)config["savefile_2"], targetSphere.transform);
+                        }
+                        else
+                        {
+
+                            LoadPositions();
+
+                            Index = 0;
+                            h = 1;
+
+                            SetTargets();
+
+                            t = new Try(Tries);
+
+                            state = State.FIRST;
+                        }
+                    }
+                    else
+                    {
+                        Index++;
+                        SetTargets();
+                        state = State.FIRST;
+                    }
+                    stack = new List<Position>();
+                    break;
+
+                default:
+                    break;
+
+            }
         }
 
     }
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
-        switch (state)
+        if(stack.Count > 0)
         {
-
-            case State.START_IN:
-                state = State.FIRST;
-                targetSphere.transform.localPosition = targetPositions[0].GetPosition();
-                progressIndicator.transform.localPosition = targetPositions[0].GetPosition();
-                break;
-
-            case State.FIRST_IN:
-                state = State.FIRST_CLICK;
-                t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
-                h++;
-                stack = new List<Position>();
-
-                targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.02197933f, 0, 1));
-                state = State.SECOND;
-                break;
-
-            case State.ACTIVATED:
-                state = State.CLICKED;
-                timer = null;
-                progressIndicator.enabled = false;
-                t.AddHit(new Hit(h, targetSphere.transform.position, stack));
-                h++;
-                if (Index >= targetPositions.Count - 1)
-                {
-                    state = State.FINISHED;
-                    session.AddTry(t);
-                    Tries++;
-
-                    if (Tries > (int)config["tries"])
-                    {
-                        state = State.FINISHED;
-                        targetSphere.SetActive(false);
-                        int ind = 0;
-                        int tes = 0;
-                        int fir = 0;
-                        foreach (Try tr in session.GetTries())
-                        {
-                            foreach (Hit h in tr.GetHits())
-                            {
-
-                                // Erster hit auf target um position von target zu ermitteln
-                                if (h.GetFirst() && tr.GetIndex() == 1 && ind == 0)
-                                {
-                                    GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
-                                    target.transform.parent = canvas.transform;
-                                    target.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
-                                    target.SetActive(true);
-                                    missedPositions.Add(target);
-                                    fir++;
-                                }
-                                Vector3 m = (bool)config["last_position"] ? h.GetLastPosition() : h.GetAverage();
-                                GameObject clicked = Instantiate(indicatorButton, m, Quaternion.identity) as GameObject;
-                                clicked.transform.parent = canvas.transform;
-                                clicked.transform.localScale = new Vector3(1, 1, 1);
-                                if (h.GetFirst())
-                                {
-                                    clicked.GetComponent<Image>().color = new Color(0.03671634f, 1, 0, 1);
-                                }
-                                else
-                                {
-                                    clicked.GetComponent<Image>().color = new Color(1, 0, 0, 1);
-                                }
-                                clicked.SetActive(true);
-                                tes++;
-                                missedPositions.Add(clicked);
-                            }
-                        }
-                        ind++;
-
-                        session.SaveToFile((string)config["savefile"]);
-                        session.SaveSum((string)config["savefile_2"]);
-                    }
-                    else
-                    {
-
-                        LoadPositions();
-
-                        Index = 0;
-                        h = 1;
-
-                        SetTargets();
-
-                        t = new Try(Tries);
-
-                        state = State.FIRST;
-                    }
-                }
-                else
-                {
-                    Index++;
-                    SetTargets();
-                    state = State.FIRST;
-                }
-                stack = new List<Position>();
-                break;
-
-            default:
-                break;
-
+            stack[stack.Count - 1].SetEvent(PointerEvent.Released);
         }
     }
 

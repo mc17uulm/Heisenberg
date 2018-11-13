@@ -127,7 +127,7 @@ public class Session
         }
     }
 
-    public void SaveSum(string file)
+    public void SaveSum(string file, Transform trans)
     {
         if(!File.Exists(file))
         {
@@ -147,7 +147,7 @@ public class Session
                                 if(!tmp.Equals(null) && (tmp.GetTarget().GetId().Equals(pos.GetTarget().GetId())))
                                 {
                                     Vector3 target;
-                                    if(h.GetFirst())
+                                    if(!h.GetFirst())
                                     {
                                         target = h.GetAverage(true);
                                     }
@@ -183,6 +183,7 @@ public class Session
         }
         else
         {
+            Debug.Log("Here");
             using (StreamWriter w = File.AppendText(file))
             {
                 foreach (Try tr in this.tries)
@@ -197,13 +198,14 @@ public class Session
                                 if (!tmp.Equals(null) && (tmp.GetTarget().GetId().Equals(pos.GetTarget().GetId())))
                                 {
                                     Vector3 target;
-                                    if (h.GetFirst())
+                                    if (!h.GetFirst())
                                     {
                                         target = h.GetAverage(true);
                                     }
                                     else
                                     {
-                                        target = pos.GetTarget().GetPosition();
+                                        target = trans.InverseTransformVector(pos.GetTarget().GetPosition());
+                                        //target = pos.GetTarget().GetPosition();
                                     }
                                     w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
                                         this.name,

@@ -13,7 +13,6 @@ public class Hit {
     {
         this.index = index;
         this.target = target;
-        positions[positions.Count - 1].SetEvent(PointerEvent.Released);
         this.positions = positions;
         this.first = first;
         Debug.Log("Construct size: " + positions.Count);
@@ -48,7 +47,6 @@ public class Hit {
     {
         if(this.positions.Count == 0)
         {
-            Debug.Log("empty pos");
             return this.target;
         }
         else
@@ -69,17 +67,17 @@ public class Hit {
         {
             if(only_none)
             {
-                if(!this.positions[this.positions.Count - 1].GetEvent().Equals(PointerEvent.None))
+                if(!this.positions[i].GetEvent().Equals(PointerEvent.None))
                 {
                     continue;
                 }
             }
-            Vector3 t = this.positions[this.positions.Count - 1].GetPointerPos();
+            Vector3 t = this.positions[i].GetPointerPos();
             x += t.x;
             y += t.y;
             z += t.z;
         }
-
+        
         return new Vector3(x / volume, y / volume, z / volume);
     }
 	

@@ -16,12 +16,12 @@ public class Config{
         {
             new Vector3(-280,180,0),
             new Vector3(-93.5f,180,0),
-            /**new Vector3(93.5f,180,0),
+            new Vector3(93.5f,180,0),
             new Vector3(280,180,0),
 
             new Vector3(-280,0,0),
             new Vector3(-93.5f,0,0),
-            new Vector3(93.5f,0,0),
+            /**new Vector3(93.5f,0,0),
             new Vector3(280,0,0),
 
             new Vector3(-280,-180,0),
