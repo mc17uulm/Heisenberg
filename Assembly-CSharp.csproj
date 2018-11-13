@@ -62,12 +62,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\HeisenbergScene\Scripts\Config.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\ControllRotation.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Hit.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Logger.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Position.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Processing.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Processing_OLD.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Session.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\Target.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Timer.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Try.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\VRUIItem.cs" />

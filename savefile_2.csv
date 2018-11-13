@@ -1,0 +1,2 @@
+name;round;trial;ballistic;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y;
+Marco;2;1;True;0;0;0;0.6136506;0.7678137;0.613435;0.7655319;0.0002156496;0.002281785;

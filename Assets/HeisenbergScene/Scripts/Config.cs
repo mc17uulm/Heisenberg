@@ -16,10 +16,10 @@ public class Config{
         {
             new Vector3(-280,180,0),
             new Vector3(-93.5f,180,0),
-            new Vector3(93.5f,180,0),
+            /**new Vector3(93.5f,180,0),
             new Vector3(280,180,0),
 
-            /**new Vector3(-280,0,0),
+            new Vector3(-280,0,0),
             new Vector3(-93.5f,0,0),
             new Vector3(93.5f,0,0),
             new Vector3(280,0,0),
@@ -31,7 +31,7 @@ public class Config{
         };
 
         // Wie oft soll eine Position wiederholt werden?
-        config["repeat"] = 2;
+        config["repeat"] = 1;
         // Durchgänge
         config["tries"] = 2;
         // Sollen die Positionen random oder nach Reihenfolge erscheinen
@@ -44,6 +44,7 @@ public class Config{
         config["last_position"] = false;
         // SaveFile
         config["savefile"] = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile.csv";
+        config["savefile_2"] = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile_2.csv";
 
 
         return config;

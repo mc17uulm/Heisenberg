@@ -57,7 +57,7 @@ public class Hit {
         }
     }
 
-    public Vector3 GetAverage()
+    public Vector3 GetAverage(bool only_none = false)
     {
         int volume = this.positions.Count;
 
@@ -67,6 +67,13 @@ public class Hit {
 
         for (int i = 0; i < volume; i++)
         {
+            if(only_none)
+            {
+                if(!this.positions[this.positions.Count - 1].GetEvent().Equals(PointerEvent.None))
+                {
+                    continue;
+                }
+            }
             Vector3 t = this.positions[this.positions.Count - 1].GetPointerPos();
             x += t.x;
             y += t.y;

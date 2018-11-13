@@ -5,9 +5,10 @@ using UnityEngine;
 public enum PointerEvent
 {
     TriggerPressed,
+    TriggerPressedFirst,
     ClickEvent,
     Clicked,
-    ClickEvent,
+    ClickedFirst,
     Released,
     None
 }
@@ -19,17 +20,17 @@ public class Position {
     private float pressStrength;
     private Vector3 ControllerPos;
     private Vector3 ControllerRot;
-    private Vector3 TargetPos;
+    private Target target;
     private Vector3 PointerPos;
 
-    public Position(long timestamp, PointerEvent ev, float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Vector3 targetPos, Vector3 pointerPos)
+    public Position(long timestamp, PointerEvent ev, float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Target target, Vector3 pointerPos)
     {
         this.timestamp = timestamp;
         this.ev = ev;
         this.pressStrength = pressStrength;
         this. ControllerPos = controllerPos;
         this.ControllerRot = controllerRot;
-        this.TargetPos = targetPos;
+        this.target = target;
         this.PointerPos = pointerPos;
 
     }
@@ -56,8 +57,14 @@ public class Position {
             case PointerEvent.TriggerPressed:
                 return "TriggerPressed";
 
+            case PointerEvent.TriggerPressedFirst:
+                return "TriggerPressedFirst";
+
             case PointerEvent.Clicked:
                 return "Clicked";
+
+            case PointerEvent.ClickedFirst:
+                return "ClickedFirst";
 
             case PointerEvent.ClickEvent:
                 return "ClickEvent";
@@ -89,9 +96,9 @@ public class Position {
         return this.ControllerRot;
     }
 
-    public Vector3 GetTargetPos()
+    public Target GetTarget()
     {
-        return this.TargetPos;
+        return this.target;
     }
 
     public Vector3 GetPointerPos()

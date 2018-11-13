@@ -47,7 +47,7 @@ public class Processing : MonoBehaviour
 
     private State state;
     private List<Position> stack;
-    private List<Vector3> targetPositions;
+    private List<Target> targetPositions;
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
     private int Index;
@@ -62,6 +62,7 @@ public class Processing : MonoBehaviour
 
     void OnEnable()
     {
+        Index = 0;
 
         config = Config.Load();
 
@@ -83,14 +84,13 @@ public class Processing : MonoBehaviour
         trackedController.TriggerUnclicked += ControllerOnRelease;
         trackedController.TriggerClicked -= ControllerOnClick;
         trackedController.TriggerClicked += ControllerOnClick;
+       
 
         Reset();
 
         LoadPositions();
 
         SetTargets(true);
-
-        Index = 0;
         Tries = 1;
         h = 1;
 
@@ -119,14 +119,13 @@ public class Processing : MonoBehaviour
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
-        Debug.Log("ONRELEASE");
         switch (state)
         {
 
             case State.START_IN:
                 state = State.FIRST;
-                targetSphere.transform.localPosition = targetPositions[0];
-                progressIndicator.transform.localPosition = targetPositions[0];
+                targetSphere.transform.localPosition = targetPositions[0].GetPosition();
+                progressIndicator.transform.localPosition = targetPositions[0].GetPosition();
                 break;
 
             case State.FIRST_IN:
@@ -140,7 +139,6 @@ public class Processing : MonoBehaviour
                 break;
 
             case State.ACTIVATED:
-                Debug.Log("INDEX NOW: " + Index);
                 state = State.CLICKED;
                 timer = null;
                 progressIndicator.enabled = false;
@@ -148,14 +146,12 @@ public class Processing : MonoBehaviour
                 h++;
                 if (Index >= targetPositions.Count - 1)
                 {
-                    Debug.Log("Fin");
                     state = State.FINISHED;
                     session.AddTry(t);
                     Tries++;
 
                     if (Tries > (int)config["tries"])
                     {
-                        Debug.Log("In Here");
                         state = State.FINISHED;
                         targetSphere.SetActive(false);
                         int ind = 0;
@@ -163,7 +159,6 @@ public class Processing : MonoBehaviour
                         int fir = 0;
                         foreach (Try tr in session.GetTries())
                         {
-                            Debug.Log("Hits: " + tr.GetHits().Count);
                             foreach (Hit h in tr.GetHits())
                             {
 
@@ -197,18 +192,12 @@ public class Processing : MonoBehaviour
                         ind++;
 
                         session.SaveToFile((string)config["savefile"]);
+                        session.SaveSum((string)config["savefile_2"]);
                     }
                     else
                     {
-                        Debug.Log("Right");
 
                         LoadPositions();
-
-                        Debug.Log(targetPositions.Count);
-                        foreach (Vector3 vec in targetPositions)
-                        {
-                            Debug.Log(vec.x + " | " + vec.y);
-                        }
 
                         Index = 0;
                         h = 1;
@@ -237,11 +226,9 @@ public class Processing : MonoBehaviour
 
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
-
         if(stack.Count > 0)
         {
             stack[stack.Count - 1].SetEvent(PointerEvent.ClickEvent);
-            Debug.Log("Click: " + triggerPress);
         }
 		
     }
@@ -262,7 +249,7 @@ public class Processing : MonoBehaviour
 
                 if (hits.Length > 0 && !state.Equals(State.START) && !state.Equals(State.START_IN))
                 {
-                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetSphere.transform.position, hits[0].point));
+                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetPositions[Index], hits[0].point));
                 }
 
                 switch (state)
@@ -305,7 +292,7 @@ public class Processing : MonoBehaviour
             {
                 if (state.Equals(State.ACTIVATED) || state.Equals(State.FIRST_IN))
                 {
-                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetSphere.transform.position, hits[0].point));
+                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetPositions[Index], hits[0].point));
                     //stack.Add(hits[0].point);
                 }
                 else if(state.Equals(State.FIRST))
@@ -345,8 +332,8 @@ public class Processing : MonoBehaviour
             Debug.Log("Index: " + Index);
             //int o = t.GetHits().Count / (int)config["repeat"];
             targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
-            targetSphere.transform.localPosition = targetPositions[Index];
-            progressIndicator.transform.localPosition = targetPositions[Index];
+            targetSphere.transform.localPosition = targetPositions[Index].GetPosition();
+            progressIndicator.transform.localPosition = targetPositions[Index].GetPosition();
         }
     }
 
@@ -379,26 +366,30 @@ public class Processing : MonoBehaviour
     private void LoadPositions()
     {
 
-        targetPositions = new List<Vector3>();
-        //List<string> p = (Resources.Load("positions") as TextAsset).text.Split(new string[] { "\r\n" }, StringSplitOptions.None).ToList();
+        targetPositions = new List<Target>();
         List<Vector3> p = ((Vector3[])config["positions"]).ToList<Vector3>();
+
+        List<Target> targets = new List<Target>();
+        int index = 0;
+        foreach(Vector3 vec in p)
+        {
+            targets.Add(new Target(vec, index));
+            index++;
+        }
+
         if ((bool)config["random"])
         {
-            Vector3 first = p[0];
-            p.RemoveAt(0);
-            p = p.OrderBy(x => rand.Next()).ToList();
-            p.Insert(0, first);
+            Target first = targets[0];
+            targets.RemoveAt(0);
+            targets = targets.OrderBy(x => rand.Next()).ToList();
+            targets.Insert(0, first);
         }
-        targetPositions = p;
-        //scoreText.text = "Versuch: 0/" + config["tries"] + "\r\nPosition: 0/" + targetPositions.Count;
+        targetPositions = targets;
 
         Vector3 panel = canvas.transform.localPosition;
         panel.z = (int)config["distance"];
         canvas.transform.localPosition = panel;
-        //targetSphere.transform.localPosition = targetPositions[0];
-        //(targetSphere.transform as RectTransform).sizeDelta = new Vector2((int)config["dimension"], (int)config["dimension"]);
         targetSphere.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
-        //progressIndicator.transform.localPosition = targetPositions[0];
         float dimension = (int)config["dimension"] * 4;
         progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
     }
@@ -415,7 +406,6 @@ public class Processing : MonoBehaviour
             state = State.START;
             targetSphere.SetActive(true);
             SetTargets(true);
-            //scoreText.text = "Versuch: " + (Tries - 1) + "/" + config["tries"] + "\r\nPosition: 0/" + targetPositions.Count;
         }
 
     }
@@ -427,13 +417,33 @@ public class Processing : MonoBehaviour
 
     private PointerEvent GetEvent()
     {
+        if(stack.Count <= 0)
+        {
+            return PointerEvent.None;
+        }
         if (triggerPress > 0.1f && triggerPress < 1.0f)
         {
-            return PointerEvent.TriggerPressed;
+            //TODO: change for first event
+            switch(stack[stack.Count-1].GetEvent())
+            {
+                case PointerEvent.TriggerPressed:
+                    return PointerEvent.TriggerPressed;
+                case PointerEvent.TriggerPressedFirst:
+                    return PointerEvent.TriggerPressed;
+                default: return PointerEvent.TriggerPressedFirst;
+            }
         }
         else if (triggerPress >= 1.0f)
         {
-            return PointerEvent.Clicked;
+            switch(stack[stack.Count-1].GetEvent())
+            {
+                case PointerEvent.Clicked:
+                    return PointerEvent.Clicked;
+                case PointerEvent.ClickedFirst:
+                    return PointerEvent.Clicked;
+                default:
+                    return PointerEvent.ClickedFirst;
+            }
         }
         else
         {
