@@ -20,19 +20,20 @@ public class Position {
     private float pressStrength;
     private Vector3 ControllerPos;
     private Vector3 ControllerRot;
-    private Target target;
+    private Vector3 targetPos;
+    private int targetId;
     private Vector3 PointerPos;
 
-    public Position(long timestamp, PointerEvent ev, float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Target target, Vector3 pointerPos)
+    public Position(long timestamp, PointerEvent ev, float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Vector3 targetPos, int targetId, Vector3 pointerPos)
     {
         this.timestamp = timestamp;
         this.ev = ev;
         this.pressStrength = pressStrength;
-        this. ControllerPos = controllerPos;
+        this.ControllerPos = controllerPos;
         this.ControllerRot = controllerRot;
-        this.target = target;
+        this.targetPos = targetPos;
+        this.targetId = targetId;
         this.PointerPos = pointerPos;
-
     }
 
     public long GetTimestamp()
@@ -96,9 +97,14 @@ public class Position {
         return this.ControllerRot;
     }
 
-    public Target GetTarget()
+    public Vector3 GetTargetPos()
     {
-        return this.target;
+        return this.targetPos;
+    }
+
+    public int GetTargetId()
+    {
+        return this.targetId;
     }
 
     public Vector3 GetPointerPos()

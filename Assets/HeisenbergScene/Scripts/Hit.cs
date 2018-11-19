@@ -15,7 +15,6 @@ public class Hit {
         this.target = target;
         this.positions = positions;
         this.first = first;
-        Debug.Log("Construct size: " + positions.Count);
     }
 
     public override string ToString()

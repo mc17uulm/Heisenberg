@@ -60,6 +60,7 @@ public class Processing : MonoBehaviour
     private SteamVR_Controller.Device device = null;
     private float triggerPress;
     private float triggerPressBefore;
+    private Transform cam;
 
     void OnEnable()
     {
@@ -100,6 +101,13 @@ public class Processing : MonoBehaviour
         triggerPress = 0;
         triggerPressBefore = 0;
 
+        Vector3 r = ((Vector3[]) config["positions"])[0];
+        Transform c = Camera.main.transform;
+        Vector3 rel = c.InverseTransformPoint(r);
+        Vector3 del = c.TransformPoint(r);
+
+
+        cam = Camera.main.transform;
     }
 
     // Update is called once per frame
@@ -262,10 +270,21 @@ public class Processing : MonoBehaviour
 
             if (Contains(hits, "Sphere", out obj, out hit))
             {
-
+                
                 if (hits.Length > 0 && !state.Equals(State.START) && !state.Equals(State.START_IN))
                 {
-                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetPositions[Index], hits[0].point));
+                    stack.Add(
+                        new Position(
+                            GetNow(),
+                            GetEvent(),
+                            triggerPress,
+                            trackedController.transform.position,
+                            trackedController.transform.rotation.eulerAngles,
+                            targetSphere.transform.position,
+                            targetPositions[Index].GetId(),
+                            hits[0].point
+                        )
+                    );
                 }
 
                 switch (state)
@@ -308,8 +327,18 @@ public class Processing : MonoBehaviour
             {
                 if (state.Equals(State.ACTIVATED) || state.Equals(State.FIRST_IN))
                 {
-                    stack.Add(new Position(GetNow(), GetEvent(), triggerPress, trackedController.transform.position, trackedController.transform.rotation.eulerAngles, targetPositions[Index], hits[0].point));
-                    //stack.Add(hits[0].point);
+                    stack.Add(
+                        new Position(
+                            GetNow(), 
+                            GetEvent(), 
+                            triggerPress, 
+                            trackedController.transform.position, 
+                            trackedController.transform.rotation.eulerAngles, 
+                            targetSphere.transform.position, 
+                            targetPositions[Index].GetId(), 
+                            hits[0].point
+                        )
+                    );
                 }
                 else if(state.Equals(State.FIRST))
                 {
@@ -345,7 +374,6 @@ public class Processing : MonoBehaviour
         }
         else
         {
-            Debug.Log("Index: " + Index);
             //int o = t.GetHits().Count / (int)config["repeat"];
             targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
             targetSphere.transform.localPosition = targetPositions[Index].GetPosition();

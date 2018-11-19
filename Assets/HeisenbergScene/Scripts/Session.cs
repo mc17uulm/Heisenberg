@@ -76,10 +76,10 @@ public class Session
                                 pos.GetControllerRot().x,
                                 pos.GetControllerRot().y,
                                 pos.GetControllerRot().z,
-                                pos.GetTarget().GetId(),
-                                pos.GetTarget().GetPosition().x,
-                                pos.GetTarget().GetPosition().y,
-                                pos.GetTarget().GetPosition().z,
+                                pos.GetTargetId(),
+                                pos.GetTargetPos().x,
+                                pos.GetTargetPos().y,
+                                pos.GetTargetPos().z,
                                 pos.GetPointerPos().x,
                                 pos.GetPointerPos().y
                              ));
@@ -113,10 +113,10 @@ public class Session
                                 pos.GetControllerRot().x,
                                 pos.GetControllerRot().y,
                                 pos.GetControllerRot().z,
-                                pos.GetTarget().GetId(),
-                                pos.GetTarget().GetPosition().x,
-                                pos.GetTarget().GetPosition().y,
-                                pos.GetTarget().GetPosition().z,
+                                pos.GetTargetId(),
+                                pos.GetTargetPos().x,
+                                pos.GetTargetPos().y,
+                                pos.GetTargetPos().z,
                                 pos.GetPointerPos().x,
                                 pos.GetPointerPos().y
                              ));
@@ -138,97 +138,120 @@ public class Session
                 {
                     foreach (Hit h in tr.GetHits())
                     {
-                        Position tmp = null;
+                        Vector3 pressed = new Vector3(0,0,0);
+                        Vector3 clicked = new Vector3(0,0,0);
+                        List<Vector3> p = new List<Vector3>();
+                        int targetId = h.GetPositions()[0].GetTargetId();
+                        Vector3 target = h.GetPositions()[0].GetTargetPos();
                         foreach (Position pos in h.GetPositions())
                         {
-                            Debug.Log(pos.GetEvent());
-                            if(pos.GetEvent().Equals(PointerEvent.ClickedFirst))
+                            switch (pos.GetEvent())
                             {
-                                if(!tmp.Equals(null) && (tmp.GetTarget().GetId().Equals(pos.GetTarget().GetId())))
-                                {
-                                    Vector3 target;
-                                    if(!h.GetFirst())
-                                    {
-                                        target = h.GetAverage(true);
-                                    }
-                                    else
-                                    {
-                                        target = pos.GetTarget().GetPosition();
-                                    }
-                                    w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
-                                        this.name,
-                                        tr.GetIndex(),
-                                        h.GetIndex(),
-                                        h.GetFirst(),
-                                        pos.GetTarget().GetId(),
-                                        target.x,
-                                        target.y,
-                                        tmp.GetControllerPos().x,
-                                        tmp.GetControllerPos().y,
-                                        pos.GetControllerPos().x,
-                                        pos.GetControllerPos().y,
-                                        tmp.GetControllerPos().x - pos.GetControllerPos().x,
-                                        tmp.GetControllerPos().y - pos.GetControllerPos().y
-                                    ));
-                                }
+
+                                case PointerEvent.TriggerPressedFirst:
+                                    pressed = pos.GetPointerPos();
+                                    break;
+
+                                case PointerEvent.ClickedFirst:
+                                    clicked = pos.GetPointerPos();
+                                    break;
+
+                                default:
+                                    break;
+
                             }
-                            else if(pos.GetEvent().Equals(PointerEvent.TriggerPressedFirst))
+
+                            // true if not ballistic
+                            if (!h.GetFirst())
                             {
-                                tmp = pos;
+                                p.Add(pos.GetPointerPos());
                             }
+
                         }
+
+                        if(p.Count > 0)
+                        {
+                            target = GetAverage(p);
+                        }
+
+                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
+                            this.name,
+                            tr.GetIndex(),
+                            h.GetIndex(),
+                            h.GetFirst(),
+                            targetId,
+                            target.x,
+                            target.y,
+                            pressed.x,
+                            pressed.y,
+                            clicked.x,
+                            clicked.y,
+                            pressed.x - clicked.x,
+                            pressed.y - clicked.y
+                         ));
                     }
                 }
             }
         }
         else
         {
-            Debug.Log("Here");
             using (StreamWriter w = File.AppendText(file))
             {
                 foreach (Try tr in this.tries)
                 {
                     foreach (Hit h in tr.GetHits())
                     {
-                        Position tmp = null;
+                        Vector3 pressed = new Vector3(0, 0, 0);
+                        Vector3 clicked = new Vector3(0, 0, 0);
+                        List<Vector3> p = new List<Vector3>();
+                        int targetId = h.GetPositions()[0].GetTargetId();
+                        Vector3 target = h.GetPositions()[0].GetTargetPos();
                         foreach (Position pos in h.GetPositions())
                         {
-                            if (pos.GetEvent().Equals(PointerEvent.ClickedFirst))
+                            switch (pos.GetEvent())
                             {
-                                if (!tmp.Equals(null) && (tmp.GetTarget().GetId().Equals(pos.GetTarget().GetId())))
-                                {
-                                    Vector3 target;
-                                    if (!h.GetFirst())
-                                    {
-                                        target = h.GetAverage(true);
-                                    }
-                                    else
-                                    {
-                                        target = trans.InverseTransformVector(pos.GetTarget().GetPosition());
-                                        //target = pos.GetTarget().GetPosition();
-                                    }
-                                    w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
-                                        this.name,
-                                        tr.GetIndex(),
-                                        h.GetIndex(),
-                                        h.GetFirst(),
-                                        pos.GetTarget().GetId(),
-                                        target.x,
-                                        target.y,
-                                        tmp.GetControllerPos().x,
-                                        tmp.GetControllerPos().y,
-                                        pos.GetControllerPos().x,
-                                        pos.GetControllerPos().y,
-                                        tmp.GetControllerPos().x - pos.GetControllerPos().x,
-                                        tmp.GetControllerPos().y - pos.GetControllerPos().y
-                                    ));
-                                }
+
+                                case PointerEvent.TriggerPressedFirst:
+                                    pressed = pos.GetPointerPos();
+                                    break;
+
+                                case PointerEvent.ClickedFirst:
+                                    clicked = pos.GetPointerPos();
+                                    break;
+
+                                default:
+                                    break;
+
                             }
-                            else if (pos.GetEvent().Equals(PointerEvent.TriggerPressedFirst))
+
+                            // true if not ballistic
+                            if (!h.GetFirst())
                             {
-                                tmp = pos;
+                                p.Add(pos.GetPointerPos());
                             }
+
                         }
+
+                        if (p.Count > 0)
+                        {
+                            target = GetAverage(p);
+                        }
+
+                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
+                            this.name,
+                            tr.GetIndex(),
+                            h.GetIndex(),
+                            h.GetFirst(),
+                            targetId,
+                            target.x,
+                            target.y,
+                            pressed.x,
+                            pressed.y,
+                            clicked.x,
+                            clicked.y,
+                            pressed.x - clicked.x,
+                            pressed.y - clicked.y
+                         ));
                     }
                 }
             }
@@ -247,5 +270,26 @@ public class Session
         }
 
         return hexValue;
+    }
+
+    public Vector3 GetAverage(List<Vector3> stack)
+    {
+        int volume = stack.Count;
+
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+
+        for (int i = 0; i < volume; i++)
+        {
+            Vector3 t = stack[i];
+            x += t.x;
+            y += t.y;
+            z += t.z;
+        }
+
+        Vector3 tmp = new Vector3(x / volume, y / volume, z / volume);
+
+        return tmp;
     }
 }

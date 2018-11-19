@@ -13,9 +13,6 @@ public class Timer{
         this.epch = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
         this.StartTime = (long)(System.DateTime.UtcNow - this.epch).TotalMilliseconds;
         this.finished = false;
-        //Debug.Log("Epoch: " + this.epch);
-        //Debug.Log("UtcNow: " + System.DateTime.UtcNow);
-        //Debug.Log("StartTime: " + (long) (System.DateTime.UtcNow - this.epch).TotalMilliseconds);
     }
 
     public bool Finished()
