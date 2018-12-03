@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,8 +11,9 @@ public class Tunnel : MonoBehaviour {
     private static SteamVR_Controller.Device device = null;
     private static string mode;
 
-    private void OnEnable()
+    private void Awake()
     {
+        Debug.Log("ON ENABLE");
         controller = GetComponent<SteamVR_TrackedController>();
 
         if (controller == null)
@@ -24,12 +26,17 @@ public class Tunnel : MonoBehaviour {
             Application.Quit();
         }
 
-        if(position == null)
+        controller.TriggerUnclicked -= ControllerOnRelease;
+        controller.TriggerUnclicked += ControllerOnRelease;
+        controller.TriggerClicked -= ControllerOnClick;
+        controller.TriggerClicked += ControllerOnClick;
+
+        if (position == null)
         {
             position = new Vector3(0, 0, 0);
         }
 
-        mode = "full";
+        mode = "fulldsgsd";
 
     }
 
@@ -46,6 +53,16 @@ public class Tunnel : MonoBehaviour {
         }
 	}
 
+    private void ControllerOnRelease(object sender, ClickedEventArgs e)
+    {
+        Processing.addEvent(PointerEvent.Released);
+    }
+
+    private void ControllerOnClick(object sender, ClickedEventArgs e)
+    {
+        Processing.addEvent(PointerEvent.ClickEvent);
+    }
+
     public static void changeMode(string m)
     {
         mode = m;
@@ -56,14 +73,11 @@ public class Tunnel : MonoBehaviour {
         if (device == null)
         {
             device = SteamVR_Controller.Input((int)controller.controllerIndex);
-            Debug.Log("failed");
             return 0;
         }
         else
         {
-            Debug.Log("Success");
             Vector3 vec = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger);
-            Debug.Log(vec.ToString());
             return vec.x;
         }
     }

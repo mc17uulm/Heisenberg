@@ -42,14 +42,13 @@ public class Processing : MonoBehaviour
     //public GameObject mainController;
 
     private SteamVR_LaserPointer laserPointer;
-    public SteamVR_TrackedController trackedController;
 
     private Timer timer;
     // Angabe der ms für welche der Nutzer im Ziel sein muss um klicken zu können
     private int timespan = 500;
 
     private State state;
-    private List<Position> stack;
+    private static List<Position> stack;
     private List<Target> targetPositions;
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
@@ -72,23 +71,7 @@ public class Processing : MonoBehaviour
         session = new Session();
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
-        /**trackedController = GetComponent<SteamVR_TrackedController>();
-        if (trackedController == null)
-        {
-            trackedController = GetComponentInParent<SteamVR_TrackedController>();
-        }
-        if (trackedController == null)
-        {
-            Debug.Log("TrackedContoroller still null");
-            Application.Quit();
-        }*/
-        
-        trackedController.TriggerUnclicked -= ControllerOnRelease;
-        trackedController.TriggerUnclicked += ControllerOnRelease;
-        trackedController.TriggerClicked -= ControllerOnClick;
-        trackedController.TriggerClicked += ControllerOnClick;
        
-
         Reset();
 
         LoadPositions();
@@ -113,7 +96,7 @@ public class Processing : MonoBehaviour
 
         triggerPressBefore = triggerPress;
         triggerPress = Tunnel.getTriggerPressed();
-        Debug.Log(triggerPress);
+        //Debug.Log(triggerPress);
 
         if (triggerPressBefore >= 1 && triggerPress < 1)
         {
@@ -227,21 +210,12 @@ public class Processing : MonoBehaviour
 
     }
 
-    private void ControllerOnRelease(object sender, ClickedEventArgs e)
+    public static void addEvent(PointerEvent e)
     {
-        if(stack.Count > 0)
+        if (stack.Count > 0)
         {
             stack[stack.Count - 1].SetEvent(PointerEvent.Released);
         }
-    }
-
-    private void ControllerOnClick(object sender, ClickedEventArgs e)
-    {
-        if(stack.Count > 0)
-        {
-            stack[stack.Count - 1].SetEvent(PointerEvent.ClickEvent);
-        }
-		
     }
 
     private void ProcessHits()
