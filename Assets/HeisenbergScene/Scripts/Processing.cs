@@ -30,16 +30,19 @@ public class Processing : MonoBehaviour
     public Image progressIndicator;
 
     // Gibt Anzahl der Durchgänge an
-    public Text scoreText;
+    //public Text scoreText;
 
     // Sphere welche als Ziel und als Referenzpunkt genutzt werden
     public GameObject targetSphere;
     // Zeigt Treffer an
     public GameObject indicatorButton;
     public GameObject canvas;
+    public GameObject controller;
+
+    //public GameObject mainController;
 
     private SteamVR_LaserPointer laserPointer;
-    private SteamVR_TrackedController trackedController;
+    public SteamVR_TrackedController trackedController;
 
     private Timer timer;
     // Angabe der ms für welche der Nutzer im Ziel sein muss um klicken zu können
@@ -57,10 +60,8 @@ public class Processing : MonoBehaviour
     private Session session;
     private Try t;
 
-    private SteamVR_Controller.Device device = null;
     private float triggerPress;
     private float triggerPressBefore;
-    private Transform cam;
 
     void OnEnable()
     {
@@ -71,7 +72,7 @@ public class Processing : MonoBehaviour
         session = new Session();
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
-        trackedController = GetComponent<SteamVR_TrackedController>();
+        /**trackedController = GetComponent<SteamVR_TrackedController>();
         if (trackedController == null)
         {
             trackedController = GetComponentInParent<SteamVR_TrackedController>();
@@ -80,7 +81,7 @@ public class Processing : MonoBehaviour
         {
             Debug.Log("TrackedContoroller still null");
             Application.Quit();
-        }
+        }*/
         
         trackedController.TriggerUnclicked -= ControllerOnRelease;
         trackedController.TriggerUnclicked += ControllerOnRelease;
@@ -100,14 +101,6 @@ public class Processing : MonoBehaviour
 
         triggerPress = 0;
         triggerPressBefore = 0;
-
-        Vector3 r = ((Vector3[]) config["positions"])[0];
-        Transform c = Camera.main.transform;
-        Vector3 rel = c.InverseTransformPoint(r);
-        Vector3 del = c.TransformPoint(r);
-
-
-        cam = Camera.main.transform;
     }
 
     // Update is called once per frame
@@ -118,17 +111,11 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        if(device == null)
-        {
-            device = SteamVR_Controller.Input((int)trackedController.controllerIndex);
-        }
-        else
-        {
-            triggerPressBefore = triggerPress;
-            triggerPress = device.GetAxis(EVRButtonId.k_EButton_SteamVR_Trigger).x;
-        }
+        triggerPressBefore = triggerPress;
+        triggerPress = Tunnel.getTriggerPressed();
+        Debug.Log(triggerPress);
 
-        if(triggerPressBefore >= 1 && triggerPress < 1)
+        if (triggerPressBefore >= 1 && triggerPress < 1)
         {
             switch (state)
             {
@@ -278,8 +265,8 @@ public class Processing : MonoBehaviour
                             GetNow(),
                             GetEvent(),
                             triggerPress,
-                            trackedController.transform.position,
-                            trackedController.transform.rotation.eulerAngles,
+                            controller.transform.position,
+                            controller.transform.rotation.eulerAngles,
                             targetSphere.transform.position,
                             targetPositions[Index].GetId(),
                             hits[0].point
@@ -332,8 +319,8 @@ public class Processing : MonoBehaviour
                             GetNow(), 
                             GetEvent(), 
                             triggerPress, 
-                            trackedController.transform.position, 
-                            trackedController.transform.rotation.eulerAngles, 
+                            controller.transform.position, 
+                            controller.transform.rotation.eulerAngles, 
                             targetSphere.transform.position, 
                             targetPositions[Index].GetId(), 
                             hits[0].point
