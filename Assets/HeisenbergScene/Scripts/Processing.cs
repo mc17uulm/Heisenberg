@@ -30,7 +30,8 @@ public class Processing : MonoBehaviour
     public Image progressIndicator;
 
     // Gibt Anzahl der Durchgänge an
-    //public Text scoreText;
+    public Text scoreText;
+    public Text commandText;
 
     // Sphere welche als Ziel und als Referenzpunkt genutzt werden
     public GameObject targetSphere;
@@ -53,11 +54,14 @@ public class Processing : MonoBehaviour
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
     private int Index;
-    private IDictionary<string, object> config;
+    private Config config;
     private int Tries;
     private int h;
     private Session session;
     private Try t;
+
+    // Latin square steps 
+    private int[] stage;
 
     private float triggerPress;
     private float triggerPressBefore;
@@ -66,9 +70,11 @@ public class Processing : MonoBehaviour
     {
         Index = 0;
 
-        config = Config.Load();
+        config = new Config();
 
-        session = new Session();
+        session = new Session(config);
+
+        stage = config.LatinSquare.GetColumn(config.Id);
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
        
@@ -80,10 +86,12 @@ public class Processing : MonoBehaviour
         Tries = 1;
         h = 1;
 
-        t = new Try(Tries);
+        t = new Try(Tries, config.LatinSquare.GetStates(stage[0]));
 
         triggerPress = 0;
         triggerPressBefore = 0;
+
+        SwitchState(stage[0]);
     }
 
     // Update is called once per frame
@@ -96,7 +104,6 @@ public class Processing : MonoBehaviour
 
         triggerPressBefore = triggerPress;
         triggerPress = Tunnel.getTriggerPressed();
-        //Debug.Log(triggerPress);
 
         if (triggerPressBefore >= 1 && triggerPress < 1)
         {
@@ -107,6 +114,7 @@ public class Processing : MonoBehaviour
                     state = State.FIRST;
                     targetSphere.transform.localPosition = targetPositions[0].GetPosition();
                     progressIndicator.transform.localPosition = targetPositions[0].GetPosition();
+                    commandText.enabled = false;
                     break;
 
                 case State.FIRST_IN:
@@ -131,7 +139,7 @@ public class Processing : MonoBehaviour
                         session.AddTry(t);
                         Tries++;
 
-                        if (Tries > (int)config["tries"])
+                        if (Tries > config.Tries)
                         {
                             state = State.FINISHED;
                             targetSphere.SetActive(false);
@@ -148,7 +156,7 @@ public class Processing : MonoBehaviour
                                     {
                                         GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
                                         target.transform.parent = canvas.transform;
-                                        target.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
+                                        target.transform.localScale = new Vector3(config.Dimension, config.Dimension, 1);
                                         target.SetActive(true);
                                         missedPositions.Add(target);
                                         fir++;
@@ -175,22 +183,24 @@ public class Processing : MonoBehaviour
                             }
                             ind++;
 
-                            session.SaveToFile((string)config["savefile"]);
-                            session.SaveSum((string)config["savefile_2"], targetSphere.transform);
+                            session.SaveToFile(config.SaveFile);
+                            session.SaveSum(config.SaveFileTwo, targetSphere.transform);
                         }
                         else
                         {
+                            commandText.enabled = true;
+                            SwitchState(Tries - 1);
 
                             LoadPositions();
 
                             Index = 0;
                             h = 1;
 
-                            SetTargets();
+                            SetTargets(true);
 
-                            t = new Try(Tries);
+                            t = new Try(Tries, config.LatinSquare.GetStates(stage[Tries-1]));
 
-                            state = State.FIRST;
+                            state = State.START;
                         }
                     }
                     else
@@ -220,7 +230,6 @@ public class Processing : MonoBehaviour
 
     private void ProcessHits()
     {
-
         if (!state.Equals(State.FINISHED))
         {
             RaycastHit[] hits;
@@ -329,8 +338,9 @@ public class Processing : MonoBehaviour
     {
         if(first)
         {
-            targetSphere.transform.localPosition = (Vector3)config["start_position"];
-            progressIndicator.transform.localPosition = (Vector3)config["start_position"];
+            targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
+            targetSphere.transform.localPosition = config.Start;
+            progressIndicator.transform.localPosition = config.Start;
             progressIndicator.enabled = false;
         }
         else
@@ -372,7 +382,7 @@ public class Processing : MonoBehaviour
     {
 
         targetPositions = new List<Target>();
-        List<Vector3> p = ((Vector3[])config["positions"]).ToList<Vector3>();
+        List<Vector3> p = config.Positions.ToList<Vector3>();
 
         List<Target> targets = new List<Target>();
         int index = 0;
@@ -382,7 +392,7 @@ public class Processing : MonoBehaviour
             index++;
         }
 
-        if ((bool)config["random"])
+        if (config.Random)
         {
             Target first = targets[0];
             targets.RemoveAt(0);
@@ -392,10 +402,10 @@ public class Processing : MonoBehaviour
         targetPositions = targets;
 
         Vector3 panel = canvas.transform.localPosition;
-        panel.z = (int)config["distance"];
+        panel.z = config.Distance;
         canvas.transform.localPosition = panel;
-        targetSphere.transform.localScale = new Vector3((int)config["dimension"], (int)config["dimension"], 1);
-        float dimension = (int)config["dimension"] * 4;
+        targetSphere.transform.localScale = new Vector3(config.Dimension, config.Dimension, 1);
+        float dimension = config.Dimension * 4;
         progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
     }
 
@@ -406,7 +416,7 @@ public class Processing : MonoBehaviour
         {
             Reset();
             Index = 0;
-            t = new Try(Tries);
+            t = new Try(Tries, config.LatinSquare.GetStates(stage[Tries-1]));
             stack = new List<Position>();
             state = State.START;
             targetSphere.SetActive(true);
@@ -454,5 +464,25 @@ public class Processing : MonoBehaviour
         {
             return PointerEvent.None;
         }
+    }
+
+    public void SwitchState(int state)
+    {
+        bool[] a = config.LatinSquare.GetStates(state);
+        string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend";
+        o += a[1] ? "Arm: ausgestreckt\r\n" : "Arm: angelegt\r\n";
+
+        if (a[2])
+        {
+            o += "Möglichkeiten: 6DOF\r\n";
+            Tunnel.ChangeMode(TunnelState.SIX);
+        }
+        else
+        {
+            o += "Möglichkeiten: 3DOF\r\n";
+            Tunnel.ChangeMode(TunnelState.THREE);
+        }
+
+        commandText.text = o;
     }
 }

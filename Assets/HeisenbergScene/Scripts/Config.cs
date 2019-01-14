@@ -4,19 +4,33 @@ using UnityEngine;
 
 public class Config{
 
-    // Konfiguration für Durchgang
+    public Vector3 Start { get; }
+    public Vector3[] Positions { get; }
+    public string Name { get; }
+    public int Id { get; }
+    public int Repeat { get; }
+    public int Tries { get; }
+    public bool Random { get; }
+    public int Dimension { get; }
+    public int Distance { get; }
+    public bool LastPosition { get; }
+    public string SaveFile { get; }
+    public string SaveFileTwo { get; }
+    public LatinSquare LatinSquare { get; }
 
-	public static IDictionary<string, object> Load()
+    public Config()
     {
-        IDictionary<string, object> config = new Dictionary<string, object>();
+        // Name of user
+        this.Name = "Marco";
+        this.Id = 1;
 
-        // Positionen der Ziele
-        config["start_position"] = new Vector3(0,0,0);
-        config["positions"] = new Vector3[]
+        this.Start = new Vector3(0, 0, 0);
+        this.Positions = new Vector3[]
         {
             new Vector3(-280,180,0),
             new Vector3(-93.5f,180,0),
             new Vector3(93.5f,180,0),
+            /**
             new Vector3(280,180,0),
 
             new Vector3(-280,0,0),
@@ -27,26 +41,27 @@ public class Config{
             new Vector3(-280,-180,0),
             new Vector3(-93.5f,-180,0),
             new Vector3(93.5f,-180,0),
-            new Vector3(280,-180,0)
+            new Vector3(280,-180,0)*/
         };
 
-        // Wie oft soll eine Position wiederholt werden?
-        config["repeat"] = 1;
-        // Durchgänge
-        config["tries"] = 2;
-        // Sollen die Positionen random oder nach Reihenfolge erscheinen
-        config["random"] = true;
-        // Größe des Zieles (width = heigth) in px
-        config["dimension"] = 15;
-        // Entfernung von Kamera zum Ziel (z-Koordinate)
-        config["distance"] = 8;
-        // Letzte Position oder Durchschnitt anzeigen lassen (Standart-Durchschnitt: min. 50 letzte Positionen)
-        config["last_position"] = false;
-        // SaveFile
-        config["savefile"] = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile.csv";
-        config["savefile_2"] = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile_2.csv";
+        // How many times is a position repeated
+        this.Repeat = 1;
+        // Amount of tries;
+        this.Tries = 8;
+        // Show the positions in random order?
+        this.Random = true;
+        // Size of the target in px (width = height)
+        this.Dimension = 15;
+        // Distance between camera and target (z)
+        this.Distance = 8;
+        // Show last position or average 
+        this.LastPosition = false;
 
+        // Savefiles
+        this.SaveFile = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile.csv";
+        this.SaveFileTwo = @"C:\Users\mi-vr\Desktop\Heisenberg\savefile_2.csv";
 
-        return config;
+        this.LatinSquare = new LatinSquare(8);
     }
+  
 }
