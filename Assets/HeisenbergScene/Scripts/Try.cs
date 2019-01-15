@@ -10,6 +10,7 @@ public class Try {
 
     public Try(int index, bool[] states)
     {
+
         this.index = index;
         this.hits = new List<Hit>();
         this.states = states;

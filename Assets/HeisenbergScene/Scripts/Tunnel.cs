@@ -9,6 +9,12 @@ public enum TunnelState
     THREE
 }
 
+public enum ClickMode
+{
+    TRIGGER,
+    PAD
+}
+
 public class Tunnel : MonoBehaviour {
 
 
@@ -17,6 +23,7 @@ public class Tunnel : MonoBehaviour {
     public Vector3 position;
     private static SteamVR_Controller.Device device = null;
     private static TunnelState mode;
+    private static ClickMode ClickMode;
     private static int ControllerId;
 
 
@@ -47,6 +54,7 @@ public class Tunnel : MonoBehaviour {
         }
 
         mode = TunnelState.SIX;
+        ClickMode = ClickMode.TRIGGER;
 
     }
 
@@ -91,27 +99,33 @@ public class Tunnel : MonoBehaviour {
         mode = state;
     }
 
-    public static float getTriggerPressed()
+    public static void ChangeClickTarget(ClickMode state)
     {
-        if (device == null)
+        ClickMode = state;
+    }
+
+    private static SteamVR_Controller.Device GetDevice()
+    {
+        int id = (int)controller.controllerIndex;
+        if ((device == null) || (id != ControllerId))
         {
-            ControllerId = (int)controller.controllerIndex;
-            Debug.Log("Init id: " + ControllerId);
-            device = SteamVR_Controller.Input(ControllerId);
-            return 0;
+            ControllerId = id;
+            return SteamVR_Controller.Input(id);
         }
-        else
+
+        return device;
+    }
+
+    public static float GetPressedValue()
+    {
+        switch(ClickMode)
         {
-            int id = (int)controller.controllerIndex;
-            if(id != ControllerId)
-            {
-                ControllerId = id;
-                device = SteamVR_Controller.Input(ControllerId);
-                Debug.Log("Changed id: " + id);
-            }
-            Vector3 vec = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger);
-            Debug.Log(vec);
-            return vec.x;
+            case ClickMode.PAD:
+                return GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+            default:
+                return GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
+
         }
+        
     }
 }

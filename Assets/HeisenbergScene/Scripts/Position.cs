@@ -74,6 +74,9 @@ public class Position {
             case PointerEvent.Released:
                 return "Released";
 
+            case PointerEvent.TabClick:
+                return "TabClick";
+
             case PointerEvent.None:
                 return "None";
 

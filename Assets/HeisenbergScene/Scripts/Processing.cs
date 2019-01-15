@@ -83,7 +83,7 @@ public class Processing : MonoBehaviour
         Tries = 1;
         h = 1;
 
-        t = new Try(Tries, SwitchState(stage[0]));
+        t = new Try(Tries, SwitchState(Tries));
 
         triggerPress = 0;
         triggerPressBefore = 0;
@@ -98,7 +98,7 @@ public class Processing : MonoBehaviour
         ProcessButtons();
 
         triggerPressBefore = triggerPress;
-        triggerPress = Tunnel.getTriggerPressed();
+        triggerPress = Tunnel.GetPressedValue();
 
         if (triggerPressBefore >= 1 && triggerPress < 1)
         {
@@ -192,7 +192,7 @@ public class Processing : MonoBehaviour
 
                             SetTargets(true);
 
-                            t = new Try(Tries, SwitchState(Tries - 1));
+                            t = new Try(Tries, SwitchState(Tries));
 
                             state = State.START;
                         }
@@ -410,7 +410,7 @@ public class Processing : MonoBehaviour
         {
             Reset();
             Index = 0;
-            t = new Try(Tries, Config.LatinSquare.GetStates(stage[Tries-1]));
+            t = new Try(Tries, SwitchState(Tries));
             stack = new List<Position>();
             state = State.START;
             targetSphere.SetActive(true);
@@ -462,7 +462,8 @@ public class Processing : MonoBehaviour
 
     public bool[] SwitchState(int state)
     {
-        bool[] a = Config.LatinSquare.GetStates(state);
+        Debug.Log("Switch state: " + stage[state-1]);
+        bool[] a = Config.LatinSquare.GetStates(stage[state-1]);
         string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend";
         o += a[1] ? "Arm: ausgestreckt\r\n" : "Arm: angelegt\r\n";
 

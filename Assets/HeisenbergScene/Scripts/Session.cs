@@ -135,9 +135,10 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("name;round;trial;ballistic;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y;");
+                w.WriteLine("name;round;trial;ArmPos;BodyPos;DOF;ballistic;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y;");
                 foreach (Try tr in this.tries)
                 {
+                    bool[] states = tr.GetStates();
                     foreach (Hit h in tr.GetHits())
                     {
                         Vector3 pressed = new Vector3(0,0,0);
@@ -176,10 +177,13 @@ public class Session
                             target = GetAverage(p);
                         }
 
-                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
+                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};",
                             Config.Name,
                             tr.GetIndex(),
                             h.GetIndex(),
+                            states[1] ? "ausgestreckt" : "angelegt",
+                            states[0] ? "sitzend" : "stehend",
+                            states[2] ? "6" : "3",
                             h.GetFirst(),
                             targetId,
                             target.x,
@@ -201,6 +205,7 @@ public class Session
             {
                 foreach (Try tr in this.tries)
                 {
+                    bool[] states = tr.GetStates();
                     foreach (Hit h in tr.GetHits())
                     {
                         Vector3 pressed = new Vector3(0, 0, 0);
@@ -239,10 +244,13 @@ public class Session
                             target = GetAverage(p);
                         }
 
-                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
+                        w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};",
                             Config.Name,
                             tr.GetIndex(),
                             h.GetIndex(),
+                            states[1] ? "ausgestreckt" : "angelegt",
+                            states[0] ? "sitzend" : "stehend",
+                            states[2] ? "6" : "3",
                             h.GetFirst(),
                             targetId,
                             target.x,
