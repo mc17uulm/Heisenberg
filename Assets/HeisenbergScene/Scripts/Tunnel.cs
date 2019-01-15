@@ -17,7 +17,7 @@ public class Tunnel : MonoBehaviour {
     public Vector3 position;
     private static SteamVR_Controller.Device device = null;
     private static TunnelState mode;
-
+    private static int ControllerId;
 
 
     private void Awake()
@@ -38,6 +38,8 @@ public class Tunnel : MonoBehaviour {
         controller.TriggerUnclicked += ControllerOnRelease;
         controller.TriggerClicked -= ControllerOnClick;
         controller.TriggerClicked += ControllerOnClick;
+        controller.PadClicked -= ControllerOnTab;
+        controller.PadClicked += ControllerOnTab;
 
         if (position == null)
         {
@@ -51,13 +53,20 @@ public class Tunnel : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         newController.transform.rotation = controller.transform.rotation;
-        if(mode.Equals(TunnelState.SIX))
+        switch(mode)
         {
-            newController.transform.position = controller.transform.position;
-        }
-        else
-        {
-            newController.transform.position = position;
+            case TunnelState.SIX:
+                newController.transform.position = controller.transform.position;
+                break;
+
+            case TunnelState.THREE:
+                newController.transform.position = position;
+                break;
+
+            default:
+                Debug.Log("No valid mode");
+                newController.transform.position = controller.transform.position;
+                break;
         }
 	}
 
@@ -71,6 +80,12 @@ public class Tunnel : MonoBehaviour {
         Processing.addEvent(PointerEvent.ClickEvent);
     }
 
+    private void ControllerOnTab(object sender, ClickedEventArgs e)
+    {
+        Debug.Log("TabClick");
+        //Processing.addEvent(PointerEvent.TabClick);
+    }
+
     public static void ChangeMode(TunnelState state)
     {
         mode = state;
@@ -80,13 +95,20 @@ public class Tunnel : MonoBehaviour {
     {
         if (device == null)
         {
-            // (int)controller.controllerIndex
-            device = SteamVR_Controller.Input(3);
-            Debug.Log(device);
+            ControllerId = (int)controller.controllerIndex;
+            Debug.Log("Init id: " + ControllerId);
+            device = SteamVR_Controller.Input(ControllerId);
             return 0;
         }
         else
         {
+            int id = (int)controller.controllerIndex;
+            if(id != ControllerId)
+            {
+                ControllerId = id;
+                device = SteamVR_Controller.Input(ControllerId);
+                Debug.Log("Changed id: " + id);
+            }
             Vector3 vec = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger);
             Debug.Log(vec);
             return vec.x;

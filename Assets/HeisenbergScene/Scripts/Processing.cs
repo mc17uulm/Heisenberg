@@ -54,7 +54,6 @@ public class Processing : MonoBehaviour
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
     private int Index;
-    private Config config;
     private int Tries;
     private int h;
     private Session session;
@@ -70,11 +69,9 @@ public class Processing : MonoBehaviour
     {
         Index = 0;
 
-        config = new Config();
+        session = new Session();
 
-        session = new Session(config);
-
-        stage = config.LatinSquare.GetColumn(config.Id);
+        stage = Config.LatinSquare.GetColumn(Config.Id);
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
        
@@ -86,12 +83,10 @@ public class Processing : MonoBehaviour
         Tries = 1;
         h = 1;
 
-        t = new Try(Tries, config.LatinSquare.GetStates(stage[0]));
+        t = new Try(Tries, SwitchState(stage[0]));
 
         triggerPress = 0;
         triggerPressBefore = 0;
-
-        SwitchState(stage[0]);
     }
 
     // Update is called once per frame
@@ -139,7 +134,7 @@ public class Processing : MonoBehaviour
                         session.AddTry(t);
                         Tries++;
 
-                        if (Tries > config.Tries)
+                        if (Tries > Config.Tries)
                         {
                             state = State.FINISHED;
                             targetSphere.SetActive(false);
@@ -156,7 +151,7 @@ public class Processing : MonoBehaviour
                                     {
                                         GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
                                         target.transform.parent = canvas.transform;
-                                        target.transform.localScale = new Vector3(config.Dimension, config.Dimension, 1);
+                                        target.transform.localScale = new Vector3(Config.Dimension, Config.Dimension, 1);
                                         target.SetActive(true);
                                         missedPositions.Add(target);
                                         fir++;
@@ -183,13 +178,12 @@ public class Processing : MonoBehaviour
                             }
                             ind++;
 
-                            session.SaveToFile(config.SaveFile);
-                            session.SaveSum(config.SaveFileTwo, targetSphere.transform);
+                            session.SaveToFile(Config.SaveFile);
+                            session.SaveSum(Config.SaveFileTwo, targetSphere.transform);
                         }
                         else
                         {
                             commandText.enabled = true;
-                            SwitchState(Tries - 1);
 
                             LoadPositions();
 
@@ -198,7 +192,7 @@ public class Processing : MonoBehaviour
 
                             SetTargets(true);
 
-                            t = new Try(Tries, config.LatinSquare.GetStates(stage[Tries-1]));
+                            t = new Try(Tries, SwitchState(Tries - 1));
 
                             state = State.START;
                         }
@@ -339,8 +333,8 @@ public class Processing : MonoBehaviour
         if(first)
         {
             targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
-            targetSphere.transform.localPosition = config.Start;
-            progressIndicator.transform.localPosition = config.Start;
+            targetSphere.transform.localPosition = Config.Start;
+            progressIndicator.transform.localPosition = Config.Start;
             progressIndicator.enabled = false;
         }
         else
@@ -382,7 +376,7 @@ public class Processing : MonoBehaviour
     {
 
         targetPositions = new List<Target>();
-        List<Vector3> p = config.Positions.ToList<Vector3>();
+        List<Vector3> p = Config.Positions.ToList<Vector3>();
 
         List<Target> targets = new List<Target>();
         int index = 0;
@@ -392,7 +386,7 @@ public class Processing : MonoBehaviour
             index++;
         }
 
-        if (config.Random)
+        if (Config.Random)
         {
             Target first = targets[0];
             targets.RemoveAt(0);
@@ -402,10 +396,10 @@ public class Processing : MonoBehaviour
         targetPositions = targets;
 
         Vector3 panel = canvas.transform.localPosition;
-        panel.z = config.Distance;
+        panel.z = Config.Distance;
         canvas.transform.localPosition = panel;
-        targetSphere.transform.localScale = new Vector3(config.Dimension, config.Dimension, 1);
-        float dimension = config.Dimension * 4;
+        targetSphere.transform.localScale = new Vector3(Config.Dimension, Config.Dimension, 1);
+        float dimension = Config.Dimension * 4;
         progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
     }
 
@@ -416,7 +410,7 @@ public class Processing : MonoBehaviour
         {
             Reset();
             Index = 0;
-            t = new Try(Tries, config.LatinSquare.GetStates(stage[Tries-1]));
+            t = new Try(Tries, Config.LatinSquare.GetStates(stage[Tries-1]));
             stack = new List<Position>();
             state = State.START;
             targetSphere.SetActive(true);
@@ -466,9 +460,9 @@ public class Processing : MonoBehaviour
         }
     }
 
-    public void SwitchState(int state)
+    public bool[] SwitchState(int state)
     {
-        bool[] a = config.LatinSquare.GetStates(state);
+        bool[] a = Config.LatinSquare.GetStates(state);
         string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend";
         o += a[1] ? "Arm: ausgestreckt\r\n" : "Arm: angelegt\r\n";
 
@@ -484,5 +478,7 @@ public class Processing : MonoBehaviour
         }
 
         commandText.text = o;
+
+        return a;
     }
 }

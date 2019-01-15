@@ -8,11 +8,9 @@ public class Session
 {
 
     private List<Try> tries;
-    private Config config;
 
-    public Session(Config config)
+    public Session()
     {
-        this.config = config;
         this.tries = new List<Try>();
     }
 
@@ -44,7 +42,7 @@ public class Session
 
     public string GetName()
     {
-        return this.config.Name;
+        return Config.Name;
     }
 
     public void SaveToFile(string file)
@@ -53,16 +51,15 @@ public class Session
         {
             using(StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("name;position;round;trial;ArmPos;BodyPos;DOF;ballistic;timestamp;event;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetID;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
+                w.WriteLine("name;round;trial;ArmPos;BodyPos;DOF;ballistic;timestamp;event;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetID;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
                 foreach(Try tr in this.tries)
                 {
                     bool[] states = tr.GetStates();
                     foreach (Hit h in tr.GetHits())
                     {
                         foreach (Position pos in h.GetPositions()) {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};",
-                                this.config.Name,
-                                "type",
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};",
+                                Config.Name,
                                 tr.GetIndex(),
                                 h.GetIndex(),
                                 states[1] ? "ausgestreckt" : "angelegt",
@@ -101,9 +98,8 @@ public class Session
                     {
                         foreach (Position pos in h.GetPositions())
                         {
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};",
-                                this.config.Name,
-                                "type",
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};",
+                                Config.Name,
                                 tr.GetIndex(),
                                 h.GetIndex(),
                                 states[1] ? "ausgestreckt" : "angelegt",
@@ -181,7 +177,7 @@ public class Session
                         }
 
                         w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
-                            this.config.Name,
+                            Config.Name,
                             tr.GetIndex(),
                             h.GetIndex(),
                             h.GetFirst(),
@@ -244,7 +240,7 @@ public class Session
                         }
 
                         w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};",
-                            this.config.Name,
+                            Config.Name,
                             tr.GetIndex(),
                             h.GetIndex(),
                             h.GetFirst(),

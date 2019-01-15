@@ -10,6 +10,7 @@ public enum PointerEvent
     Clicked,
     ClickedFirst,
     Released,
+    TabClick,
     None
 }
 
