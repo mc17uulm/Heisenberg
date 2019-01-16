@@ -14,6 +14,9 @@ public enum ClickMode
     TRIGGER,
     PAD
 }
+/**
+*   Tunnel records position and events of the controller
+*/
 
 public class Tunnel : MonoBehaviour {
 
@@ -23,7 +26,6 @@ public class Tunnel : MonoBehaviour {
     public Vector3 position;
     private static SteamVR_Controller.Device device = null;
     private static TunnelState mode;
-    private static ClickMode ClickMode;
     private static int ControllerId;
 
 
@@ -45,8 +47,14 @@ public class Tunnel : MonoBehaviour {
         controller.TriggerUnclicked += ControllerOnRelease;
         controller.TriggerClicked -= ControllerOnClick;
         controller.TriggerClicked += ControllerOnClick;
-        controller.PadClicked -= ControllerOnTab;
-        controller.PadClicked += ControllerOnTab;
+        controller.PadClicked -= ControllerPadClick;
+        controller.PadClicked += ControllerPadClick;
+        controller.PadUnclicked -= ControllerPadRelease;
+        controller.PadUnclicked += ControllerPadRelease;
+        controller.PadTouched -= ControllerPadTouch;
+        controller.PadTouched += ControllerPadTouch;
+        controller.PadUntouched -= ControllerPadUntouch;
+        controller.PadUntouched += ControllerPadUntouch;
 
         if (position == null)
         {
@@ -54,13 +62,14 @@ public class Tunnel : MonoBehaviour {
         }
 
         mode = TunnelState.SIX;
-        ClickMode = ClickMode.TRIGGER;
 
     }
 
     // Update is called once per frame
     void Update () {
         newController.transform.rotation = controller.transform.rotation;
+
+        // If mode is on 3DOF (TunnelState.THREE), the controller can only change rotation, not position
         switch(mode)
         {
             case TunnelState.SIX:
@@ -88,20 +97,29 @@ public class Tunnel : MonoBehaviour {
         Processing.addEvent(PointerEvent.ClickEvent);
     }
 
-    private void ControllerOnTab(object sender, ClickedEventArgs e)
+    private void ControllerPadClick(object sender, ClickedEventArgs e)
     {
-        Debug.Log("TabClick");
-        //Processing.addEvent(PointerEvent.TabClick);
+        Processing.addEvent(PointerEvent.PadClick);
+    }
+
+    private void ControllerPadRelease(object sender, ClickedEventArgs e)
+    {
+        Processing.addEvent(PointerEvent.PadRelease);
+    }
+
+    private void ControllerPadTouch(object sender, ClickedEventArgs e)
+    {
+        Processing.addEvent(PointerEvent.PadTouch);
+    }
+
+    private void ControllerPadUntouch(object sender, ClickedEventArgs e)
+    {
+        Processing.addEvent(PointerEvent.PadUntouch);
     }
 
     public static void ChangeMode(TunnelState state)
     {
         mode = state;
-    }
-
-    public static void ChangeClickTarget(ClickMode state)
-    {
-        ClickMode = state;
     }
 
     private static SteamVR_Controller.Device GetDevice()
@@ -118,7 +136,7 @@ public class Tunnel : MonoBehaviour {
 
     public static float GetPressedValue()
     {
-        switch(ClickMode)
+        switch(Config.clickMode)
         {
             case ClickMode.PAD:
                 return GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;

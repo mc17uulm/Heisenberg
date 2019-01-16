@@ -26,27 +26,20 @@ public enum State
 public class Processing : MonoBehaviour
 {
 
-    // roter Ring um Ziel um Countdown anzuzeigen
+    // indicates how long user is in target
     public Image progressIndicator;
-
-    // Gibt Anzahl der Durchgänge an
-    public Text scoreText;
+    
+    public Text debugText;
     public Text commandText;
-
-    // Sphere welche als Ziel und als Referenzpunkt genutzt werden
+    
     public GameObject targetSphere;
-    // Zeigt Treffer an
     public GameObject indicatorButton;
     public GameObject canvas;
     public GameObject controller;
 
-    //public GameObject mainController;
-
     private SteamVR_LaserPointer laserPointer;
 
     private Timer timer;
-    // Angabe der ms für welche der Nutzer im Ziel sein muss um klicken zu können
-    private int timespan = 500;
 
     private State state;
     private static List<Position> stack;
@@ -74,6 +67,11 @@ public class Processing : MonoBehaviour
         stage = Config.LatinSquare.GetColumn(Config.Id);
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
+
+        if(!Config.Debug)
+        {
+            debugText.enabled = false;
+        }
        
         Reset();
 
@@ -84,6 +82,7 @@ public class Processing : MonoBehaviour
         h = 1;
 
         t = new Try(Tries, SwitchState(Tries));
+        DebugLog();
 
         triggerPress = 0;
         triggerPressBefore = 0;
@@ -193,6 +192,7 @@ public class Processing : MonoBehaviour
                             SetTargets(true);
 
                             t = new Try(Tries, SwitchState(Tries));
+                            DebugLog();
 
                             state = State.START;
                         }
@@ -277,7 +277,7 @@ public class Processing : MonoBehaviour
                         }
                         else
                         {
-                            float progress = timer.GetProgress(timespan);
+                            float progress = timer.GetProgress(Config.Timespan);
                             progressIndicator.fillAmount = progress;
                         }
                         break;
@@ -339,7 +339,6 @@ public class Processing : MonoBehaviour
         }
         else
         {
-            //int o = t.GetHits().Count / (int)config["repeat"];
             targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
             targetSphere.transform.localPosition = targetPositions[Index].GetPosition();
             progressIndicator.transform.localPosition = targetPositions[Index].GetPosition();
@@ -432,7 +431,6 @@ public class Processing : MonoBehaviour
         }
         if (triggerPress > 0.1f && triggerPress < 1.0f)
         {
-            //TODO: change for first event
             switch(stack[stack.Count-1].GetEvent())
             {
                 case PointerEvent.TriggerPressed:
@@ -462,9 +460,9 @@ public class Processing : MonoBehaviour
 
     public bool[] SwitchState(int state)
     {
-        Debug.Log("Switch state: " + stage[state-1]);
+        Debug.Log("Switch state: " + state + " | " + stage[state-1]);
         bool[] a = Config.LatinSquare.GetStates(stage[state-1]);
-        string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend";
+        string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend\r\n";
         o += a[1] ? "Arm: ausgestreckt\r\n" : "Arm: angelegt\r\n";
 
         if (a[2])
@@ -481,5 +479,20 @@ public class Processing : MonoBehaviour
         commandText.text = o;
 
         return a;
+    }
+
+    public void DebugLog(string log = "")
+    {
+        string o = "";
+        if(Tries == 1)
+        {
+            o += "Start!\r\n";
+        } else
+        {
+            o += "New Round!\r\n";
+        }
+        o += "Name: " + Config.Name + " | Id: " + Config.Id + "\r\nRound " + Tries + "/8" + log;
+
+        debugText.text = o;
     }
 }

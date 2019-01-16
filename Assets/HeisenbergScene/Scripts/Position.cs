@@ -10,7 +10,10 @@ public enum PointerEvent
     Clicked,
     ClickedFirst,
     Released,
-    TabClick,
+    PadClick,
+    PadRelease,
+    PadTouch,
+    PadUntouch,
     None
 }
 
@@ -74,8 +77,17 @@ public class Position {
             case PointerEvent.Released:
                 return "Released";
 
-            case PointerEvent.TabClick:
-                return "TabClick";
+            case PointerEvent.PadClick:
+                return "PadClicked";
+
+            case PointerEvent.PadRelease:
+                return "PadReleased";
+
+            case PointerEvent.PadTouch:
+                return "PadTouched";
+
+            case PointerEvent.PadUntouch:
+                return "PadUntouched";
 
             case PointerEvent.None:
                 return "None";
