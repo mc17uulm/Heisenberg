@@ -14,6 +14,12 @@ public enum ClickMode
     TRIGGER,
     PAD
 }
+
+public enum GridMode
+{
+    GRID,
+    CIRCLE
+}
 /**
 *   Tunnel records position and events of the controller
 */
@@ -23,7 +29,7 @@ public class Tunnel : MonoBehaviour {
 
     private static SteamVR_TrackedController controller;
     public GameObject newController;
-    public Vector3 position;
+    public Vector3 StaticPosition;
     private static SteamVR_Controller.Device device = null;
     private static TunnelState mode;
     private static int ControllerId;
@@ -56,9 +62,9 @@ public class Tunnel : MonoBehaviour {
         controller.PadUntouched -= ControllerPadUntouch;
         controller.PadUntouched += ControllerPadUntouch;
 
-        if (position == null)
+        if (StaticPosition == null)
         {
-            position = new Vector3(0, 0, 0);
+            StaticPosition = Config.Start;
         }
 
         mode = TunnelState.SIX;
@@ -77,7 +83,7 @@ public class Tunnel : MonoBehaviour {
                 break;
 
             case TunnelState.THREE:
-                newController.transform.position = position;
+                newController.transform.position = StaticPosition;
                 break;
 
             default:

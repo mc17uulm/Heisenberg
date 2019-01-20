@@ -375,7 +375,23 @@ public class Processing : MonoBehaviour
     {
 
         targetPositions = new List<Target>();
-        List<Vector3> p = Config.Positions.ToList<Vector3>();
+        List<Vector3> p;
+        switch (Config.grid)
+        {
+
+            case GridMode.GRID:
+                p = Config.Positions.ToList<Vector3>();
+                break;
+
+            case GridMode.CIRCLE:
+                p = Config.Circle.ToList<Vector3>();
+                break;
+
+            default:
+                p = Config.Positions.ToList<Vector3>();
+                break;
+
+        }
 
         List<Target> targets = new List<Target>();
         int index = 0;

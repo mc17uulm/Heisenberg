@@ -14,6 +14,7 @@ public class Config {
 
     // Record clickes based on PAD or TRIGGER
     public static ClickMode clickMode = ClickMode.TRIGGER;
+    public static GridMode grid = GridMode.GRID;
 
     // Start position of 3DOF
     public static Vector3 Start = new Vector3(0, 0, 0);
@@ -23,8 +24,7 @@ public class Config {
         new Vector3(-280,180,0),
         new Vector3(-93.5f,180,0),
         new Vector3(93.5f,180,0),
-            /**
-            new Vector3(280,180,0),
+        new Vector3(280,180,0),
 
             new Vector3(-280,0,0),
             new Vector3(-93.5f,0,0),
@@ -34,7 +34,12 @@ public class Config {
             new Vector3(-280,-180,0),
             new Vector3(-93.5f,-180,0),
             new Vector3(93.5f,-180,0),
-            new Vector3(280,-180,0)*/
+            new Vector3(280,-180,0)
+    };
+
+    public static Vector3[] Circle = new Vector3[]
+    {
+         new Vector3(-280,180,0)
     };
     
     public static int Tries = 8;

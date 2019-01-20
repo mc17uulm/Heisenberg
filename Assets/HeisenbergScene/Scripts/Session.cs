@@ -45,6 +45,16 @@ public class Session
         return Config.Name;
     }
 
+    public void SaveToFile()
+    {
+        SaveToFile(Application.dataPath + "/../FullData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyy/MM/dd_hh:mm:ss") + ".csv");
+    }
+
+    public void SaveSum(Transform trans)
+    {
+        SaveSum(Application.dataPath + "/../SumData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyy/MM/dd_hh:mm:ss") + ".csv", trans);
+    }
+
     public void SaveToFile(string file)
     {
         if(!File.Exists(file))
