@@ -15,7 +15,12 @@ class TableRow extends Component
                 <th>{this.props.vorname}</th>
                 <th>{this.props.nachname}</th>
                 <th>{new Date(this.props.date).toLocaleDateString("de-DE") + " " + new Date(this.props.date).toLocaleTimeString("de-DE")}</th>
-                <th>{this.props.files}</th>
+                <th><span className={"badge badge-" + (this.props.state === "added" ? "warning" : "success")}>{this.props.state}</span></th>
+                <th>{this.props.files.map((el) => (
+                    <div>
+                        <a href={el.link}>{el.name}</a><br/>
+                    </div>
+                ))}</th>
             </tr>
         );
     }

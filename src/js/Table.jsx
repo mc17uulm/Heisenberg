@@ -18,12 +18,13 @@ class Table extends Component
                         <th scope="col">Vorname</th>
                         <th scope="col">Nachname</th>
                         <th scope="col">Date</th>
+                        <th scope="col">State</th>
                         <th scope="col">Files</th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.data.slice(0).reverse().map((el, i) => (
-                        <TableRow type={i === 0 ? "table-success" : ""} id={el.id} vorname={el.vorname} nachname={el.nachname} date={el.date} files="No files"/>
+                        <TableRow type={i === 0 ? "table-success" : ""} id={el.id} vorname={el.vorname} nachname={el.nachname} date={el.date} files={el.files} state={el.state}/>
                     ))}
                 </tbody>
             </table>
