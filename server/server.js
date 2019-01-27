@@ -24,22 +24,22 @@ app.post('/', async (req, res) => {
                 if(typeof req.body.data.id !== "undefined") {
                     res.send(await JSON.stringify({type: "success", msg: await handler.get(req.body.data.id)}));
                 }  else {
-                    res.send(JSON.stringify({type: "error", msg: "Invalid requets"}));
+                    res.send(JSON.stringify({type: "error", msg: "Invalid requests1"}));
                 } 
                 break;
             case "add":
                 if(typeof req.body.data.vorname !== "undefined" &&  typeof req.body.data.nachname !== "undefined") {
                     res.send(await JSON.stringify({type: "success", msg: await handler.add(req.body.data)}));
                 } else {
-                    res.send(JSON.stringify({type: "error", msg: "Invalid requets"}));
+                    res.send(JSON.stringify({type: "error", msg: "Invalid requests2"}));
                 }
                 break;
             default:
-                res.send(JSON.stringify({type: "error", msg: "Invalid requets"}));
+                res.send(JSON.stringify({type: "error", msg: "Invalid requests3"}));
                 break;        
         }
     } else {
-        res.send(JSON.stringify({type: "error", msg: "Invalid requets"}));
+        res.send(JSON.stringify({type: "error", msg: "Invalid requests4"}));
     }
 });
 

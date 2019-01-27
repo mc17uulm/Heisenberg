@@ -19,10 +19,11 @@ class App extends Component
     }
 
     async componentDidMount() {
+        let d = await Getter.sendRequest(JSON.stringify({
+            type: "get_all"
+        }));
         this.setState({ 
-            data: await Getter.sendRequest(JSON.stringify({
-                type: "get_all"
-            }))
+            data: d.data
         });
     }
 
@@ -45,10 +46,11 @@ class App extends Component
         this.setState({
             refreshText: "Loading ..."
         });
+        let d = await Getter.sendRequest(JSON.stringify({
+            type: "get_all"
+        }));
         this.setState({ 
-            data: await Getter.sendRequest(JSON.stringify({
-                type: "get_all"
-            })),
+            data: d.data,
             refreshText: "Refresh"
         });
     }

@@ -2,21 +2,26 @@ const fs = require('fs');
 
 class Handler {
 
+    static getConfigFile()
+    {
+        return "./../../Assets/StreamingAssets/config.json";
+    }
+
     static async getAll() {
-        let data = await JSON.parse(fs.readFileSync('./../config.json'));
+        let data = await JSON.parse(fs.readFileSync(this.getConfigFile()));
         return data;
     }
 
     static async get(id) {
-        let data = await JSON.parse(fs.readFileSync('./../config.json'));
+        let data = await JSON.parse(fs.readFileSync(this.getConfigFile()));
         return data.filter((el) => {
             el.id === id
         });
     }
 
     static async add(obj) {
-        let data = await JSON.parse(fs.readFileSync('./../config.json'));
-        let lastId = Math.max.apply(Math, data.map((el) => {
+        let data = await JSON.parse(fs.readFileSync(this.getConfigFile()));
+        let lastId = Math.max.apply(Math, data.data.map((el) => {
             return el.id;
         }));
         if(!Number.isInteger(lastId)) {
@@ -31,18 +36,8 @@ class Handler {
             date: now,
             files: []
         };
-        data.push(user);
-        await fs.writeFileSync('./../config.json', JSON.stringify(data));
-        // let csFile = await fs.readFileSync("./../Config.cs").toString();
-        // let parts = csFile.split("=");
-        // let second = parts[1].split(";");
-        // let third = parts[2].split(";");
-        // let newCs =  parts[0] + "= \"" + obj.vorname + " " + obj.nachname + "\";" + second[1] + "= " + lastId + ";" + third[1];
-        // for(let i = 0; i < 3; i++){
-        //     parts.shift();
-        // }
-        // newCs += parts.join("=");
-        // await fs.writeFileSync("./../Config.cs", newCs);
+        data.data.push(user);
+        await fs.writeFileSync(this.getConfigFile(), JSON.stringify(data));
         return user;
     }
 

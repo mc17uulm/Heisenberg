@@ -18,7 +18,7 @@ class TableRow extends Component
                 <th><span className={"badge badge-" + (this.props.state === "added" ? "warning" : "success")}>{this.props.state}</span></th>
                 <th>{this.props.files.map((el) => (
                     <div>
-                        <a href={el.link}>{el.name}</a><br/>
+                        <a href={el}>{el.substr(el.lastIndexOf("/")+1, el.length)}</a><br/>
                     </div>
                 ))}</th>
             </tr>

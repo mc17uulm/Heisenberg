@@ -4,3 +4,5 @@ savefiles/
 
 Config.cs
 config.json
+
+package-lock.json
