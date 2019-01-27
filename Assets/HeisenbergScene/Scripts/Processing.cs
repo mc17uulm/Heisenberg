@@ -62,6 +62,8 @@ public class Processing : MonoBehaviour
     {
         Index = 0;
 
+        Config.init();
+
         session = new Session();
 
         stage = Config.LatinSquare.GetColumn(Config.Id);
@@ -177,8 +179,9 @@ public class Processing : MonoBehaviour
                             }
                             ind++;
 
-                            session.SaveToFile(Config.SaveFile);
-                            session.SaveSum(Config.SaveFileTwo, targetSphere.transform);
+                            session.Save(targetSphere.transform);
+                            /**session.SaveToFile(Config.SaveFile);
+                            session.SaveSum(Config.SaveFileTwo, targetSphere.transform);*/
                         }
                         else
                         {

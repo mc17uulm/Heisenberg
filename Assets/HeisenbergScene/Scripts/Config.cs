@@ -1,13 +1,85 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 
 public class Config {
 
+    private static string ConfigFile = Path.Combine(Application.streamingAssetsPath, "config.json");
+    private static ConfigObject config;
+    private static DataObject active = null;
+
+    public static void init()
+    {
+
+        if(File.Exists(ConfigFile))
+        {
+            string data = File.ReadAllText(ConfigFile);
+            ConfigObject obj = JsonUtility.FromJson<ConfigObject>(data);
+            config = obj;
+
+            Debug = obj.debug;
+            Timespan = obj.timespan;
+
+            bool start = false;
+            foreach(DataObject d in obj.data)
+            {
+                if(d.state.Equals("added"))
+                {
+                    start = true;
+                    active = d;
+                }
+            }
+
+            UnityEngine.Debug.Log("Start: " + start);
+
+            if(!start)
+            {
+                UnityEngine.Debug.Log("No active DataObject");
+                Application.Quit();
+            }
+            else
+            {
+                Name = active.vorname + " " + active.nachname;
+                Id = active.id;
+                SaveFiles = active.files;
+            }
+
+        } else
+        {
+            UnityEngine.Debug.Log("Config File not found");
+            Application.Quit();
+        }
+    }
+
+    public static void SaveToConfig(string saveFile, string sumFile)
+    {
+        List<string> files = new List<string>()
+        {
+            saveFile,
+            sumFile
+        };
+
+        foreach(DataObject d in config.data)
+        {
+            if(d.state.Equals("added"))
+            {
+                d.files = files;
+                d.state = "finished";
+            }
+        }
+
+        string json = JsonUtility.ToJson(config);
+        File.WriteAllText(ConfigFile, json);
+
+    }
+
     // Name & id of user
-    public static string Name = "Marco";
-    public static int Id = 1;
+    public static string Name = "Test";
+    public static int Id = -1;
 
     // Adds debug information to screen
-    public static bool Debug = true;
+    public static bool Debug = false;
 
     // User has to be Timespan ms in target to successfully click
     public static int Timespan = 500;
@@ -25,7 +97,7 @@ public class Config {
         new Vector3(-93.5f,180,0),
         new Vector3(93.5f,180,0),
         new Vector3(280,180,0),
-
+        
             new Vector3(-280,0,0),
             new Vector3(-93.5f,0,0),
             new Vector3(93.5f,0,0),
@@ -50,6 +122,8 @@ public class Config {
 
     // Distance from user to target
     public static int Distance = 8;
+
+    public static List<string> SaveFiles = null;
 
     public static string SaveFile = @"C:\Users\Lizenznehmer\Desktop\Heisenberg\savefile.csv";
     public static string SaveFileTwo = @"C:\Users\Lizenznehmer\Desktop\Heisenberg\savefile_2.csv";

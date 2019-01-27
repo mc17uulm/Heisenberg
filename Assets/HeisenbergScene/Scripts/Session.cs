@@ -8,10 +8,14 @@ public class Session
 {
 
     private List<Try> tries;
+    private string SaveFile;
+    private string SumFile;
 
     public Session()
     {
         this.tries = new List<Try>();
+        this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
     }
 
     public void AddTry(Try t)
@@ -45,14 +49,11 @@ public class Session
         return Config.Name;
     }
 
-    public void SaveToFile()
+    public void Save(Transform trans)
     {
-        SaveToFile(Application.dataPath + "/../FullData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyy/MM/dd_hh:mm:ss") + ".csv");
-    }
-
-    public void SaveSum(Transform trans)
-    {
-        SaveSum(Application.dataPath + "/../SumData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyy/MM/dd_hh:mm:ss") + ".csv", trans);
+        this.SaveToFile(SaveFile);
+        this.SaveSum(SumFile, trans);
+        Config.SaveToConfig(SaveFile, SumFile);
     }
 
     public void SaveToFile(string file)
