@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Form from './Form.jsx';
 import Table from './Table.jsx';
 import Getter from './Getter.js';
+import Modal from "./Modal.jsx";
 
 class App extends Component
 {
@@ -11,11 +12,15 @@ class App extends Component
 
         this.state = {
             data: [],
-            refreshText: "Refresh"
+            refreshText: "Refresh",
+            modalHidden: true
         }
 
         this.add = this.add.bind(this);
         this.handleRefresh = this.handleRefresh.bind(this);
+        this.handleSettings = this.handleSettings.bind(this);
+        this.handleSaveSettings = this.handleSaveSettings.bind(this);
+        this.toggelModal = this.toggelModal.bind(this);
     }
 
     async componentDidMount() {
@@ -55,14 +60,44 @@ class App extends Component
         });
     }
 
+    handleSettings(e) {
+        e.preventDefault();
+        this.setState({
+            modalHidden: false
+        });
+    }
+
+    toggelModal() {
+        this.setState({
+            modalHidden: !this.state.modalHidden
+        });
+    }
+
+    async handleSaveSettings(e)
+    {
+        e.preventDefault();
+    }
+
     render() {
         return (
             <div>
-                <h3>Heisenberg Project</h3>
+                <hr />
+                <div className="row">
+                    <div className="col-11">
+                        <h3>Heisenberg Project</h3>
+                    </div>
+                    <div className="col-1">
+                        <button type="button" onClick={this.handleSettings} className="btn btn-dark float-right">Settings</button>
+                    </div>
+                </div>
                 <Form add={this.add} />
                 <br/>
                 <Table data={this.state.data}/>
                 <button type="button" onClick={this.handleRefresh} className="btn btn-info">{this.state.refreshText}</button>
+                <Modal title="Settings" body="" onSave={this.handleSaveSettings} toggleHidden={this.toggelModal} hidden={this.state.modalHidden}/>
+                {this.state.modalHidden ? "" : (
+                    <div className="modal-backdrop fade show"></div>
+                )}
             </div>
         );
     }

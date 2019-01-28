@@ -23,23 +23,26 @@ class Form extends Component
 
     add(e) {
         e.preventDefault();
+        let a = this.state.vorname === "" || this.state.nachname === "" || this.state.vorname === "undefined" || this.state.nachname === "undefined";
+        console.log("a: " + a);
         this.setState({
-            alert: this.state.vorname === "" || this.state.nachname === "" || this.state.vorname === "undefined" || this.state.nachname === "undefined"
+            alert: a
         });
         let vorname = this.state.vorname,
             nachname = this.state.nachname;
-        if(!this.state.alert){
+        if(!a){
             this.setState({
                 vorname: "",
                 nachname: ""
             });
             this.child_v.current.reset();
             this.child_n.current.reset();
-        }
-        this.props.add({
-            vorname: vorname,
-            nachname: nachname
-        });
+
+            this.props.add({
+                vorname: vorname,
+                nachname: nachname
+            });
+        } 
     }
 
     handleChange(el)

@@ -9,7 +9,6 @@ class Table extends Component
     }
 
     render() {
-        console.log(this.props.data);
         return (
             <table className="table">
                 <thead className="thead-dark">

@@ -4,7 +4,8 @@ class Handler {
 
     static getConfigFile()
     {
-        return "./../../Assets/StreamingAssets/config.json";
+        return "./../config.json";
+        // return "./../../Assets/StreamingAssets/config.json";
     }
 
     static async getAll() {
