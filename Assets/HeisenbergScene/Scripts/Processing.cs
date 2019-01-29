@@ -43,7 +43,7 @@ public class Processing : MonoBehaviour
 
     private State state;
     private static List<Position> stack;
-    private List<Target> targetPositions;
+    private List<Vector3> TargetPositions;
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
     private int Index;
@@ -58,6 +58,13 @@ public class Processing : MonoBehaviour
     private float triggerPress;
     private float triggerPressBefore;
 
+    private int Rounds;
+    private int Column;
+    private LatinSquare ParticipantSquare;
+    private LatinSquare TargetSquare;
+
+    private List<Target> Targets;
+
     void OnEnable()
     {
         Index = 0;
@@ -66,7 +73,13 @@ public class Processing : MonoBehaviour
 
         session = new Session();
 
-        stage = Config.LatinSquare.GetColumn(Config.Id);
+        Rounds = 0;
+
+        ParticipantSquare = new LatinSquare(Config.Pad ? 16 : 8);
+        TargetSquare = new LatinSquare(Config.TargetAmplitudes.Length * Config.TargetWidths.Length);
+
+        Column = Config.UserId % (Config.Pad ? 16 : 8);
+        Targets = CreateTargets();
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -108,8 +121,8 @@ public class Processing : MonoBehaviour
 
                 case State.START_IN:
                     state = State.FIRST;
-                    targetSphere.transform.localPosition = targetPositions[0].GetPosition();
-                    progressIndicator.transform.localPosition = targetPositions[0].GetPosition();
+                    targetSphere.transform.localPosition = TargetPositions[0];
+                    progressIndicator.transform.localPosition = TargetPositions[0];
                     commandText.enabled = false;
                     break;
 
@@ -129,7 +142,7 @@ public class Processing : MonoBehaviour
                     progressIndicator.enabled = false;
                     t.AddHit(new Hit(h, targetSphere.transform.position, stack));
                     h++;
-                    if (Index >= targetPositions.Count - 1)
+                    if (Index >= TargetPositions.Count - 1)
                     {
                         state = State.FINISHED;
                         session.AddTry(t);
@@ -180,8 +193,6 @@ public class Processing : MonoBehaviour
                             ind++;
 
                             session.Save(targetSphere.transform);
-                            /**session.SaveToFile(Config.SaveFile);
-                            session.SaveSum(Config.SaveFileTwo, targetSphere.transform);*/
                         }
                         else
                         {
@@ -343,8 +354,8 @@ public class Processing : MonoBehaviour
         else
         {
             targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
-            targetSphere.transform.localPosition = targetPositions[Index].GetPosition();
-            progressIndicator.transform.localPosition = targetPositions[Index].GetPosition();
+            targetSphere.transform.localPosition = TargetPositions[Index];
+            progressIndicator.transform.localPosition = TargetPositions[Index];
         }
     }
 
@@ -410,7 +421,7 @@ public class Processing : MonoBehaviour
             targets.RemoveAt(0);
             targets = targets.OrderBy(x => rand.Next()).ToList();
             targets.Insert(0, first);
-        }
+        }+
         targetPositions = targets;
 
         Vector3 panel = canvas.transform.localPosition;
@@ -477,8 +488,38 @@ public class Processing : MonoBehaviour
         }
     }
 
-    public bool[] SwitchState(int state)
+    public List<Target> CreateTargets()
     {
+        List<Target> targets = new List<Target>();
+        foreach(int amp in Config.TargetAmplitudes)
+        {
+            foreach(int size in Config.TargetWidths)
+            {
+                List<Vector3> t = new List<Vector3>();
+                for(int i = 0; i < 13; i++)
+                {
+                    t.Add(new Vector3(Convert.ToSingle((amp/2)*Math.Sin((i)*(i/360))), Convert.ToSingle((amp / 2) * Math.Sin((i) * (i/360))), 0));
+                }
+                targets.Add(new Target(t, amp, size ));
+            }
+        }
+
+        return targets;
+    }
+
+    public bool[] SwitchState(int TriesNo)
+    {
+        int remainder = TriesNo % (Config.TargetAmplitudes.Length * Config.TargetWidths.Length);
+        if (remainder == 0)
+        {
+            // Change PState
+        } else
+        {
+            targetPositions = Targets[remainder - 1].GetCircle();
+            // Change TState
+        }
+        
+
         Debug.Log("Switch state: " + state + " | " + stage[state-1]);
         bool[] a = Config.LatinSquare.GetStates(stage[state-1]);
         string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend\r\n";
@@ -510,7 +551,7 @@ public class Processing : MonoBehaviour
         {
             o += "New Round!\r\n";
         }
-        o += "Name: " + Config.Name + " | Id: " + Config.Id + "\r\nRound " + Tries + "/8" + log;
+        o += "Id: " + Config.Id + "\r\nRound " + Tries + "/8" + log;
 
         debugText.text = o;
     }

@@ -20,6 +20,7 @@ public class Config {
 
             Debug = obj.debug;
             Timespan = obj.timespan;
+            Pad = obj.pad;
 
             bool start = false;
             foreach(DataObject d in obj.data)
@@ -40,7 +41,6 @@ public class Config {
             }
             else
             {
-                Name = active.vorname + " " + active.nachname;
                 Id = active.id;
                 SaveFiles = active.files;
             }
@@ -73,10 +73,8 @@ public class Config {
         File.WriteAllText(ConfigFile, json);
 
     }
-
-    // Name & id of user
-    public static string Name = "Test";
-    public static int Id = -1;
+    
+    public static int UserId = -1;
 
     // Adds debug information to screen
     public static bool Debug = false;
@@ -84,9 +82,23 @@ public class Config {
     // User has to be Timespan ms in target to successfully click
     public static int Timespan = 500;
 
+    public static bool Pad = false;
+
+    public static int TargetId = 1;
+
+    public static int[] TargetAmplitudes = new int[]
+    {
+        350, 150
+    };
+
+    public static int[] TargetWidths = new int[]
+    {
+        15, 30, 50
+    };
+
     // Record clickes based on PAD or TRIGGER
-    public static ClickMode clickMode = ClickMode.TRIGGER;
-    public static GridMode grid = GridMode.GRID;
+    //public static ClickMode clickMode = ClickMode.TRIGGER;
+    //public static GridMode grid = GridMode.GRID;
 
     // Start position of 3DOF
     public static Vector3 Start = new Vector3(0, 0, 0);
@@ -108,13 +120,8 @@ public class Config {
             new Vector3(93.5f,-180,0),
             new Vector3(280,-180,0)
     };
-
-    public static Vector3[] Circle = new Vector3[]
-    {
-         new Vector3(-280,180,0)
-    };
     
-    public static int Tries = 8;
+    public static int Tries = 16;
     public static bool Random = true;
 
     // Size of target

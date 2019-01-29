@@ -4,23 +4,30 @@ using UnityEngine;
 
 public class Target{
 
-    private Vector3 position;
-    private int id;
+    private List<Vector3> Circle;
+    private int Amplitude;
+    private int Size;
     
-    public Target(Vector3 position, int id)
+    public Target(List<Vector3> Circle, int Amplitude, int Size)
     {
-        this.position = position;
-        this.id = id;
+        this.Circle = Circle;
+        this.Amplitude = Amplitude;
+        this.Size = Size;
     }
 
-    public Vector3 GetPosition()
+    public List<Vector3> GetCircle()
     {
-        return this.position;
+        return this.Circle;
     }
 
-    public int GetId()
+    public int GetAmplitude()
     {
-        return this.id;
+        return this.Amplitude;
+    }
+
+    public int GetSize()
+    {
+        return this.Size;
     }
 
 }

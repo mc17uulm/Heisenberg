@@ -5,9 +5,11 @@ public class LatinSquare
 {
 
     private int[][] Square { get; }
+    private int Size;
 
     public LatinSquare(int n)
     {
+        this.Size = n;
 
         // Algorithm inspired by http://euanfreeman.co.uk/balanced-latin-squares/
 
@@ -52,22 +54,30 @@ public class LatinSquare
         this.Square = tmp;
     }
 
+    public int GetSize()
+    {
+        return this.Size;
+    }
+
     public int[] GetColumn(int id)
     {
-        return (0 <= id) && (id <= 8) ? this.Square[id] : new int[] { };
+        return (0 <= id) && (id <= this.Size) ? this.Square[id] : new int[] { };
     }
 
     public bool[] GetStates(int state)
     {
-        bool[] o = new bool[3];
+        bool[] o = new bool[this.n/4];
         // State 0: TRUE => Sitzend | FALSE => Stehend
-        o[0] = state <= 4;
+        o[0] = state <= this.n/2;
 
         // State 1: TRUE => Ausgestreckt | FALSE => Angelegt
-        o[1] = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1;
+        o[1] = new List<int>() { 1, 2, 3, 4, 9, 10, 11, 12}.IndexOf(state) != -1;
 
         // State 2: TRUE => 6DOF | FALSE => 3DOF
-        o[2] = (state % 2) == 1;
+        o[2] = new List<int>() {1, 2, 5, 6, 9, 10, 13, 14 }.IndexOf(state) != -1;
+
+        // State 3: TRUE => TRIGGER | FALSE => PAD
+        o[3] = (state % 2) == 1;
 
         return o;
     }
@@ -78,6 +88,7 @@ public class LatinSquare
         o += states[0] ? "Sitzend\r\n" : "Stehend\r\n";
         o += states[1] ? "ausgestreckt\r\n" : "angelegt\r\n";
         o += states[2] ? "6DOF\r\n" : "3DOF\r\n";
+        o += states[3] ? "Trigger\r\n" : "Pad\r\n";
         return o;
     }
     
