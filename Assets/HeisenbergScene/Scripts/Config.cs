@@ -96,6 +96,8 @@ public class Config {
         15, 30, 50
     };
 
+    public static int CircleSize = 13;
+
     // Record clickes based on PAD or TRIGGER
     //public static ClickMode clickMode = ClickMode.TRIGGER;
     //public static GridMode grid = GridMode.GRID;

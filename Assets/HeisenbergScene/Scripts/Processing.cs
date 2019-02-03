@@ -11,6 +11,8 @@ using Valve.VR;
 public enum State
 {
     START,
+    SHOW_TASK,
+    SHOW_TARGET,
     START_IN,
     FIRST,
     FIRST_IN,
@@ -46,24 +48,21 @@ public class Processing : MonoBehaviour
     private List<Vector3> TargetPositions;
     private List<GameObject> missedPositions;
     public static System.Random rand = new System.Random();
-    private int Index;
+    private static int Index;
     private int Tries;
     private int h;
     private Session session;
     private Try t;
 
-    // Latin square steps 
-    private int[] stage;
-
     private float triggerPress;
     private float triggerPressBefore;
 
     private int Rounds;
-    private int Column;
-    private LatinSquare ParticipantSquare;
-    private LatinSquare TargetSquare;
+    private LatinSquare LTC;
+    private LatinSquare LTT;
+    
+    private static List<Task> Tasks;
 
-    private List<Target> Targets;
 
     void OnEnable()
     {
@@ -75,11 +74,10 @@ public class Processing : MonoBehaviour
 
         Rounds = 0;
 
-        ParticipantSquare = new LatinSquare(Config.Pad ? 16 : 8);
-        TargetSquare = new LatinSquare(Config.TargetAmplitudes.Length * Config.TargetWidths.Length);
+        LTC = new LatinSquare(8);
+        LTT = new LatinSquare(Config.TargetAmplitudes.Length * Config.TargetWidths.Length);
 
-        Column = Config.UserId % (Config.Pad ? 16 : 8);
-        Targets = CreateTargets();
+        Tasks = CreateTasks(LTC, LTT);
 
         laserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -87,7 +85,13 @@ public class Processing : MonoBehaviour
         {
             debugText.enabled = false;
         }
+
+        state = State.START;
+
+        ShowCommand("Start");
+
        
+        /**
         Reset();
 
         LoadPositions();
@@ -97,19 +101,62 @@ public class Processing : MonoBehaviour
         h = 1;
 
         t = new Try(Tries, SwitchState(Tries));
-        DebugLog();
+        DebugLog();*/
 
         triggerPress = 0;
         triggerPressBefore = 0;
+    }
+
+    public static void AddData(Position pos)
+    {
+        Tasks[Index].AddToStack(pos);
+    }
+
+    public void ShowCircle(int i)
+    {
+        Task task = Tasks[i];
+        Circle circle = task.GetCircle();
+
+    }
+
+    public void ShowTask(int i)
+    {
+        Task task = Tasks[i];
+        ShowCommand(task.PrintCommand(i) + "Zum Fortfahren clicken");
+    }
+
+    public void ShowTarget()
+    {
+        Vector3 pos = Tasks[Index].GetCircle().GetTarget().GetPosition();
+        targetSphere.transform.localPosition = pos;
+        progressIndicator.transform.localPosition = pos;
+    }
+
+    public void ExecuteState()
+    {
+        switch(state)
+        {
+            case State.SHOW_TASK:
+                HideCommand();
+                ShowTask(Index);
+                break;
+
+            case State.SHOW_TARGET:
+                HideCommand();
+                ShowTarget();
+                break;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        ProcessHits();
+        //ProcessHits();
 
         ProcessButtons();
+
+        ExecuteState();
 
         triggerPressBefore = triggerPress;
         triggerPress = Tunnel.GetPressedValue();
@@ -359,23 +406,6 @@ public class Processing : MonoBehaviour
         }
     }
 
-    private Boolean Contains(RaycastHit[] hits, string name, out GameObject x, out RaycastHit hit)
-    {
-        for (int i = 0; i < hits.Length; i++)
-        {
-            if (hits[i].collider.gameObject.name.Equals(name))
-            {
-                x = hits[i].collider.gameObject;
-                hit = hits[i];
-                return true;
-            }
-        }
-
-        x = null;
-        hit = new RaycastHit();
-        return false;
-    }
-
     private void Reset()
     {
         timer = null;
@@ -434,24 +464,31 @@ public class Processing : MonoBehaviour
 
     private void ProcessButtons()
     {
-
-        if (Input.GetKeyDown(KeyCode.Space) && state.Equals(State.FINISHED))
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
         {
+            switch(state)
+            {
+                case State.START:
+                    state = State.SHOW_TASK;
+                    break;
+
+                default:
+                    break;
+            }
+
+            /**
             Reset();
             Index = 0;
             t = new Try(Tries, SwitchState(Tries));
             stack = new List<Position>();
             state = State.START;
             targetSphere.SetActive(true);
-            SetTargets(true);
+            SetTargets(true);*/
         }
 
     }
 
-    private long GetNow()
-    {
-        return (long) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-    }
+    
 
     private PointerEvent GetEvent()
     {
@@ -554,5 +591,49 @@ public class Processing : MonoBehaviour
         o += "Id: " + Config.Id + "\r\nRound " + Tries + "/8" + log;
 
         debugText.text = o;
+    }
+
+    public static List<Task> CreateTasks(LatinSquare LTC, LatinSquare LTT)
+    {
+        int[] column = LTC.GetColumn(Config.UserId % 8);
+        int start = (Config.UserId * LTC.GetSize()) % LTT.GetSize();
+        List<Task> Tasks = new List<Task>();
+        for (int i = 0; i < column.Length; i++)
+        {
+            int state = column[i];
+            BodyPosition Body = state <= 4 ? BodyPosition.SITTING : BodyPosition.STANDING;
+            ArmPosition Arm = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1 ? ArmPosition.STRECHED : ArmPosition.APPLIED;
+            DOF dof = state % 2 == 0 ? DOF.THREE : DOF.SIX;
+
+            if (Config.Pad)
+            {
+                Task first = new Task((i * 2), Body, Arm, dof);
+                Task second = new Task((i * 2) + 1, Body, Arm, dof, Input.PAD);
+                first.CreateCircles(LTT);
+                second.CreateCircles(LTT);
+                Tasks.Add(first);
+                Tasks.Add(second);
+            }
+            else
+            {
+                Task tmp = new Task(i, Body, Arm, dof);
+                tmp.CreateCircles(LTT);
+                Tasks.Add(tmp);
+            }
+            start = start < LTC.GetSize() ? start + 1 : 0;
+        }
+
+        return Tasks;
+    }
+
+    public void ShowCommand(string cmd)
+    {
+        this.commandText.text = cmd;
+        this.commandText.enabled = true;
+    }
+
+    public void HideCommand()
+    {
+        this.commandText.enabled = false;
     }
 }
