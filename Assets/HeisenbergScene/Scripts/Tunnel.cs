@@ -3,23 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TunnelState
-{
-    SIX,
-    THREE
-}
-
-public enum ClickMode
-{
-    TRIGGER,
-    PAD
-}
-
-public enum GridMode
-{
-    GRID,
-    CIRCLE
-}
 /**
 *   Tunnel records position and events of the controller
 */
@@ -32,9 +15,11 @@ public class Tunnel : MonoBehaviour {
     public GameObject newController;
     public Vector3 StaticPosition;
     private static SteamVR_Controller.Device device = null;
-    private static TunnelState mode;
     private static int ControllerId;
-    private static Event Event;
+    private static Event.Type EventType;
+    private static Task ActualTask;
+
+    private static float[] PressValues;
 
     private void Awake()
     {
@@ -69,22 +54,26 @@ public class Tunnel : MonoBehaviour {
             StaticPosition = Config.Start;
         }
 
-        mode = TunnelState.SIX;
+        PressValues = new float[] { 0.0f, 0.0f };
+        ActualTask = null;
 
     }
 
     // Update is called once per frame
     void Update () {
+
+        UpdatePressedValue();
+
         newController.transform.rotation = controller.transform.rotation;
 
-        // If mode is on 3DOF (TunnelState.THREE), the controller can only change rotation, not position
-        switch(mode)
+        // If mode is on 3DOF (DOF.THREE), the controller can only change rotation, not position
+        switch(ActualTask.GetDegreeOfFreedom())
         {
-            case TunnelState.SIX:
+            case DOF.SIX:
                 newController.transform.position = controller.transform.position;
                 break;
 
-            case TunnelState.THREE:
+            case DOF.THREE:
                 newController.transform.position = StaticPosition;
                 break;
 
@@ -97,37 +86,37 @@ public class Tunnel : MonoBehaviour {
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.Released);
+        EventType = Event.Type.Released;
     }
 
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.ClickEvent);
+        EventType = Event.Type.ClickEvent;
     }
 
     private void ControllerPadClick(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.PadClick);
+        EventType = Event.Type.PadClick;
     }
 
     private void ControllerPadRelease(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.PadRelease);
+        EventType = Event.Type.PadRelease;
     }
 
     private void ControllerPadTouch(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.PadTouch);
+        EventType = Event.Type.PadTouch;
     }
 
     private void ControllerPadUntouch(object sender, ClickedEventArgs e)
     {
-        Processing.addEvent(PointerEvent.PadUntouch);
+        EventType = Event.Type.PadUntouch;
     }
 
-    public static void ChangeMode(TunnelState state)
+    public static void UpdateTask(Task task)
     {
-        mode = state;
+        ActualTask = task;
     }
 
     private static SteamVR_Controller.Device GetDevice()
@@ -142,17 +131,26 @@ public class Tunnel : MonoBehaviour {
         return device;
     }
 
-    public static float GetPressedValue()
+    private static void UpdatePressedValue()
     {
-        switch(Config.clickMode)
+        float pre = PressValues[0];
+        switch(ActualTask.GetInput())
         {
-            case ClickMode.PAD:
-                return GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+            case Input.PAD:
+                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+                break;
+            case Input.TRIGGER:
             default:
-                return GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
+                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
+                break;
 
         }
-        
+        PressValues[1] = pre;
+
+        if(PressValues[1] >= 1 && PressValues[0] < 1)
+        {
+            HandleClick();
+        }
     }
 
     public void ProcessHits()
@@ -165,11 +163,51 @@ public class Tunnel : MonoBehaviour {
 
         if(Contains(Hits, "Sphere", out Obj, out Hit))
         {
-            Processing.AddData(new Position(
-                GetNow(),
-                Event,
+            if(Hits.Length > 0)
+            {
+                Event now = new Event(
+                    PressValues[0],
+                    controller.transform.position,
+                    controller.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
 
-            ));
+                now.SetType(EventType);
+
+                EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+            }
+            
+        } 
+        else if(Contains(Hits, "TargetPanel", out Obj, out Hit))
+        {
+            Event now = new Event(
+                    PressValues[0],
+                    controller.transform.position,
+                    controller.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
+
+            now.SetType(EventType);
+
+            EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+        }
+    }
+    
+    private static void HandleClick()
+    {
+        switch(Processing.GetState())
+        {
+            case State.WAIT_FOR_BALLISTIC:
+                Processing.SetState(State.ACITVATE_TIMER);
+                break;
+        }
+    }
+
+    private void HandleSphereHit()
+    {
+        switch(Processing.GetState())
+        {
+            
         }
     }
 
@@ -190,8 +228,4 @@ public class Tunnel : MonoBehaviour {
         return false;
     }
 
-    private long GetNow()
-    {
-        return (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-    }
 }

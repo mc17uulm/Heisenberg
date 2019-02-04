@@ -92,6 +92,16 @@ public class Task
         return this.Circles[this.Round];
     }
 
+    public Input GetInput()
+    {
+        return this.Input;
+    }
+
+    public DOF GetDegreeOfFreedom()
+    {
+        return this.DegreeOfFreedom;
+    }
+
     public void NewRound()
     {
         this.Round++;

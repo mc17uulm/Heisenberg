@@ -13,6 +13,11 @@ public enum State
     START,
     SHOW_TASK,
     SHOW_TARGET,
+    WAIT_FOR_BALLISTIC,
+    ACITVATE_TIMER,
+    WAIT_FOR_TIMER,
+    FINISHED_TARGET,
+    TERMINATED,
     START_IN,
     FIRST,
     FIRST_IN,
@@ -43,7 +48,7 @@ public class Processing : MonoBehaviour
 
     private Timer timer;
 
-    private State state;
+    private static State State;
     private static List<Position> stack;
     private List<Vector3> TargetPositions;
     private List<GameObject> missedPositions;
@@ -86,7 +91,7 @@ public class Processing : MonoBehaviour
             debugText.enabled = false;
         }
 
-        state = State.START;
+        State = State.START;
 
         ShowCommand("Start");
 
@@ -132,9 +137,24 @@ public class Processing : MonoBehaviour
         progressIndicator.transform.localPosition = pos;
     }
 
+    private static void UpdateTask()
+    {
+        Tunnel.UpdateTask(Tasks[Index]);
+    }
+
+    public static void SetState(State state)
+    {
+        State = state;
+    }
+
+    public static State GetState()
+    {
+        return State;
+    }
+
     public void ExecuteState()
     {
-        switch(state)
+        switch(State)
         {
             case State.SHOW_TASK:
                 HideCommand();
@@ -144,6 +164,11 @@ public class Processing : MonoBehaviour
             case State.SHOW_TARGET:
                 HideCommand();
                 ShowTarget();
+                State = State.WAIT_FOR_BALLISTIC;
+                break;
+
+            case State.WAIT_FOR_BALLISTIC:
+
                 break;
         }
     }
@@ -462,69 +487,6 @@ public class Processing : MonoBehaviour
         progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
     }
 
-    private void ProcessButtons()
-    {
-        if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-        {
-            switch(state)
-            {
-                case State.START:
-                    state = State.SHOW_TASK;
-                    break;
-
-                default:
-                    break;
-            }
-
-            /**
-            Reset();
-            Index = 0;
-            t = new Try(Tries, SwitchState(Tries));
-            stack = new List<Position>();
-            state = State.START;
-            targetSphere.SetActive(true);
-            SetTargets(true);*/
-        }
-
-    }
-
-    
-
-    private PointerEvent GetEvent()
-    {
-        if(stack.Count <= 0)
-        {
-            return PointerEvent.None;
-        }
-        if (triggerPress > 0.1f && triggerPress < 1.0f)
-        {
-            switch(stack[stack.Count-1].GetEvent())
-            {
-                case PointerEvent.TriggerPressed:
-                    return PointerEvent.TriggerPressed;
-                case PointerEvent.TriggerPressedFirst:
-                    return PointerEvent.TriggerPressed;
-                default: return PointerEvent.TriggerPressedFirst;
-            }
-        }
-        else if (triggerPress >= 1.0f)
-        {
-            switch(stack[stack.Count-1].GetEvent())
-            {
-                case PointerEvent.Clicked:
-                    return PointerEvent.Clicked;
-                case PointerEvent.ClickedFirst:
-                    return PointerEvent.Clicked;
-                default:
-                    return PointerEvent.ClickedFirst;
-            }
-        }
-        else
-        {
-            return PointerEvent.None;
-        }
-    }
-
     public List<Target> CreateTargets()
     {
         List<Target> targets = new List<Target>();
@@ -622,6 +584,8 @@ public class Processing : MonoBehaviour
             }
             start = start < LTC.GetSize() ? start + 1 : 0;
         }
+
+        UpdateTask();
 
         return Tasks;
     }

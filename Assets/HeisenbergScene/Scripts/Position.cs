@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum PointerEvent
 {
@@ -19,8 +20,8 @@ public enum PointerEvent
 
 public class Position {
 
-    private long timestamp;
-    private PointerEvent ev;
+    private long Timestamp;
+    private PointerEvent Event;
     private float pressStrength;
     private Vector3 ControllerPos;
     private Vector3 ControllerRot;
@@ -28,10 +29,10 @@ public class Position {
     private int targetId;
     private Vector3 PointerPos;
 
-    public Position(long timestamp, PointerEvent ev, float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Vector3 targetPos, int targetId, Vector3 pointerPos)
+    public Position(float pressStrength, Vector3 controllerPos, Vector3 controllerRot, Vector3 targetPos, int targetId, Vector3 pointerPos)
     {
-        this.timestamp = timestamp;
-        this.ev = ev;
+        this.Timestamp = this.GetNow();
+        this.Event = PointerEvent.None;
         this.pressStrength = pressStrength;
         this.ControllerPos = controllerPos;
         this.ControllerRot = controllerRot;
@@ -42,17 +43,17 @@ public class Position {
 
     public long GetTimestamp()
     {
-        return this.timestamp;
+        return this.Timestamp;
     }
 
     public void SetEvent(PointerEvent ev)
     {
-        this.ev = ev;
+        this.Event = ev;
     }
 
     public PointerEvent GetEvent()
     {
-        return this.ev;
+        return this.Event;
     }
 
     public string PrintEvent()
@@ -126,5 +127,9 @@ public class Position {
     public Vector3 GetPointerPos()
     {
         return this.PointerPos;
+    }
+    private long GetNow()
+    {
+        return (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
     }
 }
