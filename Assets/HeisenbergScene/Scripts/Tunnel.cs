@@ -190,6 +190,8 @@ public class Tunnel : MonoBehaviour {
             now.SetType(EventType);
 
             EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+
+            
         }
     }
     
@@ -197,8 +199,17 @@ public class Tunnel : MonoBehaviour {
     {
         switch(Processing.GetState())
         {
+            case State.SHOW_TASK:
+                Processing.SetState(State.SHOW_TARGET);
+                break;
             case State.WAIT_FOR_BALLISTIC:
-                Processing.SetState(State.ACITVATE_TIMER);
+                Processing.SetState(State.WAIT_FOR_IN_TARGET);
+                break;
+            case State.FINISHED_TIMER:
+                Processing.SetState(State.FINISHED_TARGET);
+                break;
+
+            default:
                 break;
         }
     }
@@ -207,7 +218,26 @@ public class Tunnel : MonoBehaviour {
     {
         switch(Processing.GetState())
         {
-            
+            case State.WAIT_FOR_IN_TARGET:
+                Processing.SetState(State.ACITVATE_TIMER);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void HandlePanelHit()
+    {
+        switch(Processing.GetState())
+        {
+            case State.ACITVATE_TIMER:
+            case State.WAIT_FOR_TIMER:
+                Processing.SetState(State.OUT_OF_TARGET);
+                break;
+
+            default:
+                break;
         }
     }
 

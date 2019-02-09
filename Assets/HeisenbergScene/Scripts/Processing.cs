@@ -14,8 +14,11 @@ public enum State
     SHOW_TASK,
     SHOW_TARGET,
     WAIT_FOR_BALLISTIC,
+    WAIT_FOR_IN_TARGET,
     ACITVATE_TIMER,
+    OUT_OF_TARGET,
     WAIT_FOR_TIMER,
+    FINISHED_TIMER,
     FINISHED_TARGET,
     TERMINATED,
     START_IN,
@@ -46,7 +49,7 @@ public class Processing : MonoBehaviour
 
     private SteamVR_LaserPointer laserPointer;
 
-    private Timer timer;
+    private Timer Timer;
 
     private static State State;
     private static List<Position> stack;
@@ -167,10 +170,60 @@ public class Processing : MonoBehaviour
                 State = State.WAIT_FOR_BALLISTIC;
                 break;
 
-            case State.WAIT_FOR_BALLISTIC:
-
+            case State.ACITVATE_TIMER:
+                ShowTimer();
+                State = State.WAIT_FOR_TIMER;
                 break;
+
+            case State.WAIT_FOR_TIMER:
+                UpdateTimer();
+                break;
+
+            case State.OUT_OF_TARGET:
+                HideTimer();
+                State = State.WAIT_FOR_IN_TARGET;
+                break;
+
+            case State.FINISHED_TARGET:
+                HideTimer();
+                // TODO: if Target left => show Target
+                // TODO: else: if Task left => show Task
+                // TODO:       else: terminated
+                break;
+
         }
+    }
+
+    void HideTimer()
+    {
+        progressIndicator.enabled = false;
+        Timer = null;
+    }
+
+    void UpdateTimer()
+    {
+        if (Timer.Finished())
+        {
+            State = State.FINISHED_TIMER;
+            progressIndicator.color = new Color(0, 255, 0);
+        }
+        else
+        {
+            float progress = Timer.GetProgress(Config.Timespan);
+            progressIndicator.fillAmount = progress;
+        }
+    }
+
+    /**
+     * Initalizes a new Timer to stop the 
+     * 
+     */
+    void ShowTimer()
+    {
+        Timer = new Timer();
+        progressIndicator.enabled = true;
+        progressIndicator.fillAmount = 0;
+        progressIndicator.color = new Color(255, 0, 0);
     }
 
     // Update is called once per frame
@@ -183,8 +236,7 @@ public class Processing : MonoBehaviour
 
         ExecuteState();
 
-        triggerPressBefore = triggerPress;
-        triggerPress = Tunnel.GetPressedValue();
+        
 
         if (triggerPressBefore >= 1 && triggerPress < 1)
         {
@@ -224,45 +276,6 @@ public class Processing : MonoBehaviour
                         {
                             state = State.FINISHED;
                             targetSphere.SetActive(false);
-                            int ind = 0;
-                            int tes = 0;
-                            int fir = 0;
-                            foreach (Try tr in session.GetTries())
-                            {
-                                foreach (Hit h in tr.GetHits())
-                                {
-
-                                    // Erster hit auf target um position von target zu ermitteln
-                                    if (h.GetFirst() && tr.GetIndex() == 1 && ind == 0)
-                                    {
-                                        GameObject target = Instantiate(targetSphere, h.GetTarget(), Quaternion.identity) as GameObject;
-                                        target.transform.parent = canvas.transform;
-                                        target.transform.localScale = new Vector3(Config.Dimension, Config.Dimension, 1);
-                                        target.SetActive(true);
-                                        missedPositions.Add(target);
-                                        fir++;
-                                    }
-                                    GameObject clicked;
-                                    if (h.GetFirst())
-                                    {
-                                        clicked = Instantiate(indicatorButton, h.GetLastPosition(), Quaternion.identity) as GameObject;
-                                        clicked.transform.parent = canvas.transform;
-                                        clicked.transform.localScale = new Vector3(1, 1, 1);
-                                        clicked.GetComponent<Image>().color = new Color(0.03671634f, 1, 0, 1);
-                                    }
-                                    else
-                                    {
-                                        clicked = Instantiate(indicatorButton, h.GetAverage(), Quaternion.identity) as GameObject;
-                                        clicked.transform.parent = canvas.transform;
-                                        clicked.transform.localScale = new Vector3(1, 1, 1);
-                                        clicked.GetComponent<Image>().color = new Color(1, 0, 0, 1);
-                                    }
-                                    clicked.SetActive(true);
-                                    tes++;
-                                    missedPositions.Add(clicked);
-                                }
-                            }
-                            ind++;
 
                             session.Save(targetSphere.transform);
                         }
@@ -300,117 +313,27 @@ public class Processing : MonoBehaviour
 
     }
 
+    private void ProcessButtons()
+    {
+        if(UnityEngine.Input.GetKeyDown(KeyCode.Space))
+        {
+            switch(State)
+            {
+                case State.START:
+                    State = State.SHOW_TASK;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
     public static void addEvent(PointerEvent e)
     {
         if (stack.Count > 0)
         {
             stack[stack.Count - 1].SetEvent(PointerEvent.Released);
-        }
-    }
-
-    private void ProcessHits()
-    {
-        if (!state.Equals(State.FINISHED))
-        {
-            RaycastHit[] hits;
-            hits = Physics.RaycastAll(laserPointer.transform.position, transform.forward, 100.0f);
-
-            GameObject obj;
-            RaycastHit hit;
-
-            if (Contains(hits, "Sphere", out obj, out hit))
-            {
-                
-                if (hits.Length > 0 && !state.Equals(State.START) && !state.Equals(State.START_IN))
-                {
-                    stack.Add(
-                        new Position(
-                            GetNow(),
-                            GetEvent(),
-                            triggerPress,
-                            controller.transform.position,
-                            controller.transform.rotation.eulerAngles,
-                            targetSphere.transform.position,
-                            targetPositions[Index].GetId(),
-                            hits[0].point
-                        )
-                    );
-                }
-
-                switch (state)
-                {
-                    case State.START:
-                        state = State.START_IN;
-                        break;
-
-                    case State.FIRST:
-                        state = State.FIRST_IN;
-                        break;
-
-                    case State.SECOND:
-                        timer = new Timer();
-                        progressIndicator.enabled = true;
-                        progressIndicator.fillAmount = 0;
-                        progressIndicator.color = new Color(255, 0, 0);
-                        state = State.SECOND_IN;
-                        break;
-
-                    case State.SECOND_IN:
-                        if (timer.Finished())
-                        {
-                            state = State.ACTIVATED;
-                            progressIndicator.color = new Color(0, 255, 0);
-                        }
-                        else
-                        {
-                            float progress = timer.GetProgress(Config.Timespan);
-                            progressIndicator.fillAmount = progress;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-
-            }
-            else if (Contains(hits, "TargetPanel", out obj, out hit))
-            {
-                if (state.Equals(State.ACTIVATED) || state.Equals(State.FIRST_IN))
-                {
-                    stack.Add(
-                        new Position(
-                            GetNow(), 
-                            GetEvent(), 
-                            triggerPress, 
-                            controller.transform.position, 
-                            controller.transform.rotation.eulerAngles, 
-                            targetSphere.transform.position, 
-                            targetPositions[Index].GetId(), 
-                            hits[0].point
-                        )
-                    );
-                }
-                else if(state.Equals(State.FIRST))
-                {
-                    state = State.FIRST_IN;
-                }
-                else
-                {
-                    progressIndicator.enabled = false;
-                    timer = null;
-                    if(state.Equals(State.SECOND_IN))
-                    {
-                        state = State.SECOND;
-                    }
-                }
-            }
-            else
-            {
-                if(state.Equals(State.FIRST_IN))
-                {
-                    state = State.FIRST;
-                }
-            }
         }
     }
 
@@ -429,15 +352,6 @@ public class Processing : MonoBehaviour
             targetSphere.transform.localPosition = TargetPositions[Index];
             progressIndicator.transform.localPosition = TargetPositions[Index];
         }
-    }
-
-    private void Reset()
-    {
-        timer = null;
-        state = State.START;
-        progressIndicator.enabled = false;
-        stack = new List<Position>();
-        missedPositions = new List<GameObject>();
     }
 
     private void LoadPositions()
