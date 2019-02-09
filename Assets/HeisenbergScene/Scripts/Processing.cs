@@ -20,16 +20,7 @@ public enum State
     WAIT_FOR_TIMER,
     FINISHED_TIMER,
     FINISHED_TARGET,
-    TERMINATED,
-    START_IN,
-    FIRST,
-    FIRST_IN,
-    FIRST_CLICK,
-    SECOND,
-    SECOND_IN,
-    ACTIVATED,
-    CLICKED,
-    FINISHED
+    TERMINATED
 }
 
 [RequireComponent(typeof(SteamVR_LaserPointer))]
@@ -53,24 +44,14 @@ public class Processing : MonoBehaviour
 
     private static State State;
     private static List<Position> stack;
-    private List<Vector3> TargetPositions;
-    private List<GameObject> missedPositions;
-    public static System.Random rand = new System.Random();
     private static int Index;
-    private int Tries;
-    private int h;
     private Session session;
-    private Try t;
-
-    private float triggerPress;
-    private float triggerPressBefore;
 
     private int Rounds;
     private LatinSquare LTC;
     private LatinSquare LTT;
     
     private static List<Task> Tasks;
-
 
     void OnEnable()
     {
@@ -97,22 +78,6 @@ public class Processing : MonoBehaviour
         State = State.START;
 
         ShowCommand("Start");
-
-       
-        /**
-        Reset();
-
-        LoadPositions();
-
-        SetTargets(true);
-        Tries = 1;
-        h = 1;
-
-        t = new Try(Tries, SwitchState(Tries));
-        DebugLog();*/
-
-        triggerPress = 0;
-        triggerPressBefore = 0;
     }
 
     public static void AddData(Position pos)
@@ -186,11 +151,43 @@ public class Processing : MonoBehaviour
 
             case State.FINISHED_TARGET:
                 HideTimer();
-                // TODO: if Target left => show Target
-                // TODO: else: if Task left => show Task
-                // TODO:       else: terminated
+                HandleNewRound();
                 break;
 
+            case State.TERMINATED:
+                ShowCommand("Finished");
+                break;
+
+            default:
+                break;
+
+        }
+    }
+
+    void HandleNewRound()
+    {
+        if (Tasks[Index].GetCircle().HasNewRound())
+        {
+            State = State.SHOW_TARGET;
+        }
+        else
+        {
+            if (Tasks[Index].HasNewRound())
+            {
+                State = State.SHOW_TARGET;
+            }
+            else
+            {
+                if (Index == Tasks.Count - 1)
+                {
+                    State = State.TERMINATED;
+                }
+                else
+                {
+                    Index++;
+                    State = State.SHOW_TASK;
+                }
+            }
         }
     }
 
@@ -212,6 +209,7 @@ public class Processing : MonoBehaviour
             float progress = Timer.GetProgress(Config.Timespan);
             progressIndicator.fillAmount = progress;
         }
+        UpdateTask();
     }
 
     /**
@@ -230,86 +228,9 @@ public class Processing : MonoBehaviour
     void Update()
     {
 
-        //ProcessHits();
-
         ProcessButtons();
 
         ExecuteState();
-
-        
-
-        if (triggerPressBefore >= 1 && triggerPress < 1)
-        {
-            switch (state)
-            {
-
-                case State.START_IN:
-                    state = State.FIRST;
-                    targetSphere.transform.localPosition = TargetPositions[0];
-                    progressIndicator.transform.localPosition = TargetPositions[0];
-                    commandText.enabled = false;
-                    break;
-
-                case State.FIRST_IN:
-                    state = State.FIRST_CLICK;
-                    t.AddHit(new Hit(h, targetSphere.transform.position, stack, true));
-                    h++;
-                    stack = new List<Position>();
-
-                    targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.02197933f, 0, 1));
-                    state = State.SECOND;
-                    break;
-
-                case State.ACTIVATED:
-                    state = State.CLICKED;
-                    timer = null;
-                    progressIndicator.enabled = false;
-                    t.AddHit(new Hit(h, targetSphere.transform.position, stack));
-                    h++;
-                    if (Index >= TargetPositions.Count - 1)
-                    {
-                        state = State.FINISHED;
-                        session.AddTry(t);
-                        Tries++;
-
-                        if (Tries > Config.Tries)
-                        {
-                            state = State.FINISHED;
-                            targetSphere.SetActive(false);
-
-                            session.Save(targetSphere.transform);
-                        }
-                        else
-                        {
-                            commandText.enabled = true;
-
-                            LoadPositions();
-
-                            Index = 0;
-                            h = 1;
-
-                            SetTargets(true);
-
-                            t = new Try(Tries, SwitchState(Tries));
-                            DebugLog();
-
-                            state = State.START;
-                        }
-                    }
-                    else
-                    {
-                        Index++;
-                        SetTargets();
-                        state = State.FIRST;
-                    }
-                    stack = new List<Position>();
-                    break;
-
-                default:
-                    break;
-
-            }
-        }
 
     }
 
@@ -337,7 +258,7 @@ public class Processing : MonoBehaviour
         }
     }
 
-    private void SetTargets(bool first = false)
+    /**private void SetTargets(bool first = false)
     {
         if(first)
         {
@@ -354,106 +275,6 @@ public class Processing : MonoBehaviour
         }
     }
 
-    private void LoadPositions()
-    {
-
-        targetPositions = new List<Target>();
-        List<Vector3> p;
-        switch (Config.grid)
-        {
-
-            case GridMode.GRID:
-                p = Config.Positions.ToList<Vector3>();
-                break;
-
-            case GridMode.CIRCLE:
-                p = Config.Circle.ToList<Vector3>();
-                break;
-
-            default:
-                p = Config.Positions.ToList<Vector3>();
-                break;
-
-        }
-
-        List<Target> targets = new List<Target>();
-        int index = 0;
-        foreach(Vector3 vec in p)
-        {
-            targets.Add(new Target(vec, index));
-            index++;
-        }
-
-        if (Config.Random)
-        {
-            Target first = targets[0];
-            targets.RemoveAt(0);
-            targets = targets.OrderBy(x => rand.Next()).ToList();
-            targets.Insert(0, first);
-        }+
-        targetPositions = targets;
-
-        Vector3 panel = canvas.transform.localPosition;
-        panel.z = Config.Distance;
-        canvas.transform.localPosition = panel;
-        targetSphere.transform.localScale = new Vector3(Config.Dimension, Config.Dimension, 1);
-        float dimension = Config.Dimension * 4;
-        progressIndicator.transform.localScale = new Vector3(dimension, dimension, 1);
-    }
-
-    public List<Target> CreateTargets()
-    {
-        List<Target> targets = new List<Target>();
-        foreach(int amp in Config.TargetAmplitudes)
-        {
-            foreach(int size in Config.TargetWidths)
-            {
-                List<Vector3> t = new List<Vector3>();
-                for(int i = 0; i < 13; i++)
-                {
-                    t.Add(new Vector3(Convert.ToSingle((amp/2)*Math.Sin((i)*(i/360))), Convert.ToSingle((amp / 2) * Math.Sin((i) * (i/360))), 0));
-                }
-                targets.Add(new Target(t, amp, size ));
-            }
-        }
-
-        return targets;
-    }
-
-    public bool[] SwitchState(int TriesNo)
-    {
-        int remainder = TriesNo % (Config.TargetAmplitudes.Length * Config.TargetWidths.Length);
-        if (remainder == 0)
-        {
-            // Change PState
-        } else
-        {
-            targetPositions = Targets[remainder - 1].GetCircle();
-            // Change TState
-        }
-        
-
-        Debug.Log("Switch state: " + state + " | " + stage[state-1]);
-        bool[] a = Config.LatinSquare.GetStates(stage[state-1]);
-        string o = a[0] ? "Position: sitzend\r\n" : "Position: stehend\r\n";
-        o += a[1] ? "Arm: ausgestreckt\r\n" : "Arm: angelegt\r\n";
-
-        if (a[2])
-        {
-            o += "Möglichkeiten: 6DOF\r\n";
-            Tunnel.ChangeMode(TunnelState.SIX);
-        }
-        else
-        {
-            o += "Möglichkeiten: 3DOF\r\n";
-            Tunnel.ChangeMode(TunnelState.THREE);
-        }
-
-        commandText.text = o;
-
-        return a;
-    }
-
     public void DebugLog(string log = "")
     {
         string o = "";
@@ -464,10 +285,10 @@ public class Processing : MonoBehaviour
         {
             o += "New Round!\r\n";
         }
-        o += "Id: " + Config.Id + "\r\nRound " + Tries + "/8" + log;
+        o += "Id: " + Config.UserId + "\r\nRound " + Tries + "/8" + log;
 
         debugText.text = o;
-    }
+    }*/
 
     public static List<Task> CreateTasks(LatinSquare LTC, LatinSquare LTT)
     {

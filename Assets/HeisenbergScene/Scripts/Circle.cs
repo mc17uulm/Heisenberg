@@ -23,9 +23,17 @@ public class Circle
         return this.Targets[this.Round];
     }
 
-    public void NewRound()
+    public bool HasNewRound()
     {
-        this.Round++;
+        if(this.Round == this.Targets.Count - 1)
+        {
+            return false;
+        }
+        else
+        {
+            this.Round++;
+            return true;
+        }
     }
 
     public List<Target> GetTargets()

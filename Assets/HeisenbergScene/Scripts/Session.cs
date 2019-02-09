@@ -14,8 +14,8 @@ public class Session
     public Session()
     {
         this.tries = new List<Try>();
-        this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
-        this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.Name + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
     }
 
     public void AddTry(Try t)
@@ -44,11 +44,6 @@ public class Session
         return o;
     }
 
-    public string GetName()
-    {
-        return Config.Name;
-    }
-
     public void Save(Transform trans)
     {
         this.SaveToFile(SaveFile);
@@ -70,7 +65,7 @@ public class Session
                     {
                         foreach (Position pos in h.GetPositions()) {
                             w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};",
-                                Config.Name,
+                                Config.UserId,
                                 tr.GetIndex(),
                                 h.GetIndex(),
                                 states[1] ? "ausgestreckt" : "angelegt",
@@ -110,7 +105,7 @@ public class Session
                         foreach (Position pos in h.GetPositions())
                         {
                             w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};",
-                                Config.Name,
+                                Config.UserId,
                                 tr.GetIndex(),
                                 h.GetIndex(),
                                 states[1] ? "ausgestreckt" : "angelegt",
@@ -189,7 +184,7 @@ public class Session
                         }
 
                         w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};",
-                            Config.Name,
+                            Config.UserId,
                             tr.GetIndex(),
                             h.GetIndex(),
                             states[1] ? "ausgestreckt" : "angelegt",
@@ -256,7 +251,7 @@ public class Session
                         }
 
                         w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};",
-                            Config.Name,
+                            Config.UserId,
                             tr.GetIndex(),
                             h.GetIndex(),
                             states[1] ? "ausgestreckt" : "angelegt",

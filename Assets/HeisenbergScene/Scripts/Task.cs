@@ -102,9 +102,17 @@ public class Task
         return this.DegreeOfFreedom;
     }
 
-    public void NewRound()
+    public bool HasNewRound()
     {
-        this.Round++;
+        if(this.Round == this.Circles.Count-1)
+        {
+            return false;
+        }
+        else
+        {
+            this.Round++;
+            return true;
+        }
     }
 
     public void AddToStack(Position pos)
