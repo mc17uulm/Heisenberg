@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Event
+public class EventLog
 {
 
     public enum Type
@@ -28,7 +28,7 @@ public class Event
     private Vector3 ControllerRotation;
     private Vector3 PointerPosition;
 
-    public Event(float PressedValue, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition)
+    public EventLog(float PressedValue, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition)
     {
         this.Timestamp = GetNow();
         this.type = Type.Position;

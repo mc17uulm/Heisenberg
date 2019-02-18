@@ -6,13 +6,13 @@ public class Target{
 
     private int Id;
     private Vector3 Position;
-    private List<Event> Events;
+    private List<EventLog> Events;
     
     public Target(int Id, Vector3 Position)
     {
         this.Id = Id;
         this.Position = Position;
-        this.Events = new List<Event>();
+        this.Events = new List<EventLog>();
     }
 
     public int GetId()
@@ -25,14 +25,14 @@ public class Target{
         return this.Position;
     }
 
-    public List<Event> GetEvents()
+    public List<EventLog> GetEvents()
     {
         return this.Events;
     }
 
-    public Event.Type AddEvent(Event ev)
+    public EventLog.Type AddEvent(EventLog ev)
     {
-        Event last = this.Events[this.Events.Count - 1];
+        EventLog last = this.Events[this.Events.Count - 1];
         float TriggerPress = ev.GetPressedValue();
         if (this.Events.Count > 0)
         {
@@ -40,12 +40,12 @@ public class Target{
             {
                 switch(last.GetType())
                 {
-                    case Event.Type.TriggerPressed:
-                    case Event.Type.TriggerPressedFirst:
-                        ev.SetType(Event.Type.TriggerPressed);
+                    case EventLog.Type.TriggerPressed:
+                    case EventLog.Type.TriggerPressedFirst:
+                        ev.SetType(EventLog.Type.TriggerPressed);
                         break;
                     default:
-                        ev.SetType(Event.Type.TriggerPressedFirst);
+                        ev.SetType(EventLog.Type.TriggerPressedFirst);
                         break;
                 }
             }
@@ -53,18 +53,18 @@ public class Target{
             {
                 switch(last.GetType())
                 {
-                    case Event.Type.Clicked:
-                    case Event.Type.ClickedFirst:
-                        ev.SetType(Event.Type.Clicked);
+                    case EventLog.Type.Clicked:
+                    case EventLog.Type.ClickedFirst:
+                        ev.SetType(EventLog.Type.Clicked);
                         break;
                     default:
-                        ev.SetType(Event.Type.ClickedFirst);
+                        ev.SetType(EventLog.Type.ClickedFirst);
                         break;
                 }
             } 
             else
             {
-                ev.SetType(Event.Type.Position);
+                ev.SetType(EventLog.Type.Position);
             }
         }
         

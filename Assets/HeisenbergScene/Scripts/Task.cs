@@ -21,7 +21,7 @@ public enum DOF
     THREE
 }
 
-public enum Input
+public enum InputType
 {
     TRIGGER,
     PAD
@@ -35,19 +35,19 @@ public class Task
     private BodyPosition BodyPos;
     private ArmPosition ArmPos;
     private DOF DegreeOfFreedom;
-    private Input Input;
+    private InputType Input;
     private List<Circle> Circles;
     private List<Position> Stack;
 
 
-    public Task(int Id, BodyPosition Body, ArmPosition Arm, DOF dof, Input input = Input.TRIGGER)
+    public Task(int Id, BodyPosition Body, ArmPosition Arm, DOF dof, InputType Input = InputType.TRIGGER)
     {
         this.Id = Id;
         this.Round = 0;
         this.BodyPos = Body;
         this.ArmPos = Arm;
         this.DegreeOfFreedom = dof;
-        this.Input = input;
+        this.Input = Input;
         this.Circles = new List<Circle>();
         this.Stack = new List<Position>();
     }
@@ -57,7 +57,7 @@ public class Task
         string o = "Runde " + i + "\r\n";
         o += "Position: " + (this.BodyPos.Equals(BodyPosition.SITTING) ? "STEHEND" : "SITZEND") + "\r\n";
         o += "Arm: " + (this.ArmPos.Equals(ArmPosition.STRECHED) ? "AUSGESTRECKT" : "ANGELEGT") + "\r\n";
-        o += "Click: " + (this.Input.Equals(Input.TRIGGER) ? "TRIGGER" : "PAD") + "\r\n";
+        o += "Click: " + (this.Input.Equals(InputType.TRIGGER) ? "TRIGGER" : "PAD") + "\r\n";
 
         return o;
     }
@@ -92,7 +92,7 @@ public class Task
         return this.Circles[this.Round];
     }
 
-    public Input GetInput()
+    public InputType GetInput()
     {
         return this.Input;
     }

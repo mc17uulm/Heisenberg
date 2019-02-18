@@ -41,7 +41,7 @@ public class Config {
             }
             else
             {
-                Id = active.id;
+                UserId = active.id;
                 SaveFiles = active.files;
             }
 
@@ -74,7 +74,7 @@ public class Config {
 
     }
     
-    public static int UserId = -1;
+    public static int UserId = 1;
 
     // Adds debug information to screen
     public static bool Debug = false;

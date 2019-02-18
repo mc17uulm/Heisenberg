@@ -16,7 +16,7 @@ public class Tunnel : MonoBehaviour {
     public Vector3 StaticPosition;
     private static SteamVR_Controller.Device device = null;
     private static int ControllerId;
-    private static Event.Type EventType;
+    private static EventLog.Type EventType;
     private static Task ActualTask;
 
     private static float[] PressValues;
@@ -86,32 +86,32 @@ public class Tunnel : MonoBehaviour {
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.Released;
+        EventType = EventLog.Type.Released;
     }
 
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.ClickEvent;
+        EventType = EventLog.Type.ClickEvent;
     }
 
     private void ControllerPadClick(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.PadClick;
+        EventType = EventLog.Type.PadClick;
     }
 
     private void ControllerPadRelease(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.PadRelease;
+        EventType = EventLog.Type.PadRelease;
     }
 
     private void ControllerPadTouch(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.PadTouch;
+        EventType = EventLog.Type.PadTouch;
     }
 
     private void ControllerPadUntouch(object sender, ClickedEventArgs e)
     {
-        EventType = Event.Type.PadUntouch;
+        EventType = EventLog.Type.PadUntouch;
     }
 
     public static void UpdateTask(Task task)
@@ -136,10 +136,10 @@ public class Tunnel : MonoBehaviour {
         float pre = PressValues[0];
         switch(ActualTask.GetInput())
         {
-            case Input.PAD:
+            case InputType.PAD:
                 PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
                 break;
-            case Input.TRIGGER:
+            case InputType.TRIGGER:
             default:
                 PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
                 break;
@@ -165,7 +165,7 @@ public class Tunnel : MonoBehaviour {
         {
             if(Hits.Length > 0)
             {
-                Event now = new Event(
+                EventLog now = new EventLog(
                     PressValues[0],
                     controller.transform.position,
                     controller.transform.rotation.eulerAngles,
@@ -180,7 +180,7 @@ public class Tunnel : MonoBehaviour {
         } 
         else if(Contains(Hits, "TargetPanel", out Obj, out Hit))
         {
-            Event now = new Event(
+            EventLog now = new EventLog(
                     PressValues[0],
                     controller.transform.position,
                     controller.transform.rotation.eulerAngles,

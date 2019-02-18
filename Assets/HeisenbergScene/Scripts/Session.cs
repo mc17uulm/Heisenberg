@@ -281,7 +281,8 @@ public class Session
 
         for (int i = 0; i < 8; i++)
         {
-            num = Processing.rand.Next(0, int.MaxValue);
+            //num = Processing.rand.Next(0, int.MaxValue);
+            num = 1;
             hexValue += num.ToString("X8");
         }
 

@@ -58,7 +58,7 @@ public class Position {
 
     public string PrintEvent()
     {
-        switch(this.ev)
+        switch(this.Event)
         {
             case PointerEvent.TriggerPressed:
                 return "TriggerPressed";

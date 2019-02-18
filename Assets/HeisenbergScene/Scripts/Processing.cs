@@ -85,12 +85,12 @@ public class Processing : MonoBehaviour
         Tasks[Index].AddToStack(pos);
     }
 
-    public void ShowCircle(int i)
+    /**public void ShowCircle(int i)
     {
         Task task = Tasks[i];
         Circle circle = task.GetCircle();
 
-    }
+    }*/
 
     public void ShowTask(int i)
     {
@@ -305,7 +305,7 @@ public class Processing : MonoBehaviour
             if (Config.Pad)
             {
                 Task first = new Task((i * 2), Body, Arm, dof);
-                Task second = new Task((i * 2) + 1, Body, Arm, dof, Input.PAD);
+                Task second = new Task((i * 2) + 1, Body, Arm, dof, InputType.PAD);
                 first.CreateCircles(LTT);
                 second.CreateCircles(LTT);
                 Tasks.Add(first);

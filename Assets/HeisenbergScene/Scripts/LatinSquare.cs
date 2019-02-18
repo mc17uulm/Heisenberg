@@ -66,9 +66,9 @@ public class LatinSquare
 
     public bool[] GetStates(int state)
     {
-        bool[] o = new bool[this.n/4];
+        bool[] o = new bool[this.Size/4];
         // State 0: TRUE => Sitzend | FALSE => Stehend
-        o[0] = state <= this.n/2;
+        o[0] = state <= this.Size/2;
 
         // State 1: TRUE => Ausgestreckt | FALSE => Angelegt
         o[1] = new List<int>() { 1, 2, 3, 4, 9, 10, 11, 12}.IndexOf(state) != -1;
