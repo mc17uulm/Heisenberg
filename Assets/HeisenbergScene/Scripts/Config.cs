@@ -20,7 +20,6 @@ public class Config {
 
             Debug = obj.debug;
             Timespan = obj.timespan;
-            Pad = obj.pad;
 
             bool start = false;
             foreach(DataObject d in obj.data)

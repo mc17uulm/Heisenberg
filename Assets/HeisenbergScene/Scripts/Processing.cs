@@ -236,7 +236,7 @@ public class Processing : MonoBehaviour
 
     private void ProcessButtons()
     {
-        if(UnityEngine.Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             switch(State)
             {

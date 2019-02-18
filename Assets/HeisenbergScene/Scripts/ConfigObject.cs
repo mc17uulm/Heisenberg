@@ -7,7 +7,6 @@ public class ConfigObject
 {
     public int timespan;
     public bool debug;
-    public bool pad;
     public List<DataObject> data;
 
 }
