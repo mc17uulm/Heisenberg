@@ -75,6 +75,7 @@
     <Compile Include="Assets\HeisenbergScene\Scripts\Session.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Target.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Task.cs" />
+    <Compile Include="Assets\HeisenbergScene\Scripts\ThroughputController.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Timer.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Try.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Tunnel.cs" />
