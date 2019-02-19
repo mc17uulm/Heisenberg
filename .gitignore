@@ -1,2 +1,10 @@
 HeisenbergServer/
 Assets/StreamingAssets/
+node_modules/
+.vscode/
+savefiles/
+
+Config.cs
+config.json
+
+package-lock.json
