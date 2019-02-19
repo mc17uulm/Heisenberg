@@ -11,7 +11,7 @@ public class Config {
 
     public static void init()
     {
-
+        /**
         if(File.Exists(ConfigFile))
         {
             string data = File.ReadAllText(ConfigFile);
@@ -32,6 +32,7 @@ public class Config {
             }
 
             UnityEngine.Debug.Log("Start: " + start);
+            start = true;
 
             if(!start)
             {
@@ -48,7 +49,7 @@ public class Config {
         {
             UnityEngine.Debug.Log("Config File not found");
             Application.Quit();
-        }
+        }*/
     }
 
     public static void SaveToConfig(string saveFile, string sumFile)

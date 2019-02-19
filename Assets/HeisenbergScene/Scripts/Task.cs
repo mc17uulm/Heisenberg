@@ -65,23 +65,26 @@ public class Task
     public void CreateCircles(LatinSquare LTT)
     {
         int[] column = LTT.GetColumn(this.Id);
-        for(int j = 0; j < column.Length; j++)
+        for (int j = 0; j < column.Length; j++)
         {
             int Amp = 1;
             int Size = 1;
-            if(column[j] <= 3)
+            if (column[j] <= 3)
             {
                 Amp = Config.TargetAmplitudes[0];
                 Size = Config.TargetWidths[column[j] - 1];
-            } else
+            }
+            else
             {
                 Amp = Config.TargetAmplitudes[1];
                 Size = Config.TargetWidths[column[j] - 4];
             }
             List<Target> Targets = new List<Target>();
-            for(int k = 0; k < Config.CircleSize; k++)
+            int n = Config.CircleSize;
+            for (int k = 0; k < n; k++)
             {
-                Targets.Add(new Target(k, new Vector3(Convert.ToSingle((Amp / 2) * Math.Sin((k) * (k / 360))), Convert.ToSingle((Amp / 2) * Math.Sin((k) * (k / 360))), 0)));
+                Vector3 v = new Vector3(Convert.ToSingle(((double) Amp / 2) * Math.Sin(k * ((double) 360 / n))), Convert.ToSingle(((double) Amp / 2) * Math.Cos(k * ((double) 360 / n))), 0);
+                Targets.Add(new Target(k, v));
             }
             this.Circles.Add(new Circle(Amp, Size, Targets));
         }

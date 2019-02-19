@@ -32,11 +32,12 @@ public class Target{
 
     public EventLog.Type AddEvent(EventLog ev)
     {
-        EventLog last = this.Events[this.Events.Count - 1];
-        float TriggerPress = ev.GetPressedValue();
+       
         if (this.Events.Count > 0)
         {
-            if(TriggerPress > 0.1f && TriggerPress < 1.0f)
+            EventLog last = this.Events[this.Events.Count - 1];
+            float TriggerPress = ev.GetPressedValue();
+            if (TriggerPress > 0.1f && TriggerPress < 1.0f)
             {
                 switch(last.GetType())
                 {

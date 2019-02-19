@@ -22,8 +22,6 @@ public enum State
     FINISHED_TARGET,
     TERMINATED
 }
-
-[RequireComponent(typeof(SteamVR_LaserPointer))]
 public class Processing : MonoBehaviour
 {
 
@@ -38,8 +36,6 @@ public class Processing : MonoBehaviour
     public GameObject canvas;
     public GameObject controller;
 
-    private SteamVR_LaserPointer laserPointer;
-
     private Timer Timer;
 
     private static State State;
@@ -52,6 +48,7 @@ public class Processing : MonoBehaviour
     private LatinSquare LTT;
     
     private static List<Task> Tasks;
+    private static bool Initalized = false;
 
     void OnEnable()
     {
@@ -68,7 +65,8 @@ public class Processing : MonoBehaviour
 
         Tasks = CreateTasks(LTC, LTT);
 
-        laserPointer = GetComponent<SteamVR_LaserPointer>();
+        UpdateTask();
+        HideTimer();
 
         if(!Config.Debug)
         {
@@ -78,19 +76,13 @@ public class Processing : MonoBehaviour
         State = State.START;
 
         ShowCommand("Start");
+        Tunnel.IsInitalized();
     }
 
     public static void AddData(Position pos)
     {
         Tasks[Index].AddToStack(pos);
     }
-
-    /**public void ShowCircle(int i)
-    {
-        Task task = Tasks[i];
-        Circle circle = task.GetCircle();
-
-    }*/
 
     public void ShowTask(int i)
     {
@@ -100,9 +92,14 @@ public class Processing : MonoBehaviour
 
     public void ShowTarget()
     {
-        Vector3 pos = Tasks[Index].GetCircle().GetTarget().GetPosition();
+        Circle circle = Tasks[Index].GetCircle();
+        Vector3 pos = circle.GetTarget().GetPosition();
         targetSphere.transform.localPosition = pos;
+        int dimension = circle.GetSize();
+        targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
         progressIndicator.transform.localPosition = pos;
+        progressIndicator.transform.localScale = new Vector3(dimension * 4, dimension * 4, 1);
+        Vector3 now = targetSphere.transform.localPosition;
     }
 
     private static void UpdateTask()
@@ -122,6 +119,7 @@ public class Processing : MonoBehaviour
 
     public void ExecuteState()
     {
+        Debug.Log(State.ToString("G"));
         switch(State)
         {
             case State.SHOW_TASK:
@@ -168,18 +166,21 @@ public class Processing : MonoBehaviour
     {
         if (Tasks[Index].GetCircle().HasNewRound())
         {
+            Debug.Log("Circle Has new Round");
             State = State.SHOW_TARGET;
         }
         else
         {
             if (Tasks[Index].HasNewRound())
             {
+                Debug.Log("Circle Has new Round");
                 State = State.SHOW_TARGET;
             }
             else
             {
                 if (Index == Tasks.Count - 1)
                 {
+                    Debug.Log("Circle Has new Round");
                     State = State.TERMINATED;
                 }
                 else
@@ -320,13 +321,12 @@ public class Processing : MonoBehaviour
             start = start < LTC.GetSize() ? start + 1 : 0;
         }
 
-        UpdateTask();
-
         return Tasks;
     }
 
     public void ShowCommand(string cmd)
     {
+        Debug.Log("ShowCommand");
         this.commandText.text = cmd;
         this.commandText.enabled = true;
     }

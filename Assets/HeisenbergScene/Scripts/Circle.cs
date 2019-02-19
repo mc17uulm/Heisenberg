@@ -32,6 +32,7 @@ public class Circle
         else
         {
             this.Round++;
+            Debug.Log("Circle Round Up");
             return true;
         }
     }
@@ -39,5 +40,10 @@ public class Circle
     public List<Target> GetTargets()
     {
         return this.Targets;
+    }
+
+    public int GetSize()
+    {
+        return this.Size;
     }
 }

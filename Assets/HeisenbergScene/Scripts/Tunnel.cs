@@ -20,6 +20,7 @@ public class Tunnel : MonoBehaviour {
     private static Task ActualTask;
 
     private static float[] PressValues;
+    private static bool Initalized = false;
 
     private void Awake()
     {
@@ -62,7 +63,11 @@ public class Tunnel : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        UpdatePressedValue();
+        if (Initalized)
+        {
+            UpdatePressedValue();
+            ProcessHits();
+        }
 
         newController.transform.rotation = controller.transform.rotation;
 
@@ -92,6 +97,7 @@ public class Tunnel : MonoBehaviour {
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.ClickEvent;
+        Debug.Log("ClickEvent");
     }
 
     private void ControllerPadClick(object sender, ClickedEventArgs e)
@@ -119,38 +125,46 @@ public class Tunnel : MonoBehaviour {
         ActualTask = task;
     }
 
+    public static void IsInitalized()
+    {
+        Initalized = true;
+    }
+
     private static SteamVR_Controller.Device GetDevice()
     {
         int id = (int)controller.controllerIndex;
+        //Debug.Log("ID: " + id);
         if ((device == null) || (id != ControllerId))
         {
             ControllerId = id;
             return SteamVR_Controller.Input(id);
         }
+        //Debug.Log("ControllerID: " + ControllerId);
 
         return device;
     }
 
     private static void UpdatePressedValue()
-    {
-        float pre = PressValues[0];
-        switch(ActualTask.GetInput())
-        {
-            case InputType.PAD:
-                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
-                break;
-            case InputType.TRIGGER:
-            default:
-                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
-                break;
+    { 
+         float pre = PressValues[0];
+            switch (ActualTask.GetInput())
+            {
+                case InputType.PAD:
+                    PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+                    break;
+                case InputType.TRIGGER:
+                default:
+                    PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
+                    break;
 
-        }
-        PressValues[1] = pre;
+            }
+            PressValues[1] = pre;
+            //Debug.Log(PressValues[0]);
 
-        if(PressValues[1] >= 1 && PressValues[0] < 1)
-        {
-            HandleClick();
-        }
+            if (PressValues[1] >= 1 && PressValues[0] < 1)
+            {
+                HandleClick();
+            }
     }
 
     public void ProcessHits()
@@ -165,6 +179,7 @@ public class Tunnel : MonoBehaviour {
         {
             if(Hits.Length > 0)
             {
+                HandleSphereHit();
                 EventLog now = new EventLog(
                     PressValues[0],
                     controller.transform.position,
@@ -180,6 +195,7 @@ public class Tunnel : MonoBehaviour {
         } 
         else if(Contains(Hits, "TargetPanel", out Obj, out Hit))
         {
+            HandlePanelHit();
             EventLog now = new EventLog(
                     PressValues[0],
                     controller.transform.position,
@@ -192,7 +208,7 @@ public class Tunnel : MonoBehaviour {
             EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
 
             
-        }
+        } 
     }
     
     private static void HandleClick()

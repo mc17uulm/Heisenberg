@@ -61,7 +61,7 @@ public class LatinSquare
 
     public int[] GetColumn(int id)
     {
-        return (0 <= id) && (id <= this.Size) ? this.Square[id] : new int[] { };
+        return (0 <= id) && (id < this.Size) ? this.Square[id] : new int[] { };
     }
 
     public bool[] GetStates(int state)
