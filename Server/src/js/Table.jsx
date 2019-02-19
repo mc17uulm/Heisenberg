@@ -19,11 +19,12 @@ class Table extends Component
                         <th scope="col">Date</th>
                         <th scope="col">State</th>
                         <th scope="col">Files</th>
+                        <th scope="col">Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.data.slice(0).reverse().map((el, i) => (
-                        <TableRow type={i === 0 ? "table-success" : ""} id={el.id} vorname={el.vorname} nachname={el.nachname} date={el.date} files={el.files} state={el.state}/>
+                        <TableRow type={i === 0 ? "table-success" : ""} id={el.id} vorname={el.vorname} nachname={el.nachname} date={el.date} files={el.files} state={el.state} delete={() => {this.props.delete(el.id)}}/>
                     ))}
                 </tbody>
             </table>

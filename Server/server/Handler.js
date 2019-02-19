@@ -4,8 +4,8 @@ class Handler {
 
     static getConfigFile()
     {
-        return "./../config.json";
-        // return "./../../Assets/StreamingAssets/config.json";
+        //return "./../config.json";
+        return "./../../Assets/StreamingAssets/config.json";
     }
 
     static async getAll() {
@@ -20,7 +20,7 @@ class Handler {
         });
     }
 
-    static async add(obj) {
+    static async add() {
         let data = await JSON.parse(fs.readFileSync(this.getConfigFile()));
         let lastId = Math.max.apply(Math, data.data.map((el) => {
             return el.id;
@@ -28,18 +28,27 @@ class Handler {
         if(!Number.isInteger(lastId)) {
             lastId = 0;
         }
-        let now = Date.now();
         let user = {
             id: lastId += 1,
-            vorname: obj.vorname,
-            nachname: obj.nachname,
             state: "added",
-            date: now,
+            date: Date.now(),
             files: []
         };
         data.data.push(user);
         await fs.writeFileSync(this.getConfigFile(), JSON.stringify(data));
         return user;
+    }
+
+    static async delete(id)
+    {
+        let data = await JSON.parse(fs.readFileSync(this.getConfigFile()));
+        let newData = data.data.filter((el) => {
+            return el.id !== id;
+        });
+        let resp = data.data.length !== newData.length;
+        data.data = newData;
+        await fs.writeFileSync(this.getConfigFile(), JSON.stringify(data));
+        return resp;
     }
 
 }

@@ -28,12 +28,11 @@ app.post('/', async (req, res) => {
                 } 
                 break;
             case "add":
-                if(typeof req.body.data.vorname !== "undefined" &&  typeof req.body.data.nachname !== "undefined") {
-                    res.send(await JSON.stringify({type: "success", msg: await handler.add(req.body.data)}));
-                } else {
-                    res.send(JSON.stringify({type: "error", msg: "Invalid requests2"}));
-                }
+                res.send(await JSON.stringify({type: "success", msg: await handler.add()}));
                 break;
+            case "delete":
+                res.send(await JSON.stringify({type: "success", msg: await handler.delete(req.body.id)}));
+                break;    
             default:
                 res.send(JSON.stringify({type: "error", msg: "Invalid requests3"}));
                 break;        

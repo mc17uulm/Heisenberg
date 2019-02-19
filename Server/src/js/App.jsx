@@ -17,6 +17,7 @@ class App extends Component
         }
 
         this.add = this.add.bind(this);
+        this.delete = this.delete.bind(this);
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleSettings = this.handleSettings.bind(this);
         this.handleSaveSettings = this.handleSaveSettings.bind(this);
@@ -32,18 +33,37 @@ class App extends Component
         });
     }
 
-    async add(obj){
+    async add(){
         let data = this.state.data;
         data.push(await Getter.sendRequest(
             JSON.stringify({
-                type: "add",
-                data: obj
+                type: "add"
             })
         ));
 
         this.setState({
             data: data
         });
+    }
+
+    async delete(id)
+    {
+        const resp = await Getter.sendRequest(
+            JSON.stringify({
+                type: "delete",
+                id: id
+            })
+        );
+        if(resp)
+        {
+            let data = this.state.data;
+            let newData = data.filter((el) => {
+                return el.id !== id;
+            });
+            this.setState({
+                data: newData
+            });
+        }
     }
 
     async handleRefresh(e) {
@@ -90,10 +110,15 @@ class App extends Component
                         <button type="button" onClick={this.handleSettings} className="btn btn-dark float-right">Settings</button>
                     </div>
                 </div>
-                <Form add={this.add} />
-                <br/>
-                <Table data={this.state.data}/>
-                <button type="button" onClick={this.handleRefresh} className="btn btn-info">{this.state.refreshText}</button>
+                <Table data={this.state.data} delete={this.delete}/>
+                <div className="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar">
+                    <div className="mr-2">
+                        <button type="button" onClick={this.handleRefresh} className="btn btn-info">{this.state.refreshText}</button>
+                    </div>
+                    <div>
+                        <button type="button" onClick={this.add} className="btn btn-success">Add</button>
+                    </div>
+                </div>
                 <Modal title="Settings" body="" onSave={this.handleSaveSettings} toggleHidden={this.toggelModal} hidden={this.state.modalHidden}/>
                 {this.state.modalHidden ? "" : (
                     <div className="modal-backdrop fade show"></div>
