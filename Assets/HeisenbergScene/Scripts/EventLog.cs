@@ -24,15 +24,17 @@ public class EventLog
     private long Timestamp;
     private Type type;
     private float PressedValue;
+    private bool Ballistic;
     private Vector3 ControllerPosition;
     private Vector3 ControllerRotation;
     private Vector3 PointerPosition;
 
-    public EventLog(float PressedValue, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition)
+    public EventLog(float PressedValue, bool Ballistic, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition)
     {
         this.Timestamp = GetNow();
         this.type = Type.Position;
         this.PressedValue = PressedValue;
+        this.Ballistic = Ballistic;
         this.ControllerPosition = ControllerPosition;
         this.ControllerRotation = ControllerRotation;
         this.PointerPosition = PointerPosition;
@@ -51,6 +53,31 @@ public class EventLog
     public new Type GetType()
     {
         return this.type;
+    }
+
+    public long GetTimestamp()
+    {
+        return this.Timestamp;
+    }
+
+    public bool GetBallistic()
+    {
+        return this.Ballistic;
+    }
+
+    public Vector3 GetControllerPos()
+    {
+        return this.ControllerPosition;
+    }
+
+    public Vector3 GetControllerRot()
+    {
+        return this.ControllerRotation;
+    }
+
+    public Vector3 GetPointerPos()
+    {
+        return this.PointerPosition;
     }
 
     public string PrintType()

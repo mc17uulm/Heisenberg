@@ -21,6 +21,7 @@ public class Tunnel : MonoBehaviour {
 
     private static float[] PressValues;
     private static bool Initalized = false;
+    private static bool Ballistic = false;
 
     private void Awake()
     {
@@ -217,11 +218,15 @@ public class Tunnel : MonoBehaviour {
         {
             case State.SHOW_TASK:
                 Processing.SetState(State.SHOW_TARGET);
+                Ballistic = true;
                 break;
             case State.WAIT_FOR_BALLISTIC:
+                Ballistic = false;
+                // Static starts
                 Processing.SetState(State.WAIT_FOR_IN_TARGET);
                 break;
             case State.FINISHED_TIMER:
+                // Static ends
                 Processing.SetState(State.FINISHED_TARGET);
                 break;
 

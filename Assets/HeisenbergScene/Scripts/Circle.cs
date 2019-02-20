@@ -46,4 +46,14 @@ public class Circle
     {
         return this.Size;
     }
+
+    public int GetAmplitude()
+    {
+        return this.Amplitude;
+    }
+
+    public void ComputeTroughput()
+    {
+
+    }
 }

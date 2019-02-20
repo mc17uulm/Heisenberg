@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Target{
@@ -71,6 +72,18 @@ public class Target{
         
         this.Events.Add(ev);
         return ev.GetType();
+    }
+
+    public Vector3 GetPressedPosition()
+    {
+        List<EventLog> filtered = this.Events.Where(el => el.GetType().Equals(EventLog.Type.TriggerPressedFirst)).ToList();
+        return filtered[filtered.Count - 1].GetPointerPos();
+    }
+
+    public Vector3 GetClickedPosition()
+    {
+        List<EventLog> filtered = this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
+        return filtered[filtered.Count - 1].GetPointerPos();
     }
 
 }

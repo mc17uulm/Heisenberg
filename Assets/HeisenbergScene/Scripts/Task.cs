@@ -95,14 +95,44 @@ public class Task
         return this.Circles[this.Round];
     }
 
+    public List<Circle> GetCircles()
+    {
+        return this.Circles;
+    }
+
     public InputType GetInput()
     {
         return this.Input;
     }
 
+    public ArmPosition GetArmPosition()
+    {
+        return this.ArmPos;
+    }
+
+    public string PrintArmPosition()
+    {
+        return Enum.GetName(typeof(ArmPosition), this.ArmPos);
+    }
+
+    public BodyPosition GetBodyPosition()
+    {
+        return this.BodyPos;
+    }
+
+    public string PrintBodyPosition()
+    {
+        return Enum.GetName(typeof(BodyPosition), this.BodyPos);
+    }
+
     public DOF GetDegreeOfFreedom()
     {
         return this.DegreeOfFreedom;
+    }
+
+    public string PrintDOF()
+    {
+        return Enum.GetName(typeof(DOF), this.DegreeOfFreedom);
     }
 
     public bool HasNewRound()
