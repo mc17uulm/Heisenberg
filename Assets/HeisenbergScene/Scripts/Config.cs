@@ -52,12 +52,13 @@ public class Config {
         }*/
     }
 
-    public static void SaveToConfig(string saveFile, string sumFile)
+    public static void SaveToConfig(string saveFile, string sumFile, string TroughputFile)
     {
         List<string> files = new List<string>()
         {
             saveFile,
-            sumFile
+            sumFile,
+            TroughputFile
         };
 
         foreach(DataObject d in config.data)
@@ -91,19 +92,25 @@ public class Config {
         350, 150
     };
 
-    public static int[] TargetWidths = new int[]
+    /**public static int[] TargetWidths = new int[]
     {
         15, 30, 50
-    };
+    };*/
 
-    public static int CircleSize = 13;
+    public static int[] TargetWidths = new int[]
+{
+        15, 30, 50
+};
+
+    //public static int CircleSize = 13;
+    public static int CircleSize = 1;
 
     // Record clickes based on PAD or TRIGGER
     //public static ClickMode clickMode = ClickMode.TRIGGER;
     //public static GridMode grid = GridMode.GRID;
 
     // Start position of 3DOF
-    public static Vector3 Start = new Vector3(0, 0, 0);
+    public static Vector3 Start = new Vector3(0, 40, 0);
 
     // Positions of targets
     public static Vector3[] Positions = new Vector3[] {

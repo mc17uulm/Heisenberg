@@ -32,9 +32,7 @@ public class Processing : MonoBehaviour
     public Text commandText;
     
     public GameObject targetSphere;
-    public GameObject indicatorButton;
     public GameObject canvas;
-    public GameObject controller;
 
     private Timer Timer;
 
@@ -55,8 +53,6 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
-
-        session = new Session();
 
         Rounds = 0;
 
@@ -79,11 +75,6 @@ public class Processing : MonoBehaviour
         Tunnel.IsInitalized();
     }
 
-    public static void AddData(Position pos)
-    {
-        Tasks[Index].AddToStack(pos);
-    }
-
     public void ShowTask(int i)
     {
         Task task = Tasks[i];
@@ -92,6 +83,8 @@ public class Processing : MonoBehaviour
 
     public void ShowTarget()
     {
+        targetSphere.SetActive(true);
+        Debug.Log("Index: " + Index);
         Circle circle = Tasks[Index].GetCircle();
         Vector3 pos = circle.GetTarget().GetPosition();
         targetSphere.transform.localPosition = pos;
@@ -102,9 +95,18 @@ public class Processing : MonoBehaviour
         Vector3 now = targetSphere.transform.localPosition;
     }
 
+    public void HideTarget()
+    {
+        targetSphere.SetActive(false);
+    }
+
     private static void UpdateTask()
     {
-        Tunnel.UpdateTask(Tasks[Index]);
+        Task s = Tunnel.UpdateTask(Tasks[Index]);
+        if(Index > 0)
+        {
+            Tasks[Index - 1] = s;
+        }
     }
 
     public static void SetState(State state)
@@ -119,11 +121,11 @@ public class Processing : MonoBehaviour
 
     public void ExecuteState()
     {
-        Debug.Log(State.ToString("G"));
         switch(State)
         {
             case State.SHOW_TASK:
                 HideCommand();
+                HideTarget();
                 ShowTask(Index);
                 break;
 
@@ -154,6 +156,8 @@ public class Processing : MonoBehaviour
 
             case State.TERMINATED:
                 ShowCommand("Finished");
+                session = new Session(Tasks);
+                session.Save();
                 break;
 
             default:

@@ -8,12 +8,15 @@ public class Target{
     private int Id;
     private Vector3 Position;
     private List<EventLog> Events;
+    private Vector2 ActualMovement;
+    private EventLog[] FAL;
     
     public Target(int Id, Vector3 Position)
     {
         this.Id = Id;
         this.Position = Position;
         this.Events = new List<EventLog>();
+        this.FAL = new EventLog[2];
     }
 
     public int GetId()
@@ -74,16 +77,49 @@ public class Target{
         return ev.GetType();
     }
 
-    public Vector3 GetPressedPosition()
+    public List<EventLog> GetPressedPosition()
     {
-        List<EventLog> filtered = this.Events.Where(el => el.GetType().Equals(EventLog.Type.TriggerPressedFirst)).ToList();
-        return filtered[filtered.Count - 1].GetPointerPos();
+        return this.Events.Where(el => el.GetType().Equals(EventLog.Type.TriggerPressedFirst)).ToList();
     }
 
-    public Vector3 GetClickedPosition()
+    public List<EventLog> GetClickedPosition()
     {
-        List<EventLog> filtered = this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
-        return filtered[filtered.Count - 1].GetPointerPos();
+        return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
     }
+
+    private List<EventLog> GetBallisticEvents()
+    {
+        return this.Events.Where(el => el.GetBallistic()).ToList();
+    }
+
+    public void GetFirstAndLast()
+    {
+        List<EventLog> ballistic = this.GetBallisticEvents();
+        this.FAL = new EventLog[] { ballistic[0], ballistic[ballistic.Count - 1] };
+    }
+
+    public float CalculateMovementTime()
+    {
+        this.GetFirstAndLast();
+        return (float) this.FAL[1].GetTimestamp() - this.FAL[0].GetTimestamp();
+    }
+
+    public float CalculateDistance()
+    {
+        Vector3 first = this.FAL[0].GetPointerPos();
+        Vector3 last = this.FAL[1].GetPointerPos();
+        this.ActualMovement = new Vector2(last.x - first.x, last.y - first.y);
+        return this.ActualMovement.magnitude;
+    }
+
+    public float ClaculateDeviation()
+    {
+        Vector3 first = this.FAL[0].GetPointerPos();
+        Vector2 intendedVector = new Vector2(this.Position.x - first.x, this.Position.y - first.y);
+        Vector2 projectedActualMovement = Vector3.Project(this.ActualMovement, intendedVector);
+        return projectedActualMovement.magnitude - intendedVector.magnitude;
+    }
+
+
 
 }

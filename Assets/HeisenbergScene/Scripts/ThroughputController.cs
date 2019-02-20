@@ -91,7 +91,7 @@ public class ThroughputController : MonoBehaviour {
         // calculate mean movement time
         float sum = 0;
         foreach(float mt in movementTimes)
-        {
+        {//
             sum += mt;
         }
         float meanMT = sum / movementTimes.Count;

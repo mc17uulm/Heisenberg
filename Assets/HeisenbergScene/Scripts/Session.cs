@@ -11,6 +11,7 @@ public class Session
     private List<Task> Tasks;
     private string SaveFile;
     private string SumFile;
+    private string TroughputFile;
 
     public Session(List<Task> Tasks)
     {
@@ -18,6 +19,7 @@ public class Session
         this.tries = new List<Try>();
         this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
         this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.TroughputFile = Path.Combine(Application.streamingAssetsPath, "data/TroughputData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
     }
 
     public void AddTry(Try t)
@@ -46,11 +48,12 @@ public class Session
         return o;
     }
 
-    public void Save(Transform trans)
+    public void Save()
     {
         this.SaveToFile(SaveFile);
-        this.SaveSum(SumFile, trans);
-        Config.SaveToConfig(SaveFile, SumFile);
+        this.SaveSum(SumFile);
+        this.SaveTroughput(TroughputFile);
+        Config.SaveToConfig(SaveFile, SumFile, TroughputFile);
     }
 
     public void SaveToFile(string file)
@@ -59,7 +62,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("UserId;round;trial;ArmPos;BodyPos;DOF;ballistic;timestamp;event;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetID;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
+                w.WriteLine("UserId;ArmPos;BodyPos;DOF;ballistic;timestamp;event;targetDistance;targetWidth;targetID;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
             }
         }
 
@@ -84,11 +87,11 @@ public class Session
                                 task.PrintBodyPosition(),
                                 task.PrintDOF(),
                                 log.GetBallistic(),
+                                log.GetTimestamp(),
+                                log.PrintType(),
                                 circle.GetAmplitude(),
                                 circle.GetSize(),
                                 target.GetId(),
-                                log.GetTimestamp(),
-                                log.PrintType(),
                                 log.GetPressedValue(),
                                 controllerPos.x,
                                 controllerPos.y,
@@ -108,78 +111,108 @@ public class Session
         }
     }
 
-    public void SaveSum(string file, Transform trans)
+    public void SaveSum(string file)
     {
         if (!File.Exists(file))
         {
             using (StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("name;round;trial;ArmPos;BodyPos;DOF;ballistic;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y;");
+                w.WriteLine("id;ArmPos;BodyPos;DOF;ballistic;targetDistance,targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y;");
             }
         }
 
         using (StreamWriter w = File.AppendText(file))
-        { 
-
-            foreach (Try tr in this.tries)
+        {
+            foreach (Task task in this.Tasks)
             {
-                bool[] states = tr.GetStates();
-                foreach (Hit h in tr.GetHits())
+                foreach (Circle circle in task.GetCircles())
                 {
-                    Vector3 pressed = new Vector3(0, 0, 0);
-                    Vector3 clicked = new Vector3(0, 0, 0);
-                    List<Vector3> p = new List<Vector3>();
-                    int targetId = h.GetPositions()[0].GetTargetId();
-                    Vector3 target = h.GetPositions()[0].GetTargetPos();
-                    foreach (Position pos in h.GetPositions())
+                    foreach (Target target in circle.GetTargets())
                     {
-                        switch (pos.GetEvent())
-                        {
-
-                            case PointerEvent.TriggerPressedFirst:
-                                pressed = pos.GetPointerPos();
-                                break;
-
-                            case PointerEvent.ClickedFirst:
-                                clicked = pos.GetPointerPos();
-                                break;
-
-                            default:
-                                break;
-
+                        List<EventLog> Pressed = target.GetPressedPosition();
+                        List<EventLog> Clicked = target.GetClickedPosition();
+                        Vector3 Position = target.GetPosition();
+                        for (int i = 0; i < Pressed.Count; i++)
+                        { 
+                            EventLog press = Pressed[i];
+                            EventLog click = Clicked[i];    
+                            Vector3 p = press.GetPointerPos();
+                            Vector3 c = click.GetPointerPos();
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15}",
+                                Config.UserId,
+                                task.PrintArmPosition(),
+                                task.PrintBodyPosition(),
+                                task.PrintDOF(),
+                                press.GetBallistic(),
+                                circle.GetAmplitude(),
+                                circle.GetSize(),
+                                target.GetId(),
+                                Position.x,
+                                Position.y,
+                                p.x,
+                                p.y,
+                                c.x,
+                                c.y,
+                                p.x - c.x,
+                                p.y - c.y
+                             ));
                         }
-
-                        // true if not ballistic
-                        if (!h.GetFirst())
-                        {
-                            p.Add(pos.GetPointerPos());
-                        }
-
                     }
+                }
+            }
+        }
+    }
 
-                    if (p.Count > 0)
+    public void SaveTroughput(string file)
+    {
+        if (!File.Exists(file))
+        {
+            using (StreamWriter w = File.CreateText(file))
+            {
+                w.WriteLine("UserId;ArmPos;BodyPos;DOF;targetID;targetDistance;targetWidth;MeanMT;TroughputRegular;EffectiveWidth;EffectiveDistance;EffectiveID;EffectiveTroughput");
+            }
+        }
+
+        using (StreamWriter w = File.AppendText(file))
+        {
+
+            foreach (Task task in this.Tasks)
+            {
+                foreach (Circle circle in task.GetCircles())
+                {
+                    foreach (Target target in circle.GetTargets())
                     {
-                        target = GetAverage(p);
+                        foreach (EventLog log in target.GetEvents())
+                        {
+                            Vector3 controllerPos = log.GetControllerPos();
+                            Vector3 controllerRot = log.GetControllerRot();
+                            Vector3 pointerPos = log.GetPointerPos();
+                            Vector3 targetPos = target.GetPosition();
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};",
+                                Config.UserId,
+                                task.PrintArmPosition(),
+                                task.PrintBodyPosition(),
+                                task.PrintDOF(),
+                                log.GetBallistic(),
+                                log.GetTimestamp(),
+                                log.PrintType(),
+                                circle.GetAmplitude(),
+                                circle.GetSize(),
+                                target.GetId(),
+                                log.GetPressedValue(),
+                                controllerPos.x,
+                                controllerPos.y,
+                                controllerRot.x,
+                                controllerRot.y,
+                                controllerRot.z,
+                                targetPos.x,
+                                targetPos.y,
+                                targetPos.z,
+                                pointerPos.x,
+                                pointerPos.y
+                            ));
+                        }
                     }
-
-                    w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};",
-                        Config.UserId,
-                        tr.GetIndex(),
-                        h.GetIndex(),
-                        states[1] ? "ausgestreckt" : "angelegt",
-                        states[0] ? "sitzend" : "stehend",
-                        states[2] ? "6" : "3",
-                        h.GetFirst(),
-                        targetId,
-                        target.x,
-                        target.y,
-                        pressed.x,
-                        pressed.y,
-                        clicked.x,
-                        clicked.y,
-                        pressed.x - clicked.x,
-                        pressed.y - clicked.y
-                     ));
                 }
             }
         }

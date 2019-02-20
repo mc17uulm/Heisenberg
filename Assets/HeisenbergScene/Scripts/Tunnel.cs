@@ -62,18 +62,20 @@ public class Tunnel : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
 
         if (Initalized)
         {
             UpdatePressedValue();
             ProcessHits();
-        }
 
-        newController.transform.rotation = controller.transform.rotation;
+        //newController.transform.rotation = controller.transform.rotation;
 
-        // If mode is on 3DOF (DOF.THREE), the controller can only change rotation, not position
-        switch(ActualTask.GetDegreeOfFreedom())
+        Debug.Log(Enum.GetName(typeof(DOF), ActualTask.GetDegreeOfFreedom()));
+            newController.transform.position = controller.transform.position;
+            // If mode is on 3DOF (DOF.THREE), the controller can only change rotation, not position
+            switch (ActualTask.GetDegreeOfFreedom())
         {
             case DOF.SIX:
                 newController.transform.position = controller.transform.position;
@@ -88,6 +90,9 @@ public class Tunnel : MonoBehaviour {
                 newController.transform.position = controller.transform.position;
                 break;
         }
+        Debug.Log("Old: " + controller.transform.position.ToString());
+        Debug.Log("New: " + newController.transform.position.ToString());
+    }
 	}
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
@@ -121,9 +126,11 @@ public class Tunnel : MonoBehaviour {
         EventType = EventLog.Type.PadUntouch;
     }
 
-    public static void UpdateTask(Task task)
+    public static Task UpdateTask(Task task)
     {
+        Task old = ActualTask;
         ActualTask = task;
+        return old;
     }
 
     public static void IsInitalized()
@@ -183,6 +190,7 @@ public class Tunnel : MonoBehaviour {
                 HandleSphereHit();
                 EventLog now = new EventLog(
                     PressValues[0],
+                    Ballistic,
                     controller.transform.position,
                     controller.transform.rotation.eulerAngles,
                     Hits[0].point
@@ -199,6 +207,7 @@ public class Tunnel : MonoBehaviour {
             HandlePanelHit();
             EventLog now = new EventLog(
                     PressValues[0],
+                    Ballistic,
                     controller.transform.position,
                     controller.transform.rotation.eulerAngles,
                     Hits[0].point

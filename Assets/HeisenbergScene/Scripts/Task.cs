@@ -58,6 +58,8 @@ public class Task
         o += "Position: " + (this.BodyPos.Equals(BodyPosition.SITTING) ? "STEHEND" : "SITZEND") + "\r\n";
         o += "Arm: " + (this.ArmPos.Equals(ArmPosition.STRECHED) ? "AUSGESTRECKT" : "ANGELEGT") + "\r\n";
         o += "Click: " + (this.Input.Equals(InputType.TRIGGER) ? "TRIGGER" : "PAD") + "\r\n";
+        o += "DOF: " + (this.DegreeOfFreedom.Equals(DOF.SIX) ? 6 : 3) + "\r\n";
+        o += "\r\n\r\n\r\n";
 
         return o;
     }
