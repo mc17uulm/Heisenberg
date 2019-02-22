@@ -110,7 +110,7 @@ public class Config {
     //public static GridMode grid = GridMode.GRID;
 
     // Start position of 3DOF
-    public static Vector3 Start = new Vector3(0, 40, 0);
+    public static Vector3 Start = new Vector3(0, 0, 0);
 
     // Positions of targets
     public static Vector3[] Positions = new Vector3[] {

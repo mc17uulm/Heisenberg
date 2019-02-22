@@ -22,8 +22,13 @@ public enum State
     FINISHED_TARGET,
     TERMINATED
 }
+
+[RequireComponent(typeof(SteamVR_LaserPointer))]
 public class Processing : MonoBehaviour
 {
+
+    private static SteamVR_LaserPointer LaserPointer;
+    public GameObject NewController;
 
     // indicates how long user is in target
     public Image progressIndicator;
@@ -47,12 +52,17 @@ public class Processing : MonoBehaviour
     
     private static List<Task> Tasks;
     private static bool Initalized = false;
+    private static bool Ballistic = false;
+    private static EventLog.Type EventType = EventLog.Type.Position;
+    private static Task ActualTask;
 
     void OnEnable()
     {
         Index = 0;
 
         Config.init();
+
+        LaserPointer = GetComponent<SteamVR_LaserPointer>();
 
         Rounds = 0;
 
@@ -75,10 +85,26 @@ public class Processing : MonoBehaviour
         Tunnel.IsInitalized();
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+
+        ProcessButtons();
+
+        if(!State.Equals(State.TERMINATED))
+        {
+            ProcessHits();
+        }
+
+        ExecuteState();
+
+    }
+
     public void ShowTask(int i)
     {
         Task task = Tasks[i];
         ShowCommand(task.PrintCommand(i) + "Zum Fortfahren clicken");
+        UpdateTask();
     }
 
     public void ShowTarget()
@@ -102,11 +128,12 @@ public class Processing : MonoBehaviour
 
     private static void UpdateTask()
     {
-        Task s = Tunnel.UpdateTask(Tasks[Index]);
+        Task s = ActualTask;
         if(Index > 0)
         {
             Tasks[Index - 1] = s;
         }
+        ActualTask = Tasks[Index];
     }
 
     public static void SetState(State state)
@@ -177,7 +204,7 @@ public class Processing : MonoBehaviour
         {
             if (Tasks[Index].HasNewRound())
             {
-                Debug.Log("Circle Has new Round");
+                Debug.Log("Task Has new Round");
                 State = State.SHOW_TARGET;
             }
             else
@@ -214,7 +241,7 @@ public class Processing : MonoBehaviour
             float progress = Timer.GetProgress(Config.Timespan);
             progressIndicator.fillAmount = progress;
         }
-        UpdateTask();
+        //UpdateTask();
     }
 
     /**
@@ -227,16 +254,6 @@ public class Processing : MonoBehaviour
         progressIndicator.enabled = true;
         progressIndicator.fillAmount = 0;
         progressIndicator.color = new Color(255, 0, 0);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-        ProcessButtons();
-
-        ExecuteState();
-
     }
 
     private void ProcessButtons()
@@ -338,5 +355,129 @@ public class Processing : MonoBehaviour
     public void HideCommand()
     {
         this.commandText.enabled = false;
+    }
+
+    public void ProcessHits()
+    {
+        float[] PressValues = Tunnel.GetPressValues();
+        RaycastHit[] Hits;
+        Hits = Physics.RaycastAll(LaserPointer.transform.position, transform.forward, 100.0f);
+
+        GameObject Obj;
+        RaycastHit Hit;
+
+        if (Contains(Hits, "Sphere", out Obj, out Hit))
+        {
+            if (Hits.Length > 0)
+            {
+                HandleSphereHit();
+                EventLog now = new EventLog(
+                    PressValues[0],
+                    Ballistic,
+                    NewController.transform.position,
+                    NewController.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
+
+                now.SetType(EventType);
+
+                EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+            }
+
+        }
+        else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
+        {
+            HandlePanelHit();
+            EventLog now = new EventLog(
+                    PressValues[0],
+                    Ballistic,
+                    NewController.transform.position,
+                    NewController.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
+
+            now.SetType(EventType);
+
+            EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+
+
+        }
+    }
+
+    public static void HandleClick()
+    {
+        switch (State)
+        {
+            case State.SHOW_TASK:
+                State = State.SHOW_TARGET;
+                Ballistic = true;
+                break;
+            case State.WAIT_FOR_BALLISTIC:
+                Ballistic = false;
+                // Static starts
+                State = State.WAIT_FOR_IN_TARGET;
+                break;
+            case State.FINISHED_TIMER:
+                // Static ends
+                State = State.FINISHED_TARGET;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void HandleSphereHit()
+    {
+        switch (State)
+        {
+            case State.WAIT_FOR_IN_TARGET:
+                State = State.ACITVATE_TIMER;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void HandlePanelHit()
+    {
+        switch (State)
+        {
+            case State.ACITVATE_TIMER:
+            case State.WAIT_FOR_TIMER:
+                State = State.OUT_OF_TARGET;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private Boolean Contains(RaycastHit[] hits, string name, out GameObject x, out RaycastHit hit)
+    {
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i].collider.gameObject.name.Equals(name))
+            {
+                x = hits[i].collider.gameObject;
+                hit = hits[i];
+                return true;
+            }
+        }
+
+        x = null;
+        hit = new RaycastHit();
+        return false;
+    }
+
+    public static void SetEventType(EventLog.Type Type)
+    {
+        EventType = Type;
+    }
+
+    public static Task GetActualTask()
+    {
+        return ActualTask;
     }
 }
