@@ -13,7 +13,7 @@ public class LatinSquare
 
         // Algorithm inspired by http://euanfreeman.co.uk/balanced-latin-squares/
 
-        int[][] tmp = new int[n][];
+        int[][] tmp = new int[this.Size][];
         for(int i = 0; i < n; i++)
         {
             tmp[i] = new int[n];

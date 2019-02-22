@@ -6,17 +6,24 @@ using UnityEngine;
 public class Circle
 {
 
+    private int Id;
     private int Round;
     private int Amplitude;
     private int Size;
     private List<Target> Targets;
 
-    public Circle(int Amplitude, int Size, List<Target> Targets)
+    public Circle(int Id, int Amplitude, int Size, List<Target> Targets)
     {
+        this.Id = Id;
         this.Round = 0;
         this.Amplitude = Amplitude;
         this.Size = Size;
         this.Targets = Targets;
+    }
+
+    public int GetId()
+    {
+        return this.Id;
     }
 
     public Target GetTarget()
@@ -33,7 +40,6 @@ public class Circle
         else
         {
             this.Round++;
-            Debug.Log("Circle Round Up");
             return true;
         }
     }

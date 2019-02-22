@@ -20,7 +20,8 @@ public enum State
     WAIT_FOR_TIMER,
     FINISHED_TIMER,
     FINISHED_TARGET,
-    TERMINATED
+    TERMINATED,
+    SAVED
 }
 
 [RequireComponent(typeof(SteamVR_LaserPointer))]
@@ -91,12 +92,14 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        if(!State.Equals(State.TERMINATED))
+        Debug.Log("State: " + Enum.GetName(typeof(State), State));
+        Debug.Log("Ballistic: " + Ballistic);
+
+        if(!State.Equals(State.SAVED))
         {
             ProcessHits();
+            ExecuteState();
         }
-
-        ExecuteState();
 
     }
 
@@ -104,13 +107,11 @@ public class Processing : MonoBehaviour
     {
         Task task = Tasks[i];
         ShowCommand(task.PrintCommand(i) + "Zum Fortfahren clicken");
-        UpdateTask();
     }
 
     public void ShowTarget()
     {
         targetSphere.SetActive(true);
-        Debug.Log("Index: " + Index);
         Circle circle = Tasks[Index].GetCircle();
         Vector3 pos = circle.GetTarget().GetPosition();
         targetSphere.transform.localPosition = pos;
@@ -182,6 +183,7 @@ public class Processing : MonoBehaviour
                 break;
 
             case State.TERMINATED:
+                State = State.SAVED;
                 ShowCommand("Finished");
                 session = new Session(Tasks);
                 session.Save();
@@ -197,26 +199,26 @@ public class Processing : MonoBehaviour
     {
         if (Tasks[Index].GetCircle().HasNewRound())
         {
-            Debug.Log("Circle Has new Round");
             State = State.SHOW_TARGET;
+            Ballistic = true;
         }
         else
         {
             if (Tasks[Index].HasNewRound())
             {
-                Debug.Log("Task Has new Round");
                 State = State.SHOW_TARGET;
+                Ballistic = true;
             }
             else
             {
                 if (Index == Tasks.Count - 1)
                 {
-                    Debug.Log("Circle Has new Round");
                     State = State.TERMINATED;
                 }
                 else
                 {
                     Index++;
+                    UpdateTask();
                     State = State.SHOW_TASK;
                 }
             }
@@ -319,35 +321,36 @@ public class Processing : MonoBehaviour
         List<Task> Tasks = new List<Task>();
         for (int i = 0; i < column.Length; i++)
         {
+            // Get states from LatinSquare for Tasks
             int state = column[i];
             BodyPosition Body = state <= 4 ? BodyPosition.SITTING : BodyPosition.STANDING;
             ArmPosition Arm = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1 ? ArmPosition.STRECHED : ArmPosition.APPLIED;
             DOF dof = state % 2 == 0 ? DOF.THREE : DOF.SIX;
 
+            // Is PAD option available?
             if (Config.Pad)
             {
                 Task first = new Task((i * 2), Body, Arm, dof);
                 Task second = new Task((i * 2) + 1, Body, Arm, dof, InputType.PAD);
-                first.CreateCircles(LTT);
-                second.CreateCircles(LTT);
+                first.CreateCircles(LTT, (((i*2)+1)*2*column.Length)%LTT.GetSize());
+                second.CreateCircles(LTT, (((i * 2) + 1) * 2 * column.Length) % LTT.GetSize());
                 Tasks.Add(first);
                 Tasks.Add(second);
             }
             else
             {
                 Task tmp = new Task(i, Body, Arm, dof);
-                tmp.CreateCircles(LTT);
+                tmp.CreateCircles(LTT, (i*column.Length)%LTT.GetSize());
                 Tasks.Add(tmp);
             }
             start = start < LTC.GetSize() ? start + 1 : 0;
         }
-
+        
         return Tasks;
     }
 
     public void ShowCommand(string cmd)
     {
-        Debug.Log("ShowCommand");
         this.commandText.text = cmd;
         this.commandText.enabled = true;
     }
@@ -382,6 +385,7 @@ public class Processing : MonoBehaviour
                 now.SetType(EventType);
 
                 EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+                Debug.Log(Enum.GetName(typeof(DOF), ActualTask.GetDegreeOfFreedom()));
             }
 
         }

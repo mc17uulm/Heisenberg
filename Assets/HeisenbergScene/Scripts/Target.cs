@@ -87,6 +87,11 @@ public class Target{
         return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
     }
 
+    public List<EventLog> GetFirsts()
+    {
+        return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst) || el.GetType().Equals(EventLog.Type.TriggerPressedFirst)).ToList();
+    }
+
     private List<EventLog> GetBallisticEvents()
     {
         return this.Events.Where(el => el.GetBallistic()).ToList();
@@ -95,6 +100,7 @@ public class Target{
     public void GetFirstAndLast()
     {
         List<EventLog> ballistic = this.GetBallisticEvents();
+        Debug.Log("TargetId: " + this.Id + " | Count Ballistic: " + ballistic.Count);
         this.FAL = new EventLog[] { ballistic[0], ballistic[ballistic.Count - 1] };
     }
 

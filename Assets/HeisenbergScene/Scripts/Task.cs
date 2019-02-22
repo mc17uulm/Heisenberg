@@ -52,6 +52,11 @@ public class Task
         this.Stack = new List<Position>();
     }
 
+    public int GetId()
+    {
+        return this.Id;
+    }
+
     public string PrintCommand(int i = 0)
     {
         string o = "Runde " + i + "\r\n";
@@ -64,9 +69,9 @@ public class Task
         return o;
     }
 
-    public void CreateCircles(LatinSquare LTT)
+    public void CreateCircles(LatinSquare LTT, int c)
     {
-        int[] column = LTT.GetColumn(this.Id);
+        int[] column = LTT.GetColumn(c);
         for (int j = 0; j < column.Length; j++)
         {
             int Amp = 1;
@@ -88,7 +93,7 @@ public class Task
                 Vector3 v = new Vector3(Convert.ToSingle(((double) Amp / 2) * Math.Sin(k * ((double) 360 / n))), Convert.ToSingle(((double) Amp / 2) * Math.Cos(k * ((double) 360 / n))), 0);
                 Targets.Add(new Target(k, v));
             }
-            this.Circles.Add(new Circle(Amp, Size, Targets));
+            this.Circles.Add(new Circle(j, Amp, Size, Targets));
         }
     }
 
@@ -139,6 +144,7 @@ public class Task
 
     public bool HasNewRound()
     {
+
         if(this.Round == this.Circles.Count-1)
         {
             return false;
