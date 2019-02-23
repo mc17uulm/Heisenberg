@@ -18,6 +18,7 @@ public class Tunnel : MonoBehaviour {
     private static Task ActualTask;
 
     private static float[] PressValues;
+    private static float PressValue = 0.0f;
     private static bool Initalized = false;
 
     private void Awake()
@@ -89,31 +90,37 @@ public class Tunnel : MonoBehaviour {
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.Released;
+        EventLogger.AddEvent(EventLog.Type.Released);
     }
 
     private void ControllerOnClick(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.ClickEvent;
+        EventLogger.AddEvent(EventLog.Type.ClickEvent);
     }
 
     private void ControllerPadClick(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.PadClick;
+        EventLogger.AddEvent(EventLog.Type.PadClick);
     }
 
     private void ControllerPadRelease(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.PadRelease;
+        EventLogger.AddEvent(EventLog.Type.PadRelease);
     }
 
     private void ControllerPadTouch(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.PadTouch;
+        EventLogger.AddEvent(EventLog.Type.PadTouch);
     }
 
     private void ControllerPadUntouch(object sender, ClickedEventArgs e)
     {
         EventType = EventLog.Type.PadUntouch;
+        EventLogger.AddEvent(EventLog.Type.PadUntouch);
     }
 
     public static void IsInitalized()
@@ -134,24 +141,58 @@ public class Tunnel : MonoBehaviour {
     }
 
     private static void UpdatePressedValue()
-    { 
-         float pre = PressValues[0];
-         switch (Processing.GetActualTask().GetInput())
-         {
+    {
+        float Before = PressValue;
+        float Now;
+        switch (Processing.GetActualTask().GetInput())
+        {
             case InputType.PAD:
-                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
+                Now = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Touchpad).x;
                 break;
             case InputType.TRIGGER:
             default:
-                PressValues[0] = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
+                Now = GetDevice().GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x;
                 break;
-         }
-         PressValues[1] = pre;
+        }
 
-         if (PressValues[1] >= 1 && PressValues[0] < 1)
-         {
-            Processing.HandleClick();
-         }
+        EventLogger.SetPressValue(Now);
+        if (Now > 0.1f && Now < 1.0f)
+        {
+            if(Before <= 0.1f)
+            {
+                EventLogger.AddEvent(EventLog.Type.TriggerPressedFirst);
+            }
+            else if(Before >= 1.0f)
+            {
+                EventLogger.AddEvent(EventLog.Type.Position);
+            }
+            else
+            {
+                EventLogger.AddEvent(EventLog.Type.TriggerPressed);
+            }
+        }
+        else if(Now >= 1.0f)
+        {
+            if (Before <= 0.1f)
+            {
+                Processing.HandleClick();
+                EventLogger.AddEvent(EventLog.Type.ClickedFirst);
+            }
+            else if (Before >= 1.0f)
+            {
+                EventLogger.AddEvent(EventLog.Type.Clicked);
+            }
+            else
+            {
+                EventLogger.AddEvent(EventLog.Type.Position);
+            }
+        }
+        else
+        {
+            EventLogger.AddEvent(EventLog.Type.Position);
+        }
+
+        PressValue = Now;
     }
 
     public static float[] GetPressValues()

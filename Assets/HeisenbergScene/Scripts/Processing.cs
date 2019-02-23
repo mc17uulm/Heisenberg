@@ -369,42 +369,18 @@ public class Processing : MonoBehaviour
         GameObject Obj;
         RaycastHit Hit;
 
-        if (Contains(Hits, "Sphere", out Obj, out Hit))
+        if (Hits.Length > 0)
         {
-            if (Hits.Length > 0)
+            if (Contains(Hits, "Sphere", out Obj, out Hit))
             {
                 HandleSphereHit();
-                EventLog now = new EventLog(
-                    PressValues[0],
-                    Ballistic,
-                    NewController.transform.position,
-                    NewController.transform.rotation.eulerAngles,
-                    Hits[0].point
-                );
-
-                now.SetType(EventType);
-
-                EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
-                Debug.Log(Enum.GetName(typeof(DOF), ActualTask.GetDegreeOfFreedom()));
+            }
+            else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
+            {
+                HandlePanelHit();
             }
 
-        }
-        else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
-        {
-            HandlePanelHit();
-            EventLog now = new EventLog(
-                    PressValues[0],
-                    Ballistic,
-                    NewController.transform.position,
-                    NewController.transform.rotation.eulerAngles,
-                    Hits[0].point
-                );
-
-            now.SetType(EventType);
-
-            EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
-
-
+            EventLogger.AddHit(Ballistic, NewController.transform.position, NewController.transform.rotation.eulerAngles, Hits[0].point);
         }
     }
 
