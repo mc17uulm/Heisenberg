@@ -62,6 +62,7 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
+        Session.Initalize();
 
         LaserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -92,10 +93,7 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        Debug.Log("State: " + Enum.GetName(typeof(State), State));
-        Debug.Log("Ballistic: " + Ballistic);
-
-        if(!State.Equals(State.SAVED))
+        if(!State.Equals(State.SAVED) && !State.Equals(State.START))
         {
             ProcessHits();
             ExecuteState();
@@ -185,8 +183,7 @@ public class Processing : MonoBehaviour
             case State.TERMINATED:
                 State = State.SAVED;
                 ShowCommand("Finished");
-                session = new Session(Tasks);
-                session.Save();
+                Session.Save();
                 break;
 
             default:
@@ -271,14 +268,6 @@ public class Processing : MonoBehaviour
                 default:
                     break;
             }
-        }
-    }
-
-    public static void addEvent(PointerEvent e)
-    {
-        if (stack.Count > 0)
-        {
-            stack[stack.Count - 1].SetEvent(PointerEvent.Released);
         }
     }
 
@@ -380,7 +369,7 @@ public class Processing : MonoBehaviour
                 HandlePanelHit();
             }
 
-            EventLogger.AddHit(Ballistic, NewController.transform.position, NewController.transform.rotation.eulerAngles, Hits[0].point);
+            EventLogger.AddHit(Ballistic, NewController.transform.position, NewController.transform.rotation.eulerAngles, Hits[0].point, ActualTask);
         }
     }
 
