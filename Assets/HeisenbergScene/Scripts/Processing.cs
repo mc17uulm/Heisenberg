@@ -62,6 +62,7 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
+        Session.Initalize();
 
         LaserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -92,12 +93,12 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        Debug.Log("State: " + Enum.GetName(typeof(State), State));
-        Debug.Log("Ballistic: " + Ballistic);
-
-        if(!State.Equals(State.SAVED))
+        if(!State.Equals(State.SAVED) && !State.Equals(State.START))
         {
-            ProcessHits();
+            if(!State.Equals(State.SHOW_TASK))
+            {
+                ProcessHits();
+            }
             ExecuteState();
         }
 
@@ -119,7 +120,7 @@ public class Processing : MonoBehaviour
         targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
         progressIndicator.transform.localPosition = pos;
         progressIndicator.transform.localScale = new Vector3(dimension * 4, dimension * 4, 1);
-        Vector3 now = targetSphere.transform.localPosition;
+        circle.GetTarget().SetWorldPosition(targetSphere.transform.position);
     }
 
     public void HideTarget()
@@ -185,8 +186,7 @@ public class Processing : MonoBehaviour
             case State.TERMINATED:
                 State = State.SAVED;
                 ShowCommand("Finished");
-                session = new Session(Tasks);
-                session.Save();
+                Session.Save(Tasks);
                 break;
 
             default:
@@ -271,6 +271,9 @@ public class Processing : MonoBehaviour
                 default:
                     break;
             }
+        } else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            State = State.TERMINATED;
         }
     }
 

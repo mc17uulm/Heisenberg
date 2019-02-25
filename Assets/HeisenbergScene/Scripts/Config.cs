@@ -103,7 +103,7 @@ public class Config {
 };
 
     //public static int CircleSize = 13;
-    public static int CircleSize = 2;
+    public static int CircleSize = 5;
 
     // Record clickes based on PAD or TRIGGER
     //public static ClickMode clickMode = ClickMode.TRIGGER;

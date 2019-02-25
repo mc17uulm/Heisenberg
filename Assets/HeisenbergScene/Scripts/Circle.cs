@@ -63,6 +63,7 @@ public class Circle
     {
         // calculate index of difficulty
         float ID = Mathf.Log((float) this.Amplitude / this.Size + 1) / Mathf.Log(2);
+        Debug.Log("ID: " + ID);
 
         List<float> movementTimes = this.Targets.Select((el) => el.CalculateMovementTime()).ToList();
         List<float> actualDistances = this.Targets.Select(el => el.CalculateDistance()).ToList();
@@ -74,10 +75,14 @@ public class Circle
         {
             sum += mt;
         }
-        float meanMT = (float) sum / movementTimes.Count;
+
+        // MovementTime is measured in milliseconds. To fit the equation, we have to convert them to seconds
+        float meanMT = (float) sum / movementTimes.Count / 1000;
+        Debug.Log("MEANMT: " + meanMT);
 
         // calculate regularTP
         float tpRegular = (float) ID / meanMT;
+        Debug.Log("TPREG: " + tpRegular);
 
         // calculate effective width
         float sumOfDeviations = 0;
@@ -85,21 +90,27 @@ public class Circle
         {
             sumOfDeviations += deviation;
         }
+        Debug.Log("SUMOFDEV: " + sumOfDeviations);
         float effectiveWidth = 4.133f * ((float) sumOfDeviations / Mathf.Sqrt(deviations.Count - 1));
+        Debug.Log("EFFECTIVE WIDTH: " + effectiveWidth);
 
         // calculate effective distance
-        float sumOfDitances = 0;
+        float sumOfDistances = 0;
         foreach(float distance in actualDistances)
         {
-            sumOfDitances += distance;
+            sumOfDistances += distance;
         }
-        float effectiveDistance = (float) sumOfDitances / actualDistances.Count;
+        Debug.Log("SumOfDistances: " + sumOfDistances);
+        float effectiveDistance = (float) sumOfDistances / actualDistances.Count;
+        Debug.Log("EffectiveDistance: " + effectiveDistance);
 
         // calculate effective ID
         float IDEffective = Mathf.Log((float) effectiveDistance / effectiveWidth + 1) / Mathf.Log(2);
+        Debug.Log("IDEFECTIVE: " + IDEffective);
 
         // calculate effective troughput
         float tpEffective = (float) IDEffective / meanMT;
+        Debug.Log("TPEFFECTIVE: " + tpEffective);
 
         return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
             this.Amplitude,

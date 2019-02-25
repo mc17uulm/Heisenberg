@@ -7,6 +7,7 @@ public class Target{
 
     private int Id;
     private Vector3 Position;
+    private Vector3 PositionWorld;
     private List<EventLog> Events;
     private Vector2 ActualMovement;
     private EventLog[] FAL;
@@ -29,6 +30,16 @@ public class Target{
         return this.Position;
     }
 
+    public Vector3 GetWorldPosition()
+    {
+        return this.PositionWorld;
+    }
+
+    public void SetWorldPosition(Vector3 WorldPosition)
+    {
+        this.PositionWorld = WorldPosition;
+    }
+
     public List<EventLog> GetEvents()
     {
         return this.Events;
@@ -36,7 +47,6 @@ public class Target{
 
     public EventLog.Type AddEvent(EventLog ev)
     {
-       
         if (this.Events.Count > 0)
         {
             EventLog last = this.Events[this.Events.Count - 1];
@@ -87,6 +97,35 @@ public class Target{
         return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
     }
 
+    public List<EventLog> GetSum()
+    {
+        List<EventLog> o = new List<EventLog>();
+        if (this.Events.Count > 0)
+        {
+            EventLog Pressed = this.Events[0];
+            EventLog Clicked = Pressed;
+            foreach (EventLog Log in this.Events)
+            {
+                switch (Log.GetType())
+                {
+                    case EventLog.Type.TriggerPressedFirst:
+                        Pressed = Log;
+                        break;
+                    case EventLog.Type.ClickedFirst:
+                        Clicked = Log;
+                        break;
+                    case EventLog.Type.Clicked:
+                        o.Add(Pressed);
+                        o.Add(Clicked);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return o;
+    }
+
     public List<EventLog> GetFirsts()
     {
         return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst) || el.GetType().Equals(EventLog.Type.TriggerPressedFirst)).ToList();
@@ -100,30 +139,40 @@ public class Target{
     public void GetFirstAndLast()
     {
         List<EventLog> ballistic = this.GetBallisticEvents();
-        Debug.Log("TargetId: " + this.Id + " | Count Ballistic: " + ballistic.Count);
         this.FAL = new EventLog[] { ballistic[0], ballistic[ballistic.Count - 1] };
     }
 
     public float CalculateMovementTime()
     {
         this.GetFirstAndLast();
-        return (float) this.FAL[1].GetTimestamp() - this.FAL[0].GetTimestamp();
+        long time = this.FAL[1].GetTimestamp() - this.FAL[0].GetTimestamp();
+        return time;
     }
 
     public float CalculateDistance()
     {
+        Debug.Log("TargetID: " + this.Id);
         Vector3 first = this.FAL[0].GetPointerPos();
         Vector3 last = this.FAL[1].GetPointerPos();
+        Debug.Log("First: " + first.ToString());
+        Debug.Log("Last: " + last.ToString());
         this.ActualMovement = new Vector2(last.x - first.x, last.y - first.y);
+        Debug.Log("ActualMovement: " + this.ActualMovement.ToString() + " | Magn: " + this.ActualMovement.magnitude);
         return this.ActualMovement.magnitude;
     }
 
     public float ClaculateDeviation()
     {
+        Debug.Log("TargetID: " + this.Id);
         Vector3 first = this.FAL[0].GetPointerPos();
-        Vector2 intendedVector = new Vector2(this.Position.x - first.x, this.Position.y - first.y);
+        Debug.Log("Target: " + this.PositionWorld.ToString());
+        Vector2 intendedVector = new Vector2(this.PositionWorld.x - first.x, this.PositionWorld.y - first.y);
+        Debug.Log("IntendedVec: " + intendedVector.ToString());
         Vector2 projectedActualMovement = Vector3.Project(this.ActualMovement, intendedVector);
-        return projectedActualMovement.magnitude - intendedVector.magnitude;
+        Debug.Log("ProjectedMove: " + projectedActualMovement.ToString());
+        float o = Mathf.Abs(projectedActualMovement.magnitude - intendedVector.magnitude);
+        Debug.Log("ProjectedMag: " + projectedActualMovement.magnitude + " | IntendedVector: " + intendedVector.magnitude + " => " + o);
+        return o;
     }
 
 
