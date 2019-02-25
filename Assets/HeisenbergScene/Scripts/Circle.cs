@@ -62,7 +62,7 @@ public class Circle
     public string CalculateTroughput()
     {
         // calculate index of difficulty
-        float ID = Mathf.Log(this.Amplitude / this.Size + 1) / Mathf.Log(2);
+        float ID = Mathf.Log((float) this.Amplitude / this.Size + 1) / Mathf.Log(2);
 
         List<float> movementTimes = this.Targets.Select((el) => el.CalculateMovementTime()).ToList();
         List<float> actualDistances = this.Targets.Select(el => el.CalculateDistance()).ToList();
@@ -74,10 +74,10 @@ public class Circle
         {
             sum += mt;
         }
-        float meanMT = sum / movementTimes.Count;
+        float meanMT = (float) sum / movementTimes.Count;
 
         // calculate regularTP
-        float tpRegular = ID / meanMT;
+        float tpRegular = (float) ID / meanMT;
 
         // calculate effective width
         float sumOfDeviations = 0;
@@ -85,7 +85,7 @@ public class Circle
         {
             sumOfDeviations += deviation;
         }
-        float effectiveWidth = 4.133f * (sumOfDeviations / Mathf.Sqrt(deviations.Count - 1));
+        float effectiveWidth = 4.133f * ((float) sumOfDeviations / Mathf.Sqrt(deviations.Count - 1));
 
         // calculate effective distance
         float sumOfDitances = 0;
@@ -93,13 +93,13 @@ public class Circle
         {
             sumOfDitances += distance;
         }
-        float effectiveDistance = sumOfDitances / actualDistances.Count;
+        float effectiveDistance = (float) sumOfDitances / actualDistances.Count;
 
         // calculate effective ID
-        float IDEffective = Mathf.Log(effectiveDistance / effectiveWidth + 1) / Mathf.Log(2);
+        float IDEffective = Mathf.Log((float) effectiveDistance / effectiveWidth + 1) / Mathf.Log(2);
 
         // calculate effective troughput
-        float tpEffective = IDEffective / meanMT;
+        float tpEffective = (float) IDEffective / meanMT;
 
         return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
             this.Amplitude,

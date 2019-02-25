@@ -6,70 +6,40 @@ using System.IO;
 
 public class Session
 {
+    
+    private static string SaveFile;
+    private static string SumFile;
+    private static string TroughputFile;
 
-    private List<Try> tries;
-    private List<Task> Tasks;
-    private string SaveFile;
-    private string SumFile;
-    private string TroughputFile;
-
-    public Session(List<Task> Tasks)
+    public static void Initalize()
     {
-        this.Tasks = Tasks;
-        this.tries = new List<Try>();
-        this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
-        this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
-        this.TroughputFile = Path.Combine(Application.streamingAssetsPath, "data/TroughputData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        TroughputFile = Path.Combine(Application.streamingAssetsPath, "data/TroughputData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
     }
 
-    public void AddTry(Try t)
+    public static void Save(List<Task> Tasks)
     {
-        this.tries.Add(t);
-    }
-
-    public Try GetTry(int index)
-    {
-        return this.tries[index];
-    }
-
-    public List<Try> GetTries()
-    {
-        return this.tries;
-    }
-
-    public List<Hit> GetAllHits()
-    {
-        List<Hit> o = new List<Hit>();
-        foreach(Try t in this.tries)
-        {
-            o.Concat(t.GetHits());
-        }
-
-        return o;
-    }
-
-    public void Save()
-    {
-        SaveToFile(SaveFile);
-        SaveSum(SumFile);
-        SaveTroughput(TroughputFile);
+        SaveToFile(Tasks);
+        SaveSum(Tasks);
+        SaveTroughput(Tasks);
         Config.SaveToConfig(SaveFile, SumFile, TroughputFile);
     }
 
-    public void SaveToFile(string file)
+    public static void SaveToFile(List<Task> Tasks)
     {
-        if (!File.Exists(file))
+        if (!File.Exists(SaveFile))
         {
-            using (StreamWriter w = File.CreateText(file))
+            using (StreamWriter w = File.CreateText(SaveFile))
             {
                 w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;targetDistance;targetWidth;targetID;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
             }
         }
 
-        using (StreamWriter w = File.AppendText(file))
+        using (StreamWriter w = File.AppendText(SaveFile))
         { 
 
-            foreach (Task task in this.Tasks)
+            foreach (Task task in Tasks)
             {
                 foreach (Circle circle in task.GetCircles())
                 {
@@ -115,19 +85,19 @@ public class Session
         }
     }
 
-    public void SaveSum(string file)
+    public static void SaveSum(List<Task> Tasks)
     {
-        if (!File.Exists(file))
+        if (!File.Exists(SumFile))
         {
-            using (StreamWriter w = File.CreateText(file))
+            using (StreamWriter w = File.CreateText(SumFile))
             {
                 w.WriteLine("id;ArmPos;BodyPos;DOF;ballistic;targetDistance,targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
             }
         }
 
-        using (StreamWriter w = File.AppendText(file))
+        using (StreamWriter w = File.AppendText(SumFile))
         {
-            foreach (Task task in this.Tasks)
+            foreach (Task task in Tasks)
             {
                 foreach (Circle circle in task.GetCircles())
                 {
@@ -167,20 +137,20 @@ public class Session
         }
     }
 
-    public void SaveTroughput(string file)
+    public static void SaveTroughput(List<Task> Tasks)
     {
-        if (!File.Exists(file))
+        if (!File.Exists(TroughputFile))
         {
-            using (StreamWriter w = File.CreateText(file))
+            using (StreamWriter w = File.CreateText(TroughputFile))
             {
                 w.WriteLine("UserId;ArmPos;BodyPos;DOF;targetID;targetDistance;targetWidth;MeanMT;TroughputRegular;EffectiveWidth;EffectiveDistance;EffectiveID;EffectiveTroughput");
             }
         }
 
-        using (StreamWriter w = File.AppendText(file))
+        using (StreamWriter w = File.AppendText(TroughputFile))
         {
 
-            foreach (Task task in this.Tasks)
+            foreach (Task task in Tasks)
             {
                 foreach (Circle circle in task.GetCircles())
                 {
