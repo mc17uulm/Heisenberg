@@ -112,7 +112,7 @@ public class Circle
         float tpEffective = (float) IDEffective / meanMT;
         Debug.Log("TPEFFECTIVE: " + tpEffective);
 
-        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
+        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
             this.Amplitude,
             this.Size,
             meanMT,
@@ -120,7 +120,8 @@ public class Circle
             effectiveWidth,
             effectiveDistance,
             IDEffective,
-            tpEffective
+            tpEffective,
+            sumOfDeviations
         );
 
     }

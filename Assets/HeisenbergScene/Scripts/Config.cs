@@ -11,7 +11,6 @@ public class Config {
 
     public static void init()
     {
-        /**
         if(File.Exists(ConfigFile))
         {
             string data = File.ReadAllText(ConfigFile);
@@ -49,7 +48,7 @@ public class Config {
         {
             UnityEngine.Debug.Log("Config File not found");
             Application.Quit();
-        }*/
+        }
     }
 
     public static void SaveToConfig(string saveFile, string sumFile, string TroughputFile)

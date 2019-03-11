@@ -11,7 +11,7 @@ public class Tunnel : MonoBehaviour {
     
     private static SteamVR_TrackedController controller;
     public GameObject newController;
-    public Vector3 StaticPosition;
+    private static Vector3 StaticPosition;
     private static SteamVR_Controller.Device device = null;
     private static int ControllerId;
     private static EventLog.Type EventType;
@@ -47,10 +47,7 @@ public class Tunnel : MonoBehaviour {
         controller.PadUntouched -= ControllerPadUntouch;
         controller.PadUntouched += ControllerPadUntouch;
 
-        if (StaticPosition == null)
-        {
-            StaticPosition = Config.Start;
-        }
+        StaticPosition = new Vector3(0, 0, 0);
 
         PressValues = new float[] { 0.0f, 0.0f };
         ActualTask = null;
@@ -79,12 +76,16 @@ public class Tunnel : MonoBehaviour {
                     break;
 
                 default:
-                    Debug.Log("No valid mode");
                     newController.transform.position = controller.transform.position;
                     break;
             }
         }
 	}
+
+    public static void UpdateStatic()
+    {
+        StaticPosition = controller.transform.position;
+    }
 
     private void ControllerOnRelease(object sender, ClickedEventArgs e)
     {

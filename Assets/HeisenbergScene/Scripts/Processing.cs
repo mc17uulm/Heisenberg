@@ -274,6 +274,9 @@ public class Processing : MonoBehaviour
         } else if(Input.GetKeyDown(KeyCode.Escape))
         {
             State = State.TERMINATED;
+        } else if(Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            Tunnel.UpdateStatic();
         }
     }
 
@@ -379,7 +382,8 @@ public class Processing : MonoBehaviour
                 Ballistic,
                 NewController.transform.position,
                 NewController.transform.rotation.eulerAngles,
-                Hits[0].point
+                Hits[0].point,
+                State
             );
 
             now.SetType(EventType);
