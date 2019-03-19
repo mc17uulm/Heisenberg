@@ -32,7 +32,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(SaveFile))
             {
-                w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;state;targetDistance;targetWidth;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
+                w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;state;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
             }
         }
 
@@ -51,7 +51,7 @@ public class Session
                             Vector3 controllerRot = log.GetControllerRot();
                             Vector3 pointerPos = log.GetPointerPos();
                             Vector3 targetPos = target.GetWorldPosition();
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};{23};{24}",
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};{23};{24};{25};{26}",
                                 Config.UserId,
                                 task.GetId(),
                                 circle.GetId(),
@@ -65,6 +65,8 @@ public class Session
                                 log.PrintState(),
                                 circle.GetAmplitude(),
                                 circle.GetSize(),
+                                circle.GetDistance(),
+                                circle.GetWidth(),
                                 log.GetPressedValue(),
                                 controllerPos.x,
                                 controllerPos.y,
@@ -91,7 +93,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(SumFile))
             {
-                w.WriteLine("id;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;targetDistance;targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
+                w.WriteLine("id;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
             }
         }
 
@@ -112,7 +114,7 @@ public class Session
                             EventLog click = Sum[i+1];    
                             Vector3 p = press.GetPointerPos();
                             Vector3 c = click.GetPointerPos();
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18}",
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20}",
                                 Config.UserId,
                                 task.GetId(),
                                 circle.GetId(),
@@ -123,6 +125,8 @@ public class Session
                                 click.GetBallistic(),
                                 circle.GetAmplitude(),
                                 circle.GetSize(),
+                                circle.GetDistance(),
+                                circle.GetWidth(),
                                 target.GetId(),
                                 Position.x,
                                 Position.y,
@@ -146,7 +150,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(TroughputFile))
             {
-                w.WriteLine("UserId;ArmPos;BodyPos;DOF;circleID;targetDistance;targetWidth;MeanMT;TroughputRegular;EffectiveWidth;EffectiveDistance;EffectiveID;EffectiveTroughput;SumOfDeviations");
+                w.WriteLine("UserId;ArmPos;BodyPos;DOF;circleID;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;MeanMT;TroughputRegular;EffectiveWidth;EffectiveDistance;EffectiveID;EffectiveTroughput;SumOfDeviations");
             }
         }
 

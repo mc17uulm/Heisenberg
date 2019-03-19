@@ -54,6 +54,7 @@ public class Processing : MonoBehaviour
     private static List<Task> Tasks;
     private static bool Initalized = false;
     private static bool Ballistic = false;
+    private static Vector3 prev = new Vector3(-1,-1,-1);
     private static EventLog.Type EventType = EventLog.Type.Position;
     private static Task ActualTask;
 
@@ -117,6 +118,15 @@ public class Processing : MonoBehaviour
         Vector3 pos = circle.GetTarget().GetPosition();
         targetSphere.transform.localPosition = pos;
         int dimension = circle.GetSize();
+        if(prev.z != -1)
+        {
+            RectTransform rt = (RectTransform)targetSphere.transform;
+            circle.SetDistance(Vector3.Distance(prev, targetSphere.transform.position));
+            circle.SetWidth((circle.GetDistance() * rt.rect.width) / circle.GetAmplitude());
+            prev = new Vector3(-1, -1, -1);
+            Debug.Log("Amplitude: " + circle.GetAmplitude() + " | Distance: " + circle.GetDistance());
+            Debug.Log("Size: " + circle.GetSize() + " | Width: " + circle.GetWidth());
+        }
         targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
         progressIndicator.transform.localPosition = pos;
         progressIndicator.transform.localScale = new Vector3(dimension * 4, dimension * 4, 1);
@@ -180,6 +190,7 @@ public class Processing : MonoBehaviour
 
             case State.FINISHED_TARGET:
                 HideTimer();
+                // Calculate
                 HandleNewRound();
                 break;
 
@@ -199,6 +210,7 @@ public class Processing : MonoBehaviour
     {
         if (Tasks[Index].GetCircle().HasNewRound())
         {
+            prev = targetSphere.transform.position;
             State = State.SHOW_TARGET;
             Ballistic = true;
         }

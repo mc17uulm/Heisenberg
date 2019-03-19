@@ -9,7 +9,9 @@ public class Circle
     private int Id;
     private int Round;
     private int Amplitude;
+    private float Distance;
     private int Size;
+    private float Width;
     private List<Target> Targets;
 
     public Circle(int Id, int Amplitude, int Size, List<Target> Targets)
@@ -59,10 +61,30 @@ public class Circle
         return this.Amplitude;
     }
 
+    public void SetWidth(float Width)
+    {
+        this.Width = Width;
+    }
+
+    public float GetWidth()
+    {
+        return this.Width;
+    }
+
+    public void SetDistance(float Distance)
+    {
+        this.Distance = Distance;
+    }
+
+    public float GetDistance()
+    {
+        return this.Distance;
+    }
+
     public string CalculateTroughput()
     {
         // calculate index of difficulty
-        float ID = Mathf.Log((float) this.Amplitude / this.Size + 1) / Mathf.Log(2);
+        float ID = Mathf.Log((float) this.Distance / this.Width + 1) / Mathf.Log(2);
         Debug.Log("ID: " + ID);
 
         List<float> movementTimes = this.Targets.Select((el) => el.CalculateMovementTime()).ToList();
@@ -112,9 +134,11 @@ public class Circle
         float tpEffective = (float) IDEffective / meanMT;
         Debug.Log("TPEFFECTIVE: " + tpEffective);
 
-        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
             this.Amplitude,
             this.Size,
+            this.Distance,
+            this.Width,
             meanMT,
             tpRegular,
             effectiveWidth,
