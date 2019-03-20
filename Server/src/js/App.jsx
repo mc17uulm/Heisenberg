@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Form from './Form.jsx';
 import Table from './Table.jsx';
 import Getter from './Getter.js';
 import Modal from "./Modal.jsx";

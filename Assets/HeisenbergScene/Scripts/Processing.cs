@@ -62,7 +62,6 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
-        Session.Initalize();
 
         LaserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -93,7 +92,10 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        if(!State.Equals(State.SAVED) && !State.Equals(State.START))
+        Debug.Log("State: " + Enum.GetName(typeof(State), State));
+        Debug.Log("Ballistic: " + Ballistic);
+
+        if(!State.Equals(State.SAVED))
         {
             ProcessHits();
             ExecuteState();
@@ -183,7 +185,8 @@ public class Processing : MonoBehaviour
             case State.TERMINATED:
                 State = State.SAVED;
                 ShowCommand("Finished");
-                Session.Save();
+                session = new Session(Tasks);
+                session.Save();
                 break;
 
             default:
@@ -268,6 +271,14 @@ public class Processing : MonoBehaviour
                 default:
                     break;
             }
+        }
+    }
+
+    public static void addEvent(PointerEvent e)
+    {
+        if (stack.Count > 0)
+        {
+            stack[stack.Count - 1].SetEvent(PointerEvent.Released);
         }
     }
 
@@ -358,18 +369,42 @@ public class Processing : MonoBehaviour
         GameObject Obj;
         RaycastHit Hit;
 
-        if (Hits.Length > 0)
+        if (Contains(Hits, "Sphere", out Obj, out Hit))
         {
-            if (Contains(Hits, "Sphere", out Obj, out Hit))
+            if (Hits.Length > 0)
             {
                 HandleSphereHit();
-            }
-            else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
-            {
-                HandlePanelHit();
+                EventLog now = new EventLog(
+                    PressValues[0],
+                    Ballistic,
+                    NewController.transform.position,
+                    NewController.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
+
+                now.SetType(EventType);
+
+                EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+                Debug.Log(Enum.GetName(typeof(DOF), ActualTask.GetDegreeOfFreedom()));
             }
 
-            EventLogger.AddHit(Ballistic, NewController.transform.position, NewController.transform.rotation.eulerAngles, Hits[0].point, ActualTask);
+        }
+        else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
+        {
+            HandlePanelHit();
+            EventLog now = new EventLog(
+                    PressValues[0],
+                    Ballistic,
+                    NewController.transform.position,
+                    NewController.transform.rotation.eulerAngles,
+                    Hits[0].point
+                );
+
+            now.SetType(EventType);
+
+            EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
+
+
         }
     }
 

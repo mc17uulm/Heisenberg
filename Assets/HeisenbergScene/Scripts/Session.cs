@@ -6,104 +6,178 @@ using System.IO;
 
 public class Session
 {
-   
-    private static string SaveFile;
-    private static string SumFile;
-    private static string TroughputFile;
 
-    public static void Initalize()
+    private List<Try> tries;
+    private List<Task> Tasks;
+    private string SaveFile;
+    private string SumFile;
+    private string TroughputFile;
+
+    public Session(List<Task> Tasks)
     {
-        SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
-        SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
-        TroughputFile = Path.Combine(Application.streamingAssetsPath, "data/TroughputData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.Tasks = Tasks;
+        this.tries = new List<Try>();
+        this.SaveFile = Path.Combine(Application.streamingAssetsPath, "data/FullData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.SumFile = Path.Combine(Application.streamingAssetsPath, "data/SumData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
+        this.TroughputFile = Path.Combine(Application.streamingAssetsPath, "data/TroughputData_" + Config.UserId + "_" + System.DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".csv");
     }
 
-    public static void Save()
+    public void AddTry(Try t)
     {
-        SaveSum();
-        SaveTroughput();
+        this.tries.Add(t);
+    }
+
+    public Try GetTry(int index)
+    {
+        return this.tries[index];
+    }
+
+    public List<Try> GetTries()
+    {
+        return this.tries;
+    }
+
+    public List<Hit> GetAllHits()
+    {
+        List<Hit> o = new List<Hit>();
+        foreach(Try t in this.tries)
+        {
+            o.Concat(t.GetHits());
+        }
+
+        return o;
+    }
+
+    public void Save()
+    {
+        SaveToFile(SaveFile);
+        SaveSum(SumFile);
+        SaveTroughput(TroughputFile);
         Config.SaveToConfig(SaveFile, SumFile, TroughputFile);
     }
 
-    public static void AddToFile(EventLog Log)
+    public void SaveToFile(string file)
     {
-        if (!File.Exists(SaveFile))
+        if (!File.Exists(file))
         {
-            using (StreamWriter w = File.CreateText(SaveFile))
+            using (StreamWriter w = File.CreateText(file))
             {
-                w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;targetDistance;targetWidth;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
+                w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;targetDistance;targetWidth;targetID;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
             }
         }
 
-        using (StreamWriter w = File.AppendText(SaveFile))
-        {
-                w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-                    Config.UserId,
-                    Log.PrintIds(),
-                    Log.PrintTask(),
-                    Log.GetBallistic(),
-                    Log.GetTimestamp(),
-                    Log.PrintType(),
-                    Log.PrintCircle(),
-                    Log.GetPressedValue(),
-                    Log.PrintPositions()
-                ));
-        }
-    }
+        using (StreamWriter w = File.AppendText(file))
+        { 
 
-    public static void SaveSum()
-    {
-        if (!File.Exists(SumFile))
-        {
-            using (StreamWriter w = File.CreateText(SumFile))
+            foreach (Task task in this.Tasks)
             {
-                w.WriteLine("id;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;targetDistance,targetWidth;target.x;target.y;target.z;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
-            }
-        }
-
-        using (StreamWriter w = File.AppendText(SumFile))
-        {
-            List<EventLog> Firsts = EventLogger.GetFirsts();
-            for (int i = 0; i < Firsts.Count; i=i+2)
-            {
-                EventLog Press = Firsts[i];
-                EventLog Click = Firsts[i + 1];
-                if(!Press.GetType().Equals(EventLog.Type.TriggerPressedFirst) || !Click.GetType().Equals(EventLog.Type.ClickedFirst))
+                foreach (Circle circle in task.GetCircles())
                 {
-                    Debug.Log("ERROR: Save Sum is not working");
-                }
-                else
-                {
-                    w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11}",
-                       Config.UserId,
-                       Click.PrintIds(),
-                       Click.PrintTask(),
-                       Click.GetBallistic(),
-                       Click.PrintCircle(),
-                       Click.PrintTarget(),
-                       Press.GetPointerPos().x,
-                       Press.GetPointerPos().y,
-                       Click.GetPointerPos().x, 
-                       Click.GetPointerPos().y,
-                       Press.GetPointerPos().x - Click.GetPointerPos().x,
-                       Press.GetPointerPos().y - Click.GetPointerPos().y
-                    ));
+                    foreach (Target target in circle.GetTargets())
+                    {
+                        foreach (EventLog log in target.GetEvents())
+                        {
+                            Vector3 controllerPos = log.GetControllerPos();
+                            Vector3 controllerRot = log.GetControllerRot();
+                            Vector3 pointerPos = log.GetPointerPos();
+                            Vector3 targetPos = target.GetPosition();
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};{23};{24}",
+                                Config.UserId,
+                                task.GetId(),
+                                circle.GetId(),
+                                target.GetId(),
+                                task.PrintArmPosition(),
+                                task.PrintBodyPosition(),
+                                task.PrintDOF(),
+                                log.GetBallistic(),
+                                log.GetTimestamp(),
+                                log.PrintType(),
+                                circle.GetAmplitude(),
+                                circle.GetSize(),
+                                target.GetId(),
+                                log.GetPressedValue(),
+                                controllerPos.x,
+                                controllerPos.y,
+                                controllerPos.z,
+                                controllerRot.x,
+                                controllerRot.y,
+                                controllerRot.z,
+                                targetPos.x,
+                                targetPos.y,
+                                targetPos.z,
+                                pointerPos.x,
+                                pointerPos.y
+                            ));
+                        }
+                    }
                 }
             }
         }
     }
 
-    public static void SaveTroughput()
+    public void SaveSum(string file)
     {
-        if (!File.Exists(TroughputFile))
+        if (!File.Exists(file))
         {
-            using (StreamWriter w = File.CreateText(TroughputFile))
+            using (StreamWriter w = File.CreateText(file))
+            {
+                w.WriteLine("id;ArmPos;BodyPos;DOF;ballistic;targetDistance,targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
+            }
+        }
+
+        using (StreamWriter w = File.AppendText(file))
+        {
+            foreach (Task task in this.Tasks)
+            {
+                foreach (Circle circle in task.GetCircles())
+                {
+                    foreach (Target target in circle.GetTargets())
+                    {
+                        List<EventLog> Pressed = target.GetPressedPosition();
+                        List<EventLog> Clicked = target.GetClickedPosition();
+                        Vector3 Position = target.GetPosition();
+                        for (int i = 0; i < Clicked.Count; i++)
+                        { 
+                            EventLog press = Pressed[i];
+                            EventLog click = Clicked[i];    
+                            Vector3 p = press.GetPointerPos();
+                            Vector3 c = click.GetPointerPos();
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15}",
+                                Config.UserId,
+                                task.PrintArmPosition(),
+                                task.PrintBodyPosition(),
+                                task.PrintDOF(),
+                                press.GetBallistic(),
+                                circle.GetAmplitude(),
+                                circle.GetSize(),
+                                target.GetId(),
+                                Position.x,
+                                Position.y,
+                                p.x,
+                                p.y,
+                                c.x,
+                                c.y,
+                                p.x - c.x,
+                                p.y - c.y
+                             ));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void SaveTroughput(string file)
+    {
+        if (!File.Exists(file))
+        {
+            using (StreamWriter w = File.CreateText(file))
             {
                 w.WriteLine("UserId;ArmPos;BodyPos;DOF;targetID;targetDistance;targetWidth;MeanMT;TroughputRegular;EffectiveWidth;EffectiveDistance;EffectiveID;EffectiveTroughput");
             }
         }
 
-        using (StreamWriter w = File.AppendText(TroughputFile))
+        using (StreamWriter w = File.AppendText(file))
         {
 
             foreach (Task task in this.Tasks)
@@ -123,7 +197,7 @@ public class Session
         }
     }
 
-    private static string BuildHexString()
+    private string BuildHexString()
     {
         string hexValue = string.Empty;
         int num;
@@ -138,7 +212,7 @@ public class Session
         return hexValue;
     }
 
-    public static Vector3 GetAverage(List<Vector3> stack)
+    public Vector3 GetAverage(List<Vector3> stack)
     {
         int volume = stack.Count;
 
