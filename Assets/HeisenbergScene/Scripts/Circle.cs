@@ -61,9 +61,9 @@ public class Circle
         return this.Amplitude;
     }
 
-    public void SetWidth(float Width)
+    public void SetWidth()
     {
-        this.Width = Width;
+        this.Width = ((this.Distance * this.Size) / this.Amplitude);
     }
 
     public float GetWidth()

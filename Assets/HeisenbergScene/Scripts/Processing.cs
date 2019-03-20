@@ -120,11 +120,12 @@ public class Processing : MonoBehaviour
         int dimension = circle.GetSize();
         if(prev.z != -1)
         {
-            RectTransform rt = (RectTransform)targetSphere.transform;
+            RectTransform rt = (RectTransform) targetSphere.transform;
             circle.SetDistance(Vector3.Distance(prev, targetSphere.transform.position));
-            circle.SetWidth((circle.GetDistance() * rt.rect.width) / circle.GetAmplitude());
+            circle.SetWidth();
             prev = new Vector3(-1, -1, -1);
             Debug.Log("Amplitude: " + circle.GetAmplitude() + " | Distance: " + circle.GetDistance());
+            //TODO: Test values of width in run
             Debug.Log("Size: " + circle.GetSize() + " | Width: " + circle.GetWidth());
         }
         targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
