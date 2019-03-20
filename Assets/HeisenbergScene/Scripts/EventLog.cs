@@ -23,13 +23,14 @@ public class EventLog
 
     private long Timestamp;
     private Type type;
+    private State state;
     private float PressedValue;
     private bool Ballistic;
     private Vector3 ControllerPosition;
     private Vector3 ControllerRotation;
     private Vector3 PointerPosition;
 
-    public EventLog(float PressedValue, bool Ballistic, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition)
+    public EventLog(float PressedValue, bool Ballistic, Vector3 ControllerPosition, Vector3 ControllerRotation, Vector3 PointerPosition, State state)
     {
         this.Timestamp = GetNow();
         this.type = Type.Position;
@@ -38,6 +39,7 @@ public class EventLog
         this.ControllerPosition = ControllerPosition;
         this.ControllerRotation = ControllerRotation;
         this.PointerPosition = PointerPosition;
+        this.state = state;
     }
 
     public float GetPressedValue()
@@ -53,6 +55,11 @@ public class EventLog
     public new Type GetType()
     {
         return this.type;
+    }
+
+    public new State GetState()
+    {
+        return this.state;
     }
 
     public long GetTimestamp()
@@ -83,6 +90,11 @@ public class EventLog
     public string PrintType()
     {
         return Enum.GetName(typeof(Type), this.type);
+    }
+
+    public string PrintState()
+    {
+        return Enum.GetName(typeof(State), this.state);
     }
 
     private long GetNow()

@@ -90,10 +90,10 @@ public class Task
             int n = Config.CircleSize;
             for (int k = 0; k < n; k++)
             {
-                Vector3 v = new Vector3(Convert.ToSingle(((double) Amp / 2) * Math.Sin(k * ((double) 360 / n))), Convert.ToSingle(((double) Amp / 2) * Math.Cos(k * ((double) 360 / n))), 0);
+                Vector3 v = new Vector3(Convert.ToSingle(((double) Amp / 2) * Math.Sin(k * ((double) 360 / n) * (Math.PI / 180))), Convert.ToSingle(((double) Amp / 2) * Math.Cos(k * ((double) 360 / n) * (Math.PI / 180))), 0);
                 Targets.Add(new Target(k, v));
             }
-            this.Circles.Add(new Circle(j, Amp, Size, Targets));
+            this.Circles.Add(new Circle(j, Amp, Size, this.SortCircle(Targets)));
         }
     }
 
@@ -159,6 +159,26 @@ public class Task
     public void AddToStack(Position pos)
     {
         this.Stack.Add(pos);
+    }
+
+    public List<Target> SortCircle(List<Target> Targets)
+    {
+        List<Target> o = new List<Target>();
+        o.Add(Targets[0]);
+        int m = Targets.Count - 1;
+        for(int i = 1; i < Targets.Count; i++)
+        {
+            int x = (int) Math.Ceiling((double) i / 2) - 1;
+            if((i%2) == 0)
+            {
+                o.Add(Targets[m - x]);
+            }
+            else
+            {
+                o.Add(Targets[(int)Math.Floor((float)m / 2) - x]);
+            }
+        }
+        return o;
     }
 
 

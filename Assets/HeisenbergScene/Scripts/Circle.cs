@@ -9,7 +9,9 @@ public class Circle
     private int Id;
     private int Round;
     private int Amplitude;
+    private float Distance;
     private int Size;
+    private float Width;
     private List<Target> Targets;
 
     public Circle(int Id, int Amplitude, int Size, List<Target> Targets)
@@ -59,10 +61,31 @@ public class Circle
         return this.Amplitude;
     }
 
+    public void SetWidth(float Width)
+    {
+        this.Width = Width;
+    }
+
+    public float GetWidth()
+    {
+        return this.Width;
+    }
+
+    public void SetDistance(float Distance)
+    {
+        this.Distance = Distance;
+    }
+
+    public float GetDistance()
+    {
+        return this.Distance;
+    }
+
     public string CalculateTroughput()
     {
         // calculate index of difficulty
-        float ID = Mathf.Log(this.Amplitude / this.Size + 1) / Mathf.Log(2);
+        float ID = Mathf.Log((float) this.Distance / this.Width + 1) / Mathf.Log(2);
+        Debug.Log("ID: " + ID);
 
         List<float> movementTimes = this.Targets.Select((el) => el.CalculateMovementTime()).ToList();
         List<float> actualDistances = this.Targets.Select(el => el.CalculateDistance()).ToList();
@@ -74,10 +97,14 @@ public class Circle
         {
             sum += mt;
         }
-        float meanMT = sum / movementTimes.Count;
+
+        // MovementTime is measured in milliseconds. To fit the equation, we have to convert them to seconds
+        float meanMT = (float) sum / movementTimes.Count / 1000;
+        Debug.Log("MEANMT: " + meanMT);
 
         // calculate regularTP
-        float tpRegular = ID / meanMT;
+        float tpRegular = (float) ID / meanMT;
+        Debug.Log("TPREG: " + tpRegular);
 
         // calculate effective width
         float sumOfDeviations = 0;
@@ -85,31 +112,40 @@ public class Circle
         {
             sumOfDeviations += deviation;
         }
-        float effectiveWidth = 4.133f * (sumOfDeviations / Mathf.Sqrt(deviations.Count - 1));
+        Debug.Log("SUMOFDEV: " + sumOfDeviations);
+        float effectiveWidth = 4.133f * ((float) sumOfDeviations / Mathf.Sqrt(deviations.Count - 1));
+        Debug.Log("EFFECTIVE WIDTH: " + effectiveWidth);
 
         // calculate effective distance
-        float sumOfDitances = 0;
+        float sumOfDistances = 0;
         foreach(float distance in actualDistances)
         {
-            sumOfDitances += distance;
+            sumOfDistances += distance;
         }
-        float effectiveDistance = sumOfDitances / actualDistances.Count;
+        Debug.Log("SumOfDistances: " + sumOfDistances);
+        float effectiveDistance = (float) sumOfDistances / actualDistances.Count;
+        Debug.Log("EffectiveDistance: " + effectiveDistance);
 
         // calculate effective ID
-        float IDEffective = Mathf.Log(effectiveDistance / effectiveWidth + 1) / Mathf.Log(2);
+        float IDEffective = Mathf.Log((float) effectiveDistance / effectiveWidth + 1) / Mathf.Log(2);
+        Debug.Log("IDEFECTIVE: " + IDEffective);
 
         // calculate effective troughput
-        float tpEffective = IDEffective / meanMT;
+        float tpEffective = (float) IDEffective / meanMT;
+        Debug.Log("TPEFFECTIVE: " + tpEffective);
 
-        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7}",
+        return string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10}",
             this.Amplitude,
             this.Size,
+            this.Distance,
+            this.Width,
             meanMT,
             tpRegular,
             effectiveWidth,
             effectiveDistance,
             IDEffective,
-            tpEffective
+            tpEffective,
+            sumOfDeviations
         );
 
     }

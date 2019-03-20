@@ -79,6 +79,7 @@
     <Compile Include="Assets\HeisenbergScene\Scripts\Try.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\Tunnel.cs" />
     <Compile Include="Assets\HeisenbergScene\Scripts\VRUIItem.cs" />
+    <Compile Include="Assets\StaticJitter.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_Teleporter.cs" />

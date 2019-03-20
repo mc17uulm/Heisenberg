@@ -54,6 +54,7 @@ public class Processing : MonoBehaviour
     private static List<Task> Tasks;
     private static bool Initalized = false;
     private static bool Ballistic = false;
+    private static Vector3 prev = new Vector3(-1,-1,-1);
     private static EventLog.Type EventType = EventLog.Type.Position;
     private static Task ActualTask;
 
@@ -62,6 +63,7 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
+        Session.Initalize();
 
         LaserPointer = GetComponent<SteamVR_LaserPointer>();
 
@@ -92,12 +94,12 @@ public class Processing : MonoBehaviour
 
         ProcessButtons();
 
-        Debug.Log("State: " + Enum.GetName(typeof(State), State));
-        Debug.Log("Ballistic: " + Ballistic);
-
-        if(!State.Equals(State.SAVED))
+        if(!State.Equals(State.SAVED) && !State.Equals(State.START))
         {
-            ProcessHits();
+            if(!State.Equals(State.SHOW_TASK))
+            {
+                ProcessHits();
+            }
             ExecuteState();
         }
 
@@ -116,10 +118,19 @@ public class Processing : MonoBehaviour
         Vector3 pos = circle.GetTarget().GetPosition();
         targetSphere.transform.localPosition = pos;
         int dimension = circle.GetSize();
+        if(prev.z != -1)
+        {
+            RectTransform rt = (RectTransform)targetSphere.transform;
+            circle.SetDistance(Vector3.Distance(prev, targetSphere.transform.position));
+            circle.SetWidth((circle.GetDistance() * rt.rect.width) / circle.GetAmplitude());
+            prev = new Vector3(-1, -1, -1);
+            Debug.Log("Amplitude: " + circle.GetAmplitude() + " | Distance: " + circle.GetDistance());
+            Debug.Log("Size: " + circle.GetSize() + " | Width: " + circle.GetWidth());
+        }
         targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
         progressIndicator.transform.localPosition = pos;
         progressIndicator.transform.localScale = new Vector3(dimension * 4, dimension * 4, 1);
-        Vector3 now = targetSphere.transform.localPosition;
+        circle.GetTarget().SetWorldPosition(targetSphere.transform.position);
     }
 
     public void HideTarget()
@@ -179,14 +190,14 @@ public class Processing : MonoBehaviour
 
             case State.FINISHED_TARGET:
                 HideTimer();
+                // Calculate
                 HandleNewRound();
                 break;
 
             case State.TERMINATED:
                 State = State.SAVED;
                 ShowCommand("Finished");
-                session = new Session(Tasks);
-                session.Save();
+                Session.Save(Tasks);
                 break;
 
             default:
@@ -199,6 +210,7 @@ public class Processing : MonoBehaviour
     {
         if (Tasks[Index].GetCircle().HasNewRound())
         {
+            prev = targetSphere.transform.position;
             State = State.SHOW_TARGET;
             Ballistic = true;
         }
@@ -271,6 +283,12 @@ public class Processing : MonoBehaviour
                 default:
                     break;
             }
+        } else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            State = State.TERMINATED;
+        } else if(Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            Tunnel.UpdateStatic();
         }
     }
 
@@ -369,43 +387,31 @@ public class Processing : MonoBehaviour
         GameObject Obj;
         RaycastHit Hit;
 
-        if (Contains(Hits, "Sphere", out Obj, out Hit))
+        if(Hits.Length > 0)
         {
-            if (Hits.Length > 0)
-            {
-                HandleSphereHit();
-                EventLog now = new EventLog(
-                    PressValues[0],
-                    Ballistic,
-                    NewController.transform.position,
-                    NewController.transform.rotation.eulerAngles,
-                    Hits[0].point
-                );
-
-                now.SetType(EventType);
-
-                EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
-                Debug.Log(Enum.GetName(typeof(DOF), ActualTask.GetDegreeOfFreedom()));
-            }
-
-        }
-        else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
-        {
-            HandlePanelHit();
             EventLog now = new EventLog(
-                    PressValues[0],
-                    Ballistic,
-                    NewController.transform.position,
-                    NewController.transform.rotation.eulerAngles,
-                    Hits[0].point
-                );
+                PressValues[0],
+                Ballistic,
+                NewController.transform.position,
+                NewController.transform.rotation.eulerAngles,
+                Hits[0].point,
+                State
+            );
 
             now.SetType(EventType);
 
             EventType = ActualTask.GetCircle().GetTarget().AddEvent(now);
 
-
+            if (Contains(Hits, "Sphere", out Obj, out Hit))
+            {
+                HandleSphereHit();
+            }
+            else if (Contains(Hits, "TargetPanel", out Obj, out Hit))
+            {
+                HandlePanelHit();
+            }
         }
+        
     }
 
     public static void HandleClick()
