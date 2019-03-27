@@ -14,8 +14,6 @@ class Table extends Component
                 <thead className="thead-dark">
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Vorname</th>
-                        <th scope="col">Nachname</th>
                         <th scope="col">Date</th>
                         <th scope="col">State</th>
                         <th scope="col">Files</th>
