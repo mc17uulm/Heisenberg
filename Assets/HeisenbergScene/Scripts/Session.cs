@@ -45,7 +45,7 @@ public class Session
                 {
                     foreach (Target target in circle.GetTargets())
                     {
-                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}{5}", task.GetId(), circle.GetId(), target.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
+                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}", task.GetId(), circle.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
                         foreach (EventLog log in target.GetEvents())
                         {
                             Vector3 controllerPos = log.GetControllerPos();
@@ -107,7 +107,7 @@ public class Session
                 {
                     foreach (Target target in circle.GetTargets())
                     {
-                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}{5}", task.GetId(), circle.GetId(), target.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
+                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}", task.GetId(), circle.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
                         List<Vector3 []> Sum = target.GetSum();
                         Vector3 Position = target.GetWorldPosition();
                         for (int i = 0; i < Sum.Count; i++)
