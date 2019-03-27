@@ -32,7 +32,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(SaveFile))
             {
-                w.WriteLine("UserId;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;state;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
+                w.WriteLine("UserId;ConditionHash;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;timestamp;event;state;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;TriggerValue;ControllerPos.X;ControllerPos.Y;ControllerPos.Z;ControllerRot.X;ControllerRot.Y;ControllerRot.Z;TargetPos.X;TargetPos.Y;TargetPos.Z;PointerPos.X;PointerPos.Y");
             }
         }
 
@@ -45,14 +45,16 @@ public class Session
                 {
                     foreach (Target target in circle.GetTargets())
                     {
+                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}{5}", task.GetId(), circle.GetId(), target.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
                         foreach (EventLog log in target.GetEvents())
                         {
                             Vector3 controllerPos = log.GetControllerPos();
                             Vector3 controllerRot = log.GetControllerRot();
                             Vector3 pointerPos = log.GetPointerPos();
                             Vector3 targetPos = target.GetWorldPosition();
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};{23};{24};{25};{26}",
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21};{22};{23};{24};{25};{26};{27}",
                                 Config.UserId,
+                                hash,
                                 task.GetId(),
                                 circle.GetId(),
                                 target.GetId(),
@@ -93,7 +95,7 @@ public class Session
         {
             using (StreamWriter w = File.CreateText(SumFile))
             {
-                w.WriteLine("id;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
+                w.WriteLine("id;ConditionHash;TaskNo;CircleNo;TargetNo;ArmPos;BodyPos;DOF;ballistic;targetDistanceLocal;targetWidthLocal;targetDistance;targetWidth;targetID;target.x;target.y;pressed.x;pressed.y;click.x;click.y;difference.x;difference.y");
             }
         }
 
@@ -105,24 +107,25 @@ public class Session
                 {
                     foreach (Target target in circle.GetTargets())
                     {
-                        List<EventLog> Sum = target.GetSum();
+                        string hash = ComputeHash(string.Format("{0}{1}{2}{3}{4}{5}", task.GetId(), circle.GetId(), target.GetId(), task.PrintArmPosition(), task.PrintBodyPosition(), task.PrintDOF()));
+                        List<Vector3 []> Sum = target.GetSum();
                         Vector3 Position = target.GetWorldPosition();
-                        Debug.Log("SumCount=" + Sum.Count);
-                        for (int i = 0; i < Sum.Count; i=i+2)
-                        { 
-                            EventLog press = Sum[i];
-                            EventLog click = Sum[i+1];    
-                            Vector3 p = press.GetPointerPos();
-                            Vector3 c = click.GetPointerPos();
-                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20}",
+                        for (int i = 0; i < Sum.Count; i++)
+                        {
+                            bool ballistic = i == 0;
+                            Vector3[] vecs = Sum[i];
+                            Vector3 p = vecs[0];
+                            Vector3 c = vecs[1];
+                            w.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9};{10};{11};{12};{13};{14};{15};{16};{17};{18};{19};{20};{21}",
                                 Config.UserId,
+                                hash,
                                 task.GetId(),
                                 circle.GetId(),
                                 target.GetId(),
                                 task.PrintArmPosition(),
                                 task.PrintBodyPosition(),
                                 task.PrintDOF(),
-                                click.GetBallistic(),
+                                ballistic,
                                 circle.GetAmplitude(),
                                 circle.GetSize(),
                                 circle.GetDistance(),
@@ -142,6 +145,17 @@ public class Session
                 }
             }
         }
+    }
+
+    public static string ComputeHash(string input) {
+        // Adler32 hashing algo
+        const int mod = 65521;
+        uint a = 1, b = 0;
+        foreach (char c in input) {
+            a = (a + c) % mod;
+            b = (b + a) % mod;
+        }
+        return "" + ((b << 16) | a);
     }
 
     public static void SaveTroughput(List<Task> Tasks)

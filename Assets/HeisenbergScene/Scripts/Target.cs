@@ -97,33 +97,44 @@ public class Target{
         return this.Events.Where(el => el.GetType().Equals(EventLog.Type.ClickedFirst)).ToList();
     }
 
-    public List<EventLog> GetSum()
+    public List<Vector3 []> GetSum()
     {
-        List<EventLog> o = new List<EventLog>();
+        List<Vector3 []> o = new List<Vector3 []>();
         if (this.Events.Count > 0)
         {
-            EventLog Pressed = this.Events[0];
-            EventLog Clicked = Pressed;
-            foreach (EventLog Log in this.Events)
-            {
-                switch (Log.GetType())
-                {
-                    case EventLog.Type.TriggerPressedFirst:
-                        Pressed = Log;
-                        break;
-                    case EventLog.Type.ClickedFirst:
-                        Clicked = Log;
-                        break;
-                    case EventLog.Type.Clicked:
-                        o.Add(Pressed);
-                        o.Add(Clicked);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            o.Add(GetPos(GetBallisticEvents()));
+            o.Add(GetPos(GetNonBallisticEvents()));
         }
         return o;
+    }
+
+    private Vector3[] GetPos(List<EventLog> Logs) {
+        List<Vector3[]> l = new List<Vector3[]>();
+        bool clicked = false;
+        EventLog Pressed = Logs[0];
+        EventLog Clicked = Pressed;
+        foreach (EventLog Log in Logs) {
+            switch (Log.GetType()) {
+                case EventLog.Type.TriggerPressedFirst:
+                    Pressed = Log;
+                    clicked = false;
+                    break;
+                case EventLog.Type.ClickedFirst:
+                    Clicked = Log;
+                    clicked = false;
+                    break;
+                case EventLog.Type.Clicked:
+                    if (!clicked) {
+                        l.Add(new Vector3[] { Pressed.GetPointerPos(), Clicked.GetPointerPos() });
+                        clicked = true;
+                    }
+                    break;
+                default:
+                    clicked = false;
+                    break;
+            }
+        }
+        return l[l.Count - 1];
     }
 
     public List<EventLog> GetFirsts()
@@ -134,6 +145,10 @@ public class Target{
     private List<EventLog> GetBallisticEvents()
     {
         return this.Events.Where(el => el.GetBallistic()).ToList();
+    }
+
+    private List<EventLog> GetNonBallisticEvents() {
+        return this.Events.Where(el => !el.GetBallistic()).ToList();
     }
 
     public void GetFirstAndLast()

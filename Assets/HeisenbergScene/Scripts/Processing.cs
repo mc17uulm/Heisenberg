@@ -34,7 +34,7 @@ public class Processing : MonoBehaviour
     // indicates how long user is in target
     public Image progressIndicator;
     
-    public Text debugText;
+    // public Text debugText;
     public Text commandText;
     
     public GameObject targetSphere;
@@ -77,10 +77,10 @@ public class Processing : MonoBehaviour
         UpdateTask();
         HideTimer();
 
-        if(!Config.Debug)
+        /**if(!Config.Debug)
         {
             debugText.enabled = false;
-        }
+        }*/
 
         State = State.START;
 
