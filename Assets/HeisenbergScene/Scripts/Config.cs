@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 public class Config {
 
     private static string ConfigFile = Path.Combine(Application.streamingAssetsPath, "config.json");
     private static ConfigObject config;
     private static DataObject active = null;
+    public static int UserId = 1;
+
+    // Adds debug information to screen
+    public static bool Debug = false;
+
+    // User has to be Timespan ms in target to successfully click
+    public static int Timespan = 500;
 
     public static void init()
     {
@@ -20,29 +27,16 @@ public class Config {
             Debug = obj.debug;
             Timespan = obj.timespan;
 
-            bool start = false;
-            foreach(DataObject d in obj.data)
+            int id = -1;
+            foreach (DataObject d in obj.data)
             {
-                if(d.state.Equals("added"))
+                if (d.id > id)
                 {
-                    start = true;
-                    active = d;
+                    id = d.id;
                 }
             }
 
-            UnityEngine.Debug.Log("Start: " + start);
-            start = true;
-
-            if(!start)
-            {
-                UnityEngine.Debug.Log("No active DataObject");
-                Application.Quit();
-            }
-            else
-            {
-                UserId = active.id;
-                SaveFiles = active.files;
-            }
+            UserId = id + 1;
 
         } else
         {
@@ -60,27 +54,12 @@ public class Config {
             TroughputFile
         };
 
-        foreach(DataObject d in config.data)
-        {
-            if(d.state.Equals("added"))
-            {
-                d.files = files;
-                d.state = "finished";
-            }
-        }
+        config.data.Add(new DataObject(UserId, DateTime.UtcNow.ToString(), files));
 
         string json = JsonUtility.ToJson(config);
         File.WriteAllText(ConfigFile, json);
 
     }
-    
-    public static int UserId = 1;
-
-    // Adds debug information to screen
-    public static bool Debug = false;
-
-    // User has to be Timespan ms in target to successfully click
-    public static int Timespan = 500;
 
     public static bool Pad = false;
 
