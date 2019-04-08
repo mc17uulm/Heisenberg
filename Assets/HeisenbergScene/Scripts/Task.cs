@@ -52,6 +52,15 @@ public class Task
         this.Stack = new List<Position>();
     }
 
+    public void Reset()
+    {
+        this.Round = 0;
+        foreach(Circle c in this.Circles)
+        {
+            c.Reset();
+        }
+    }
+
     public int GetId()
     {
         return this.Id;

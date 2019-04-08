@@ -20,6 +20,11 @@ public class Target{
         this.FAL = new EventLog[2];
     }
 
+    public void Reset()
+    {
+        this.Events = new List<EventLog>();
+    }
+
     public int GetId()
     {
         return this.Id;

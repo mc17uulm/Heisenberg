@@ -77,11 +77,6 @@ public class Processing : MonoBehaviour
         UpdateTask();
         HideTimer();
 
-        /**if(!Config.Debug)
-        {
-            debugText.enabled = false;
-        }*/
-
         State = State.START;
 
         ShowCommand("Start");
@@ -301,38 +296,6 @@ public class Processing : MonoBehaviour
         }
     }
 
-    /**private void SetTargets(bool first = false)
-    {
-        if(first)
-        {
-            targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
-            targetSphere.transform.localPosition = Config.Start;
-            progressIndicator.transform.localPosition = Config.Start;
-            progressIndicator.enabled = false;
-        }
-        else
-        {
-            targetSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(1, 0, 0.8135681f));
-            targetSphere.transform.localPosition = TargetPositions[Index];
-            progressIndicator.transform.localPosition = TargetPositions[Index];
-        }
-    }
-
-    public void DebugLog(string log = "")
-    {
-        string o = "";
-        if(Tries == 1)
-        {
-            o += "Start!\r\n";
-        } else
-        {
-            o += "New Round!\r\n";
-        }
-        o += "Id: " + Config.UserId + "\r\nRound " + Tries + "/8" + log;
-
-        debugText.text = o;
-    }*/
-
     public static List<Task> CreateTasks(LatinSquare LTC, LatinSquare LTT)
     {
         int[] column = LTC.GetColumn(Config.UserId % 8);
@@ -346,22 +309,10 @@ public class Processing : MonoBehaviour
             ArmPosition Arm = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1 ? ArmPosition.STRECHED : ArmPosition.APPLIED;
             DOF dof = state % 2 == 0 ? DOF.THREE : DOF.SIX;
 
-            // Is PAD option available?
-            if (Config.Pad)
-            {
-                Task first = new Task((i * 2), Body, Arm, dof);
-                Task second = new Task((i * 2) + 1, Body, Arm, dof, InputType.PAD);
-                first.CreateCircles(LTT, (((i*2)+1)*2*column.Length)%LTT.GetSize());
-                second.CreateCircles(LTT, (((i * 2) + 1) * 2 * column.Length) % LTT.GetSize());
-                Tasks.Add(first);
-                Tasks.Add(second);
-            }
-            else
-            {
-                Task tmp = new Task(i, Body, Arm, dof);
-                tmp.CreateCircles(LTT, (i*column.Length)%LTT.GetSize());
-                Tasks.Add(tmp);
-            }
+            Task tmp = new Task(i, Body, Arm, dof);
+            tmp.CreateCircles(LTT, (i*column.Length)%LTT.GetSize());
+            Tasks.Add(tmp);
+
             start = start < LTC.GetSize() ? start + 1 : 0;
         }
         

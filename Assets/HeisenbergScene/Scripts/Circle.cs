@@ -23,6 +23,15 @@ public class Circle
         this.Targets = Targets;
     }
 
+    public void Reset()
+    {
+        this.Round = 0;
+        foreach(Target t in this.Targets)
+        {
+            t.Reset();
+        }
+    }
+
     public int GetId()
     {
         return this.Id;
