@@ -70,11 +70,6 @@ public class Config {
         350, 150
     };
 
-    /**public static int[] TargetWidths = new int[]
-    {
-        15, 30, 50
-    };*/
-
     public static int[] TargetWidths = new int[]
 {
         15, 30, 50

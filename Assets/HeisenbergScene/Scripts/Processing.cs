@@ -286,6 +286,26 @@ public class Processing : MonoBehaviour
         {
             Tunnel.UpdateStatic();
         }
+        else if(Input.GetKeyDown(KeyCode.Keypad0)) { Reset(0); }
+        else if (Input.GetKeyDown(KeyCode.Keypad1)) { Reset(1); }
+        else if (Input.GetKeyDown(KeyCode.Keypad2)) { Reset(2); }
+        else if (Input.GetKeyDown(KeyCode.Keypad3)) { Reset(3); }
+        else if (Input.GetKeyDown(KeyCode.Keypad4)) { Reset(4); }
+        else if (Input.GetKeyDown(KeyCode.Keypad5)) { Reset(5); }
+        else if (Input.GetKeyDown(KeyCode.Keypad6)) { Reset(6); }
+        else if (Input.GetKeyDown(KeyCode.Keypad7)) { Reset(7); }
+    }
+
+    private static void Reset(int Round) 
+    {
+        if (Round <= 8) {
+            for (int i = Round + 1; i < Tasks.Count; i++) {
+                Tasks[i].Reset();
+            }
+            Index = Round;
+            UpdateTask();
+            State = State.SHOW_TASK;
+        }
     }
 
     public static void addEvent(PointerEvent e)
