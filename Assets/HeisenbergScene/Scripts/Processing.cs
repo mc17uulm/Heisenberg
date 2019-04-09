@@ -119,9 +119,6 @@ public class Processing : MonoBehaviour
             circle.SetDistance(Vector3.Distance(prev, targetSphere.transform.position));
             circle.SetWidth();
             prev = new Vector3(-1, -1, -1);
-            Debug.Log("Amplitude: " + circle.GetAmplitude() + " | Distance: " + circle.GetDistance());
-            //TODO: Test values of width in run
-            Debug.Log("Size: " + circle.GetSize() + " | Width: " + circle.GetWidth());
         }
         targetSphere.transform.localScale = new Vector3(dimension, dimension, 1);
         progressIndicator.transform.localPosition = pos;
@@ -251,7 +248,6 @@ public class Processing : MonoBehaviour
             float progress = Timer.GetProgress(Config.Timespan);
             progressIndicator.fillAmount = progress;
         }
-        //UpdateTask();
     }
 
     /**
@@ -298,8 +294,8 @@ public class Processing : MonoBehaviour
 
     private static void Reset(int Round) 
     {
-        if (Round <= 8) {
-            for (int i = Round + 1; i < Tasks.Count; i++) {
+        if (Round <= 7) {
+            for (int i = Round; i < Tasks.Count; i++) {
                 Tasks[i].Reset();
             }
             Index = Round;

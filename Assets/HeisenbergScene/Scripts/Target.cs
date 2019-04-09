@@ -171,27 +171,18 @@ public class Target{
 
     public float CalculateDistance()
     {
-        Debug.Log("TargetID: " + this.Id);
         Vector3 first = this.FAL[0].GetPointerPos();
         Vector3 last = this.FAL[1].GetPointerPos();
-        Debug.Log("First: " + first.ToString());
-        Debug.Log("Last: " + last.ToString());
         this.ActualMovement = new Vector2(last.x - first.x, last.y - first.y);
-        Debug.Log("ActualMovement: " + this.ActualMovement.ToString() + " | Magn: " + this.ActualMovement.magnitude);
         return this.ActualMovement.magnitude;
     }
 
     public float ClaculateDeviation()
     {
-        Debug.Log("TargetID: " + this.Id);
         Vector3 first = this.FAL[0].GetPointerPos();
-        Debug.Log("Target: " + this.PositionWorld.ToString());
         Vector2 intendedVector = new Vector2(this.PositionWorld.x - first.x, this.PositionWorld.y - first.y);
-        Debug.Log("IntendedVec: " + intendedVector.ToString());
         Vector2 projectedActualMovement = Vector3.Project(this.ActualMovement, intendedVector);
-        Debug.Log("ProjectedMove: " + projectedActualMovement.ToString());
         float o = Mathf.Abs(projectedActualMovement.magnitude - intendedVector.magnitude);
-        Debug.Log("ProjectedMag: " + projectedActualMovement.magnitude + " | IntendedVector: " + intendedVector.magnitude + " => " + o);
         return o;
     }
 
