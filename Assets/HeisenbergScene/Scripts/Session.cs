@@ -20,10 +20,17 @@ public class Session
 
     public static void Save(List<Task> Tasks)
     {
-        SaveToFile(Tasks);
+        //SaveToFile(Tasks);
         SaveSum(Tasks);
         SaveTroughput(Tasks);
         Config.SaveToConfig(SaveFile, SumFile, TroughputFile);
+    }
+
+    public static void SaveTaskToFile(Task Task)
+    {
+        List<Task> Tasks = new List<Task>();
+        Tasks.Add(Task);
+        SaveToFile(Tasks);
     }
 
     public static void SaveToFile(List<Task> Tasks)

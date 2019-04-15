@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using Valve.VR;
 
 public enum State
 {
@@ -216,8 +211,10 @@ public class Processing : MonoBehaviour
             }
             else
             {
+                Session.SaveTaskToFile(Tasks[Index]);
                 if (Index == Tasks.Count - 1)
                 {
+
                     State = State.TERMINATED;
                 }
                 else
