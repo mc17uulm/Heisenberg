@@ -58,6 +58,7 @@ public class Processing : MonoBehaviour
         Index = 0;
 
         Config.init();
+        Debug.Log("UserID: " + Config.UserId);
         Session.Initalize();
 
         LaserPointer = GetComponent<SteamVR_LaserPointer>();
