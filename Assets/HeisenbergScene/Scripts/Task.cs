@@ -69,7 +69,7 @@ public class Task
     public string PrintCommand(int i = 0)
     {
         string o = "Runde " + i + "\r\n";
-        o += "Position: " + (this.BodyPos.Equals(BodyPosition.SITTING) ? "STEHEND" : "SITZEND") + "\r\n";
+        o += "Position: " + (this.BodyPos.Equals(BodyPosition.SITTING) ? "SITZEND" : "STEHEND") + "\r\n";
         o += "Arm: " + (this.ArmPos.Equals(ArmPosition.STRECHED) ? "AUSGESTRECKT" : "ANGELEGT") + "\r\n";
         o += "Click: " + (this.Input.Equals(InputType.TRIGGER) ? "TRIGGER" : "PAD") + "\r\n";
         o += "DOF: " + (this.DegreeOfFreedom.Equals(DOF.SIX) ? 6 : 3) + "\r\n";

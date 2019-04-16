@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 public enum State
 {
@@ -223,6 +224,8 @@ public class Processing : MonoBehaviour
                     Index++;
                     UpdateTask();
                     State = State.SHOW_TASK;
+                    Debug.Log(Tasks[Index].GetArmPosition());
+                    Debug.Log(Tasks[Index].GetBodyPosition());
                 }
             }
         }
@@ -268,6 +271,8 @@ public class Processing : MonoBehaviour
             {
                 case State.START:
                     State = State.SHOW_TASK;
+                    Debug.Log(Tasks[Index].GetArmPosition());
+                    Debug.Log(Tasks[Index].GetBodyPosition());
                     break;
 
                 default:
@@ -299,6 +304,8 @@ public class Processing : MonoBehaviour
             Index = Round;
             UpdateTask();
             State = State.SHOW_TASK;
+            Debug.Log(Tasks[Index].GetArmPosition());
+            Debug.Log(Tasks[Index].GetBodyPosition());
         }
     }
 
@@ -312,22 +319,35 @@ public class Processing : MonoBehaviour
 
     public static List<Task> CreateTasks(LatinSquare LTC, LatinSquare LTT)
     {
-        int[] column = LTC.GetColumn(Config.UserId % 8);
-        int start = (Config.UserId * LTC.GetSize()) % LTT.GetSize();
-        List<Task> Tasks = new List<Task>();
-        for (int i = 0; i < column.Length; i++)
-        {
-            // Get states from LatinSquare for Tasks
-            int state = column[i];
-            BodyPosition Body = state <= 4 ? BodyPosition.SITTING : BodyPosition.STANDING;
-            ArmPosition Arm = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1 ? ArmPosition.STRECHED : ArmPosition.APPLIED;
-            DOF dof = state % 2 == 0 ? DOF.THREE : DOF.SIX;
+        //string file = Path.Combine(Application.streamingAssetsPath, "latinsquares.txt");
+        //for (int r = 0; r < 12; r++) {
+            int[] column = LTC.GetColumn(Config.UserId % 8);
+            int start = (Config.UserId * LTC.GetSize()) % LTT.GetSize();
+            List<Task> Tasks = new List<Task>();
+            for (int i = 0; i < column.Length; i++) {
+                // Get states from LatinSquare for Tasks
+                int state = column[i];
+                BodyPosition Body = state <= 4 ? BodyPosition.SITTING : BodyPosition.STANDING;
+                ArmPosition Arm = new List<int>() { 1, 2, 5, 6 }.IndexOf(state) != -1 ? ArmPosition.STRECHED : ArmPosition.APPLIED;
+                DOF dof = state % 2 == 0 ? DOF.THREE : DOF.SIX;
 
-            Task tmp = new Task(i, Body, Arm, dof);
-            tmp.CreateCircles(LTT, (i*column.Length)%LTT.GetSize());
-            Tasks.Add(tmp);
+                Task tmp = new Task(i, Body, Arm, dof);
+                tmp.CreateCircles(LTT, (i * column.Length) % LTT.GetSize());
+                //Debug.Log(tmp.PrintCommand(i));
+          //      if (!File.Exists(file)) {
+            //        using (StreamWriter w = File.CreateText(file)) {
+              //          w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
+                //    }
+           //     } else {
+             //       using (StreamWriter w = File.AppendText(file)) {
+               //         w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
+                 //   }
+               // }
+                
+                Tasks.Add(tmp);
 
-            start = start < LTC.GetSize() ? start + 1 : 0;
+                start = start < LTC.GetSize() ? start + 1 : 0;
+            //}
         }
         
         return Tasks;
