@@ -1,68 +1,59 @@
 UserId: 0 | TaskNo. 0 | Command: Runde 0
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 0 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
-Arm: ANGELEGT
+Position: SITZEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 0 | TaskNo. 2 | Command: Runde 2
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 0 | TaskNo. 3 | Command: Runde 3
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
 
 
 
-UserId: 0 | TaskNo. 3 | Command: Runde 3
+UserId: 0 | TaskNo. 4 | Command: Runde 4
 Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
-
-
-
-
-UserId: 0 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 0 | TaskNo. 5 | Command: Runde 5
 Position: SITZEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 0 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 0 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -70,8 +61,17 @@ DOF: 3
 
 
 
-UserId: 1 | TaskNo. 0 | Command: Runde 0
+UserId: 0 | TaskNo. 7 | Command: Runde 7
 Position: STEHEND
+Arm: AUSGESTRECKT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 1 | TaskNo. 0 | Command: Runde 0
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -80,7 +80,7 @@ DOF: 3
 
 
 UserId: 1 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -89,7 +89,7 @@ DOF: 6
 
 
 UserId: 1 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
@@ -98,7 +98,7 @@ DOF: 6
 
 
 UserId: 1 | TaskNo. 3 | Command: Runde 3
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
@@ -107,7 +107,7 @@ DOF: 3
 
 
 UserId: 1 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
+Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
@@ -116,7 +116,7 @@ DOF: 3
 
 
 UserId: 1 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
@@ -125,7 +125,7 @@ DOF: 6
 
 
 UserId: 1 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
+Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -134,7 +134,7 @@ DOF: 6
 
 
 UserId: 1 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -143,16 +143,7 @@ DOF: 3
 
 
 UserId: 2 | TaskNo. 0 | Command: Runde 0
-Position: STEHEND
-Arm: AUSGESTRECKT
-Click: TRIGGER
-DOF: 3
-
-
-
-
-UserId: 2 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -160,53 +151,44 @@ DOF: 6
 
 
 
+UserId: 2 | TaskNo. 1 | Command: Runde 1
+Position: SITZEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
 UserId: 2 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 2 | TaskNo. 3 | Command: Runde 3
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 2 | TaskNo. 4 | Command: Runde 4
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 2 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
-Arm: AUSGESTRECKT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 2 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 2 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -214,9 +196,27 @@ DOF: 3
 
 
 
-UserId: 3 | TaskNo. 0 | Command: Runde 0
+UserId: 2 | TaskNo. 6 | Command: Runde 6
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 2 | TaskNo. 7 | Command: Runde 7
+Position: STEHEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 3 | TaskNo. 0 | Command: Runde 0
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
 
@@ -225,7 +225,7 @@ DOF: 3
 
 UserId: 3 | TaskNo. 1 | Command: Runde 1
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -233,8 +233,8 @@ DOF: 6
 
 
 UserId: 3 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
-Arm: AUSGESTRECKT
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -243,7 +243,7 @@ DOF: 6
 
 UserId: 3 | TaskNo. 3 | Command: Runde 3
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -252,7 +252,7 @@ DOF: 3
 
 UserId: 3 | TaskNo. 4 | Command: Runde 4
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -260,8 +260,8 @@ DOF: 3
 
 
 UserId: 3 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
-Arm: AUSGESTRECKT
+Position: STEHEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -270,7 +270,7 @@ DOF: 6
 
 UserId: 3 | TaskNo. 6 | Command: Runde 6
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -278,8 +278,8 @@ DOF: 6
 
 
 UserId: 3 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
-Arm: AUSGESTRECKT
+Position: STEHEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
 
@@ -290,25 +290,25 @@ UserId: 4 | TaskNo. 0 | Command: Runde 0
 Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 4 | TaskNo. 1 | Command: Runde 1
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 4 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
-Arm: AUSGESTRECKT
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
@@ -317,7 +317,7 @@ UserId: 4 | TaskNo. 3 | Command: Runde 3
 Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
@@ -326,25 +326,25 @@ UserId: 4 | TaskNo. 4 | Command: Runde 4
 Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 4 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
-Arm: AUSGESTRECKT
+Position: STEHEND
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 4 | TaskNo. 6 | Command: Runde 6
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
@@ -353,7 +353,7 @@ UserId: 4 | TaskNo. 7 | Command: Runde 7
 Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
@@ -432,9 +432,9 @@ DOF: 3
 
 UserId: 6 | TaskNo. 0 | Command: Runde 0
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
@@ -443,7 +443,7 @@ UserId: 6 | TaskNo. 1 | Command: Runde 1
 Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
@@ -452,25 +452,25 @@ UserId: 6 | TaskNo. 2 | Command: Runde 2
 Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 6 | TaskNo. 3 | Command: Runde 3
-Position: STEHEND
-Arm: ANGELEGT
+Position: SITZEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 6 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
-Arm: ANGELEGT
+Position: STEHEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
@@ -479,7 +479,7 @@ UserId: 6 | TaskNo. 5 | Command: Runde 5
 Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
@@ -488,23 +488,23 @@ UserId: 6 | TaskNo. 6 | Command: Runde 6
 Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 6 | TaskNo. 7 | Command: Runde 7
 Position: SITZEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 7 | TaskNo. 0 | Command: Runde 0
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
 
@@ -512,8 +512,8 @@ DOF: 3
 
 
 UserId: 7 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
-Arm: ANGELEGT
+Position: SITZEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -522,7 +522,7 @@ DOF: 6
 
 UserId: 7 | TaskNo. 2 | Command: Runde 2
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -530,8 +530,8 @@ DOF: 6
 
 
 UserId: 7 | TaskNo. 3 | Command: Runde 3
-Position: STEHEND
-Arm: ANGELEGT
+Position: SITZEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -539,8 +539,8 @@ DOF: 3
 
 
 UserId: 7 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
-Arm: ANGELEGT
+Position: STEHEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -549,7 +549,7 @@ DOF: 3
 
 UserId: 7 | TaskNo. 5 | Command: Runde 5
 Position: SITZEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -557,8 +557,8 @@ DOF: 6
 
 
 UserId: 7 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
-Arm: ANGELEGT
+Position: STEHEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -567,7 +567,7 @@ DOF: 6
 
 UserId: 7 | TaskNo. 7 | Command: Runde 7
 Position: SITZEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
 
@@ -575,70 +575,61 @@ DOF: 3
 
 
 UserId: 8 | TaskNo. 0 | Command: Runde 0
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 8 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
-Arm: ANGELEGT
+Position: SITZEND
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 8 | TaskNo. 2 | Command: Runde 2
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 8 | TaskNo. 3 | Command: Runde 3
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
 
 
 
-UserId: 8 | TaskNo. 3 | Command: Runde 3
+UserId: 8 | TaskNo. 4 | Command: Runde 4
 Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
-DOF: 3
-
-
-
-
-UserId: 8 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 8 | TaskNo. 5 | Command: Runde 5
 Position: SITZEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 8 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 8 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -646,8 +637,17 @@ DOF: 3
 
 
 
-UserId: 9 | TaskNo. 0 | Command: Runde 0
+UserId: 8 | TaskNo. 7 | Command: Runde 7
 Position: STEHEND
+Arm: AUSGESTRECKT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 9 | TaskNo. 0 | Command: Runde 0
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -656,7 +656,7 @@ DOF: 3
 
 
 UserId: 9 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -665,7 +665,7 @@ DOF: 6
 
 
 UserId: 9 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
@@ -674,7 +674,7 @@ DOF: 6
 
 
 UserId: 9 | TaskNo. 3 | Command: Runde 3
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
@@ -683,7 +683,7 @@ DOF: 3
 
 
 UserId: 9 | TaskNo. 4 | Command: Runde 4
-Position: SITZEND
+Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
@@ -692,7 +692,7 @@ DOF: 3
 
 
 UserId: 9 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
@@ -701,7 +701,7 @@ DOF: 6
 
 
 UserId: 9 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
+Position: STEHEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -710,7 +710,7 @@ DOF: 6
 
 
 UserId: 9 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -719,16 +719,7 @@ DOF: 3
 
 
 UserId: 10 | TaskNo. 0 | Command: Runde 0
-Position: STEHEND
-Arm: AUSGESTRECKT
-Click: TRIGGER
-DOF: 3
-
-
-
-
-UserId: 10 | TaskNo. 1 | Command: Runde 1
-Position: STEHEND
+Position: SITZEND
 Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
@@ -736,53 +727,44 @@ DOF: 6
 
 
 
+UserId: 10 | TaskNo. 1 | Command: Runde 1
+Position: SITZEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
 UserId: 10 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
+Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 6
+DOF: 3
 
 
 
 
 UserId: 10 | TaskNo. 3 | Command: Runde 3
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 10 | TaskNo. 4 | Command: Runde 4
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
-DOF: 3
+DOF: 6
 
 
 
 
 UserId: 10 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
-Arm: AUSGESTRECKT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 10 | TaskNo. 6 | Command: Runde 6
-Position: SITZEND
-Arm: ANGELEGT
-Click: TRIGGER
-DOF: 6
-
-
-
-
-UserId: 10 | TaskNo. 7 | Command: Runde 7
-Position: SITZEND
+Position: STEHEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
@@ -790,9 +772,27 @@ DOF: 3
 
 
 
-UserId: 11 | TaskNo. 0 | Command: Runde 0
+UserId: 10 | TaskNo. 6 | Command: Runde 6
 Position: STEHEND
-Arm: AUSGESTRECKT
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 10 | TaskNo. 7 | Command: Runde 7
+Position: STEHEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 11 | TaskNo. 0 | Command: Runde 0
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 3
 
@@ -801,7 +801,7 @@ DOF: 3
 
 UserId: 11 | TaskNo. 1 | Command: Runde 1
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -809,8 +809,8 @@ DOF: 6
 
 
 UserId: 11 | TaskNo. 2 | Command: Runde 2
-Position: STEHEND
-Arm: AUSGESTRECKT
+Position: SITZEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -819,7 +819,7 @@ DOF: 6
 
 UserId: 11 | TaskNo. 3 | Command: Runde 3
 Position: STEHEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -828,7 +828,7 @@ DOF: 3
 
 UserId: 11 | TaskNo. 4 | Command: Runde 4
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
 
@@ -836,8 +836,8 @@ DOF: 3
 
 
 UserId: 11 | TaskNo. 5 | Command: Runde 5
-Position: SITZEND
-Arm: AUSGESTRECKT
+Position: STEHEND
+Arm: ANGELEGT
 Click: TRIGGER
 DOF: 6
 
@@ -846,7 +846,7 @@ DOF: 6
 
 UserId: 11 | TaskNo. 6 | Command: Runde 6
 Position: SITZEND
-Arm: ANGELEGT
+Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 6
 
@@ -854,10 +854,82 @@ DOF: 6
 
 
 UserId: 11 | TaskNo. 7 | Command: Runde 7
+Position: STEHEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 12 | TaskNo. 0 | Command: Runde 0
+Position: STEHEND
+Arm: AUSGESTRECKT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 12 | TaskNo. 1 | Command: Runde 1
+Position: STEHEND
+Arm: AUSGESTRECKT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 12 | TaskNo. 2 | Command: Runde 2
+Position: SITZEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 12 | TaskNo. 3 | Command: Runde 3
+Position: STEHEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 12 | TaskNo. 4 | Command: Runde 4
+Position: SITZEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 6
+
+
+
+
+UserId: 12 | TaskNo. 5 | Command: Runde 5
+Position: STEHEND
+Arm: ANGELEGT
+Click: TRIGGER
+DOF: 3
+
+
+
+
+UserId: 12 | TaskNo. 6 | Command: Runde 6
 Position: SITZEND
 Arm: AUSGESTRECKT
 Click: TRIGGER
 DOF: 3
+
+
+
+
+UserId: 12 | TaskNo. 7 | Command: Runde 7
+Position: SITZEND
+Arm: AUSGESTRECKT
+Click: TRIGGER
+DOF: 6
 
 
 

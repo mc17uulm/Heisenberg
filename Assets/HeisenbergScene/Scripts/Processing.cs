@@ -319,10 +319,12 @@ public class Processing : MonoBehaviour
 
     public static List<Task> CreateTasks(LatinSquare LTC, LatinSquare LTT)
     {
-        //string file = Path.Combine(Application.streamingAssetsPath, "latinsquares.txt");
-        //for (int r = 0; r < 12; r++) {
+        /**string file = Path.Combine(Application.streamingAssetsPath, "latinsquares.txt");
+        for (int r = 0; r <= 12; r++) {*/
             int[] column = LTC.GetColumn(Config.UserId % 8);
             int start = (Config.UserId * LTC.GetSize()) % LTT.GetSize();
+            //int[] column = LTC.GetColumn(r % 8);
+            //int start = (r * LTC.GetSize()) % LTT.GetSize();
             List<Task> Tasks = new List<Task>();
             for (int i = 0; i < column.Length; i++) {
                 // Get states from LatinSquare for Tasks
@@ -333,16 +335,16 @@ public class Processing : MonoBehaviour
 
                 Task tmp = new Task(i, Body, Arm, dof);
                 tmp.CreateCircles(LTT, (i * column.Length) % LTT.GetSize());
-                //Debug.Log(tmp.PrintCommand(i));
-          //      if (!File.Exists(file)) {
-            //        using (StreamWriter w = File.CreateText(file)) {
-              //          w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
-                //    }
-           //     } else {
-             //       using (StreamWriter w = File.AppendText(file)) {
-               //         w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
-                 //   }
-               // }
+                Debug.Log(tmp.PrintCommand(i));
+               /**if (!File.Exists(file)) {
+                    using (StreamWriter w = File.CreateText(file)) {
+                        w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
+                    }
+                } else {
+                    using (StreamWriter w = File.AppendText(file)) {
+                        w.WriteLine("UserId: " + r + " | TaskNo. " + i + " | Command: " + tmp.PrintCommand(i));
+                    }
+                }*/
                 
                 Tasks.Add(tmp);
 
