@@ -1,0 +1,28 @@
+%% introduction.tex
+%%
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Pointing in VR}
+
+In normal desktop applications, the mouse is the standard device for input. Mobile devices use mostly touchscreens and sometimes gyroscopes as input devices, where the mouse and the touchscreen or -pad work on a 2D plane. 
+
+In contrast to that, virtual reality (VR) uses pointing in three dimensions to present the applications and to receive inputs. Most modern VR devices use a controller with three (3DOF) or six (6DOF) degrees of freedom to navigate and select in the virtual environment (VE). 
+
+The actions are based on the procedure of the user pointing the controller to the desired target and selecting the target by clicking or pressing a button on the controller. Sometimes this pointing is indicated in VR by a raycast. This raycast shows the direction and the aim of the position of the controller, by spawning a ray out of the top of the device. The user has then the opportunity to directly see, where he's pointing with the controller. Because the controller is tracked in at least three dimensions, the action of selecting something (by clicking or pressing) has an impact on the position of the controller itself, and therefore on the resulting position of the selection on the canvas. This unintentional change of the selected position by selecting something is described in some scientific papers as the ``Heisenberg Effect''.
+
+This paper gives an in-depth view on this ``Heisenberg Effect'', shows its impact and what actions are required to compensate it. To show the ``Heisenberg Effect'', it's required to isolate other effects, caused by the three dimensional (3D) architecture of the VR controller and the virtual environment. 
+
+Based on this it is necessary to understand these effects and to take note of these effects in investigating the ``Heisenberg Effect''.
+
+\section{Objective}
+
+Applications in VR rely on a dependable interaction with the user. To gain immersion, it is necessary, that a user has the sense, the virtual environment correctly responds to his actions. If selections and clicks are not registered by the system, caused by different effects, immersion suffers from this experience. One of these effects could be the so-called ``Heisenberg Effect''. Because it is only referenced in a small amount of scientific papers, more research on this topic is needed. To understand this ``Heisenberg Effect'' better and even show it's impact is incentive for this thesis. Finding a way to compensate the effect is also one of the motives for this work because reliable selections are the basis for good and efficient user experience.
+
+\section{Structure}
+
+To have a good insight into the topic of distal pointing and the associated effects, this work takes at first a look at related work in the field of distal pointing. Used procedures for study design and to analyze these effects are also described in the second chapter (Related Work -~\ref{ch:related-work}). To have a good basis on describing and characterizing the ``Heisenberg Effect'' a short view on the already done work will be a part of the second chapter. 
+
+To explore more aspects of this effect, a study was carried out. The third chapter (Content -~\ref{ch:content}) takes a look on the way of implementing a useful study design, and the used resources and algorithms. The experiment is explained in detail and a short look on the resulted data is given.
+
+The collected data out of the experiment is analyzed and discussed in the fourth chapter (Results -~\ref{ch:results}). Also, an explanation of the ``Heisenberg Effect'' based on this data is given. The last chapter (Conclusions and future work -~\ref{ch:conclusion}) takes a look on the now newly described ``Heisenberg Effect'' and shows some steps that could compensate this effect. Incentives and lookouts for future work on this topic are also presented.

@@ -1,0 +1,106 @@
+% Read the readme first!
+% options:
+% - uulm-draft: show todonotes, links, linenumbers hide label names
+% - uulm-draft-verbose: show todonotes, links, linenumbers, label names
+% - uulm-release-electronic: show links, hide todonotes, linenumbers, label names
+% - uulm-release-print hide everything
+%
+\documentclass[uulm-release-print]{thesis-uulm}
+
+% workarround for some stupid error in combination with IEEEtran, bibtex and babel.
+\makeatletter
+\def\markboth#1#2{%
+  \def\leftmark{\@IEEEcompsoconly{\sffamily}#1}%
+  \def\rightmark{\@IEEEcompsoconly{\sffamily}#2}}
+\makeatother
+
+% create vectors
+\usepackage{amsmath}
+\usepackage{subfigure}
+
+% Choose language
+%%\usepackage[ngerman]{babel}
+ \usepackage[english]{babel}
+
+% Fonts
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\rmdefault}{phv}
+\renewcommand{\ttdefault}{pcr}
+
+% Adjust variables
+\author{Marco Combosch}
+\title{An In-Depth Analysis of and Compensation for the Heisenberg Effect}
+\email{marco.combosch@uni-ulm.de}
+\matnr{868772}	% Student ID
+\degree{Media Informatics} %program you are enrolled
+
+\type{Bachelor Thesis} % Type of Thesis (Bachelors, Masters)
+\jahr{2019}
+
+\gutachterA{Prof. Dr. Enrico Rukzio} % First Reviewer
+%\gutachterB{Prof. Dr. Un Leserlich}  % Second reviewer
+\betreuer{Dennis Wolf} % supervisor
+
+% Can be user to only compile parts of the document
+\includeonly{
+template/definitions,
+chapters/introduction,
+chapters/related-work,
+chapters/content,
+chapters/evaluation,
+chapters/conclusion,
+chapters/appendix
+}
+
+% Definitions for code listings
+\include{template/definitions}
+
+\begin{document}
+
+\frontmatter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{roman}
+\begin{nolinenumbers}
+\maketitle
+
+\copyrightpage
+\end{nolinenumbers}
+
+\setstretch{1.2}
+
+\begin{abstract}
+
+In modern virtual reality (VR) systems, distal interaction with a controller on canvas is the standard input model. In games and applications in VR, distal pointing is used as the main interface to interact with the virtual environment. Some of them need precise selections to work accurately. Predictable and accurate pointing can also reduce frustration when working and/or playing in VR. Some scientific papers suggest that the ``Heisenberg Effect'', an effect resulting in selecting a target by clicking or pressing a button, has an impact on the performance, accuracy and usability of VR applications. This thesis takes a look at this ``Heisenberg Effect'', it's underlying mechanism and on possible actions to compensate the effect. The foundation of this work is a study which was implemented to analyze if the ``Heisenberg Effect'' can be detected and what its effect is. 
+
+The evaluation of the collected data suggests, that the ``Heisenberg Effect'' exists and has an impact on accuracy and performance on distal pointing tasks. On the basis of this statement, a short overview of ideas is given, on how to compensate this effect. These ideas give a basis for future work on this topic.
+
+\end{abstract}
+
+\begin{nolinenumbers}
+\tableofcontents
+\end{nolinenumbers}
+
+\mainmatter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{arabic}
+\include{chapters/introduction}
+\include{chapters/related-work}
+\include{chapters/content}
+\include{chapters/evaluation}
+\include{chapters/conclusion}
+
+%\appendix
+%% \include{chapters/appendix}
+
+\backmatter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\listoffigures
+\listoftables
+
+%\bibliographystyle{natdin}
+\bibliographystyle{IEEEtranS}	% alternativer Stil
+\bibliography{bibliography} % Bib-Datei
+
+\cleardoublepage
+\clearscrheadfoot
+\declaration
+
+\end{document}
